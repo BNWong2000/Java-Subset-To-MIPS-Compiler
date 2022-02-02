@@ -27,13 +27,20 @@ int main(int argc, char* argv[]){
 
     while ((tok = lexer->yylex()) != 0)
     {
-        std::cout << "line: " << lexer->getLine() << " token " << getName(tok) << " Lexeme: |" << lexer->YYText() << "|\n";
-        
-        // if (tok == T_ID || tok == T_NUM){
-        //     std::cout << " Lexeme: " << lexer->getLexeme() << "\n";
-        // }else{
-        //     std::cout << "\n";
-        // }
+        std::cout << "line: " << lexer->getLine() << " token " << getName(tok);;
+        if(tok == T_STR){
+            std::cout << " Lexeme: ";
+            const char *temp = lexer->YYText();
+            int size = sizeof(temp);
+            for(int i = 0; i < size; ++i){
+                std::cout << temp[i];
+            }
+            std::cout << std::endl;
+        }else if (tok == T_ID || tok == T_NUM){
+            std::cout << " Lexeme: " << lexer->getLexeme() << "\n";
+        }else{
+            std::cout << "\n";
+        }
                   
     }
 

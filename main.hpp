@@ -33,6 +33,7 @@ enum
     T_OR,
     T_IF,
     T_ELSE,
+    T_STR
 };
 
 class myLexer : public yyFlexLexer
@@ -100,6 +101,8 @@ inline char const* getName(int token){
             return "IF";
         case T_ELSE:
             return "ELSE";
+        case T_STR:
+            return "STRING";
         default:
             return "";
     }

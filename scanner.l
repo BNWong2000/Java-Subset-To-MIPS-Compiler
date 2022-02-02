@@ -21,6 +21,7 @@ num {digit}{digit}*
 ID {alpha}{alphaNum}*
 
 %x COMMENT
+%x STRING
 
 %%
 [ \t\r]+    ;  /* Whitespace*/
@@ -48,7 +49,15 @@ ID {alpha}{alphaNum}*
 {ID}        {lexeme = std::string(YYText()); return T_ID;}
 {num}       {lexeme = std::string(YYText()); return T_NUM;}
 
-"//"             BEGIN(COMMENT);
+"//"            BEGIN(COMMENT);
+\"              {yymore(); BEGIN(STRING); }
+
+<STRING>\"          {BEGIN(INITIAL); return T_STR;}
+<STRING>\0          {yymore(); std::cout << "null char" ;}
+<STRING>\n          {std::cerr << "ERROR: Newline inside string." << std::endl;}
+<STRING><<EOF>>     {std::cerr << "ERROR: Unterminated String." << std::endl;}
+<STRING>.           {yymore();}
+
 <COMMENT>.
 <COMMENT>\n     {BEGIN(INITIAL); std::cout << "Comment on line " << yylineno << "\n"; }
 
