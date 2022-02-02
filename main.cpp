@@ -21,21 +21,23 @@ int main(int argc, char* argv[]){
     }
 
     std::istream *myStream = &myFile;
-    // char thing[256];
-    // myStream->getline(thing, 256);
-
-    // std::cout << thing << std::endl;
 
     auto lexer = createLexer(myStream);
     int tok;
 
     while ((tok = lexer->yylex()) != 0)
     {
-        std::cout << " token " << std::endl;
+        std::cout << "line: " << lexer->getLine() << " token " << getName(tok) << " Lexeme: |" << lexer->YYText() << "|\n";
+        
+        // if (tok == T_ID || tok == T_NUM){
+        //     std::cout << " Lexeme: " << lexer->getLexeme() << "\n";
+        // }else{
+        //     std::cout << "\n";
+        // }
+                  
     }
 
     if (myFile.is_open())
         myFile.close();
-
     return EXIT_SUCCESS;
 }

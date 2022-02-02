@@ -24,7 +24,7 @@ ID {alpha}{alphaNum}*
 
 %%
 [ \t\r]+    ;  /* Whitespace*/
-\n          ;
+\n        ;
 
 ">"         return T_GT;
 "<"         return T_LT;
@@ -34,15 +34,21 @@ ID {alpha}{alphaNum}*
 "-"         return T_SUB;
 "/"         return T_DIV;
 "*"         return T_MULT;
+"="         return T_EQ;
+"=="        return T_BEQ;
+"!="        return T_NEQ;
+"!"         return T_NOT;
+"&&"        return T_AND;
+"||"        return T_OR;
 "if"        return T_IF;
 "else"      return T_ELSE;
 "begin"     return T_BEGIN;
 "end"       return T_END;
 
 {ID}        {lexeme = std::string(YYText()); return T_ID;}
-{num}       return T_NUM;
+{num}       {lexeme = std::string(YYText()); return T_NUM;}
 
-"#"             BEGIN(COMMENT);
+"//"             BEGIN(COMMENT);
 <COMMENT>.
 <COMMENT>\n     {BEGIN(INITIAL); std::cout << "Comment on line " << yylineno << "\n"; }
 
