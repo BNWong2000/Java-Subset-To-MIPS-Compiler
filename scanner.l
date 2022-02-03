@@ -18,8 +18,9 @@ alphaNumUnderscore [0-9a-zA-Z_]
 digit [0-9]
 alphaNum [0-9a-zA-Z]
 
-
 num {digit}{digit}*
+
+/* Since ID's can contain _, then we include them in the regex*/
 ID {alphaUnderscore}{alphaNumUnderscore}*
 
 %x COMMENT
@@ -29,7 +30,8 @@ ID {alphaUnderscore}{alphaNumUnderscore}*
 [ \t\r]+    ;  /* Whitespace*/
 \n        ;
 
-">"         return T_GT;
+
+">"         return T_GT; /* All known reserved words and symbols */
 "<"         return T_LT;
 ">="        return T_GE;
 "<="        return T_LE;
@@ -67,18 +69,21 @@ ID {alphaUnderscore}{alphaNumUnderscore}*
 "//"            BEGIN(COMMENT);
 \"              {yymore(); BEGIN(STRING); }
 
-<STRING>\"          {BEGIN(INITIAL); return T_STR;}
-<STRING>"\\\""      { yymore();}
-<STRING>\n          {std::cerr << "ERROR: Newline inside string." << std::endl; return T_ERR;}
+
+<STRING>\"          {BEGIN(INITIAL); return T_STR;}     /* Strings */
+<STRING>"\\\""      { yymore();}                        /* If a \" is inside of a string, then include it. */
+<STRING>\n          {std::cerr << "ERROR: Newline inside string." << std::endl; return T_ERR;}  /* Check for EOF or newline in strings */
 <STRING><<EOF>>     {std::cerr << "ERROR: Unterminated String." << std::endl; return T_ERR;}
 <STRING>.           { yymore();}
 
 <COMMENT>.
 <COMMENT>\n     {BEGIN(INITIAL); }
 
-.               {return T_WARN;}
+
+.               {return T_WARN;} /* Send warning on illegal character */
 %%
 
+/* This code was obtained from the TA (Shankar) in tutorial.*/
 std::unique_ptr<myLexer> createLexer(std::istream* inputStream) {
     return std::make_unique<myLexer>(inputStream);
 }
