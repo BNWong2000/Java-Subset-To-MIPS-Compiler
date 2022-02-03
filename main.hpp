@@ -9,9 +9,9 @@
 #include <cstdlib>
 #include <cerrno>
 #include <cstring>
+
 // Token enum
-enum
-{
+enum {
     T_ID = 1,
     T_NUM,
     T_ADD,
@@ -51,13 +51,17 @@ enum
     T_ERR
 };
 
+/**
+ * A class which inherits the yyFlexLexer class from FLex
+ * The purpose of this is to lex the input file, and return the necessary information
+ * to generate a token.
+ */
 class myLexer : public yyFlexLexer
 {
 
 public:
     myLexer(std::istream *inputStream) : yyFlexLexer(inputStream) {
         yylineno=1;
-        numWarnings = 0;
     }
 
     virtual ~myLexer() = default;
@@ -69,12 +73,18 @@ public:
     std::string getLexeme(){
         return lexeme;
     }
-    int numWarnings;
+    
     std::string lexeme;
 };
 
 std::unique_ptr<myLexer> createLexer(std::istream *inputStream);
 
+/**
+ * @brief Gets the name given the token type. 
+ * Based off of code from the TA shown in tutorial.
+ * @param token the enumerated value of the token.
+ * @return char const* - the string format name to be printed with the token information. 
+ */
 inline char const* getName(int token){
     switch(token){
         case T_ID:
