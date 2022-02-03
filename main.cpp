@@ -24,7 +24,7 @@ int main(int argc, char* argv[]){
 
     auto lexer = createLexer(myStream);
     int tok;
-    int warningCount = 0, warningLine = 0;
+    int warningCount = 0;
     while ((tok = lexer->yylex()) != 0)
     {
         std::cout << "line: " << lexer->getLine() << " token " << getName(tok);
@@ -45,19 +45,12 @@ int main(int argc, char* argv[]){
         }else if (tok == T_WARN){
             int lineNum = lexer->getLine();
             std::cerr << "WARNING: Ignoring an illegal char on line " << lineNum << std::endl;
-            if (warningLine == lineNum)
-            {
-                warningCount++;
-                if(warningCount == MAXNUMWARNINGS){
-                    std::cerr << "ERROR: Too many illegal characters at line " << lineNum << std::endl;
-                    return EXIT_FAILURE;
-                }
+            warningCount++;
+            if(warningCount == MAXNUMWARNINGS){
+                std::cerr << "ERROR: Too many illegal characters at or near line " << lineNum << std::endl;
+                return EXIT_FAILURE;
             }
-            else
-            {
-                warningCount = 1;
-                warningLine = lineNum;
-            }
+            
         }else{
             std::cout << "\n";
         }

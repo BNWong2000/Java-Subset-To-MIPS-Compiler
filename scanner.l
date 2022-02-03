@@ -74,7 +74,7 @@ ID {alphaUnderscore}{alphaNumUnderscore}*
 <STRING>.           { yymore();}
 
 <COMMENT>.
-<COMMENT>\n     {BEGIN(INITIAL); std::cout << "Comment on line " << yylineno-1 << "\n"; }
+<COMMENT>\n     {BEGIN(INITIAL); }
 
 .               {return T_WARN;}
 %%
