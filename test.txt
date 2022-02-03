@@ -1,12 +1,3 @@
-{}
-}
-{
-}
-}
-as
-alphaNum
-
-
 // Legit Tokens:
 // singletons
 
@@ -71,4 +62,10 @@ _abc_0
 
 // yes, this *is* legal..
 
-"abcd
+"ab\@cd"
+
+
+"abc"
+"ab\t\ndef"
+"ab\"cd"
+"ab\\\"cd"

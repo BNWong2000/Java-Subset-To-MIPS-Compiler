@@ -13,12 +13,14 @@
 /* Definitions: */
 
 alpha [a-zA-Z]
+alphaUnderscore [a-zA-Z_]
+alphaNumUnderscore [0-9a-zA-Z_]
 digit [0-9]
 alphaNum [0-9a-zA-Z]
 
 
 num {digit}{digit}*
-ID {alpha}{alphaNum}*
+ID {alphaUnderscore}{alphaNumUnderscore}*
 
 %x COMMENT
 %x STRING
@@ -35,6 +37,7 @@ ID {alpha}{alphaNum}*
 "-"         return T_SUB;
 "/"         return T_DIV;
 "*"         return T_MULT;
+"%"         return T_MOD;
 "="         return T_EQ;
 "=="        return T_BEQ;
 "!="        return T_NEQ;
@@ -43,8 +46,20 @@ ID {alpha}{alphaNum}*
 "||"        return T_OR;
 "if"        return T_IF;
 "else"      return T_ELSE;
-"begin"     return T_BEGIN;
-"end"       return T_END;
+"while"     return T_WHILE;
+"break"     return T_BREAK;
+"return"    return T_RET;
+"("         return T_LB;
+")"         return T_RB;
+"{"         return T_LCB;
+"}"         return T_RCB;
+";"         return T_SC;
+","         return T_COM;
+"true"      return T_TRUE;
+"false"     return T_FALSE;
+"boolean"   return T_BOOL;
+"int"       return T_INT;
+"void"      return T_VOID;
 
 {ID}        {lexeme = std::string(YYText()); return T_ID;}
 {num}       {lexeme = std::string(YYText()); return T_NUM;}
@@ -53,15 +68,15 @@ ID {alpha}{alphaNum}*
 \"              {yymore(); BEGIN(STRING); }
 
 <STRING>\"          {BEGIN(INITIAL); return T_STR;}
-<STRING>\0          {yymore(); std::cout << "null char" ;}
-<STRING>\n          {std::cerr << "ERROR: Newline inside string." << std::endl;}
-<STRING><<EOF>>     {std::cerr << "ERROR: Unterminated String." << std::endl;}
-<STRING>.           {yymore();}
+<STRING>"\\\""      { yymore();}
+<STRING>\n          {std::cerr << "ERROR: Newline inside string." << std::endl; return T_ERR;}
+<STRING><<EOF>>     {std::cerr << "ERROR: Unterminated String." << std::endl; return T_ERR;}
+<STRING>.           { yymore();}
 
 <COMMENT>.
-<COMMENT>\n     {BEGIN(INITIAL); std::cout << "Comment on line " << yylineno << "\n"; }
+<COMMENT>\n     {BEGIN(INITIAL); std::cout << "Comment on line " << yylineno-1 << "\n"; }
 
-.           std::cerr << "Illegal char on line " << yylineno << std::endl;
+.               {return T_WARN;}
 %%
 
 std::unique_ptr<myLexer> createLexer(std::istream* inputStream) {
