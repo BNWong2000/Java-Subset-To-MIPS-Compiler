@@ -1,0 +1,2 @@
+"This is a legal string"
+"This isn't........ (no end quote)
