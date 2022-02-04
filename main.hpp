@@ -56,8 +56,7 @@ enum {
  * The purpose of this is to lex the input file, and return the necessary information
  * to generate a token.
  */
-class myLexer : public yyFlexLexer
-{
+class myLexer : public yyFlexLexer {
 
 public:
     myLexer(std::istream *inputStream) : yyFlexLexer(inputStream) {
@@ -70,7 +69,7 @@ public:
 
     int getLine() { return yylineno; }
 
-    std::string getLexeme(){
+    std::string getLexeme() {
         return lexeme;
     }
     
