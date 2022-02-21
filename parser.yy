@@ -6,6 +6,7 @@
 %define api.parser.class {Parser}
 %locations
 
+
 %code requires{
     #include <string>
     #include <memory>
@@ -15,78 +16,79 @@
     }
 }
 
+%define api.token.prefix {T_}
+
+%parse-param {std::unique_ptr<JCC::MyLexer> &lexer}
 
 %code{
     #include <iostream>
     #include "main.hpp"
 
-    #undef  yyLex
-    #define yyLex MyLexer->yyLex
+    #undef  yylex
+    #define yylex lexer->yylex
 
 
 
 }
 
 
-%parse-param {std::unique_ptr<JCC::MyLexer> &lexer}
 
 %union{
     int ival;
     std::string *str;
 }
 
-%token    <str>  T_ID
-%token    <ival> T_NUM
-%token    T_ADD
-%token    T_SUB
-%token    T_DIV
-%token    T_MULT
-%token    T_MOD
-%token    T_LT
-%token    T_GT
-%token    T_GE
-%token    T_LE
-%token    T_EQ
-%token    T_BEQ
-%token    T_NEQ
-%token    T_NOT
-%token    T_AND
-%token    T_OR
-%token    T_IF
-%token    T_ELSE
-%token    T_WHILE
-%token    T_FOR
-%token    T_BREAK
-%token    T_RET
-%token    T_STR
-%token    T_LB
-%token    T_RB
-%token    T_RCB
-%token    T_LCB
-%token    T_SC
-%token    T_COM
-%token    T_TRUE
-%token    T_FALSE
-%token    T_BOOL
-%token    T_INT
-%token    T_VOID
-%token    T_WARN
-%token    T_ERR
+%token    <str>  ID "identifier"
+%token    <ival> NUM "number"
+%token    ADD '+'
+%token    SUB '-'
+%token    DIV '/'
+%token    MULT '*'
+%token    MOD '%'
+%token    LT '<'
+%token    GT '>'
+%token    GE 
+%token    LE 
+%token    ASIGN '='
+%token    EQ 
+%token    NEQ 
+%token    NOT '!'
+%token    AND 
+%token    OR 
+%token    IF 
+%token    ELSE
+%token    WHILE
+%token    BREAK
+%token    RET
+%token    STR
+%token    LB
+%token    RB
+%token    RCB
+%token    LCB
+%token    SC
+%token    COM
+%token    TRUE
+%token    FALSE
+%token    BOOL
+%token    INT
+%token    VOID
+%token    WARN
+%token    ERR
 
-%start S
+%start start
 
 %%
 start           : /* empty */
                 | globaldeclarations
                 ;
 
-literal         : NUMBER
-                | STRING
+literal         : NUM
+                | STR
                 | TRUE
                 | FALSE
                 ;
 
-type            : BOOLEAN
+type            : BOOL
                 | INT
                 ;
 
@@ -145,8 +147,8 @@ statement               : block
                         | ';'
                         | statementexpression ';'
                         | BREAK ';'
-                        | RETURN expression ';'
-                        | RETURN ';'
+                        | RET expression ';'
+                        | RET ';'
                         | IF '(' expression ')' statement
                         | IF '(' expression ')' statement ELSE statement
                         | WHILE '(' expression ')' statement
@@ -198,7 +200,7 @@ relationalexpression    : additiveexpression
 
 equalityexpression      : relationalexpression
                         | equalityexpression EQ relationalexpression
-                        | equalityexpression NE relationalexpression
+                        | equalityexpression NEQ relationalexpression
                         ;
 
 conditionalandexpression: equalityexpression
@@ -219,3 +221,8 @@ assignment              : identifier '=' assignmentexpression
 expression              : assignmentexpression
                         ;
 %%
+
+void JCC::Parser::error(const location_type &loc, const std::string &errmsg)
+{
+   std::cerr << "Error: " << errmsg << " at " << loc << "\n";
+}

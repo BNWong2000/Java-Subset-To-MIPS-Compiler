@@ -10,7 +10,7 @@
     #include "main.hpp"
 
     #undef  YY_DECL
-    #define YY_DECL int JCC::MyLexer::(JCC::Parser::semantic_type *yylval, JCC::Parser::location_type *loc)
+    #define YY_DECL int JCC::MyLexer::yylex(JCC::Parser::semantic_type *yylval, JCC::Parser::location_type *loc)
     #define YY_USER_ACTION loc->step();
 %}
 
@@ -44,8 +44,8 @@ ID {alphaUnderscore}{alphaNumUnderscore}*
 "/"         return T_DIV;
 "*"         return T_MULT;
 "%"         return T_MOD;
-"="         return T_EQ;
-"=="        return T_BEQ;
+"="         return T_ASSIGN;
+"=="        return T_EQ;
 "!="        return T_NEQ;
 "!"         return T_NOT;
 "&&"        return T_AND;
