@@ -1,5 +1,5 @@
 %option c++
-%option yyclass="myLexer"
+%option yyclass="JCC::MyLexer"
 %option yylineno 
 %option noyywrap
 
@@ -8,6 +8,10 @@
     #include <iostream>
     #include <fstream>
     #include "main.hpp"
+
+    #undef  YY_DECL
+    #define YY_DECL int JCC::MyLexer::(JCC::Parser::semantic_type *yylval, JCC::Parser::location_type *loc)
+    #define YY_USER_ACTION loc->step();
 %}
 
 /* Definitions: */
@@ -84,6 +88,6 @@ ID {alphaUnderscore}{alphaNumUnderscore}*
 %%
 
 /* This code was obtained from the TA (Shankar) in tutorial.*/
-std::unique_ptr<myLexer> createLexer(std::istream* inputStream) {
-    return std::make_unique<myLexer>(inputStream);
+std::unique_ptr<JCC::MyLexer> createLexer(std::istream* inputStream) {
+    return std::make_unique<JCC::MyLexer>(inputStream);
 }

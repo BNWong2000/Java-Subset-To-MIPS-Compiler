@@ -56,14 +56,14 @@ enum {
  * The purpose of this is to lex the input file, and return the necessary information
  * to generate a token.
  */
-class myLexer : public yyFlexLexer {
+class MyLexer : public yyFlexLexer {
 
 public:
-    myLexer(std::istream *inputStream) : yyFlexLexer(inputStream) {
+    MyLexer(std::istream *inputStream) : yyFlexLexer(inputStream) {
         yylineno=1;
     }
 
-    virtual ~myLexer() = default;
+    virtual ~MyLexer() = default;
 
     int yylex();
 
@@ -76,7 +76,7 @@ public:
     std::string lexeme;
 };
 
-std::unique_ptr<myLexer> createLexer(std::istream *inputStream);
+std::unique_ptr<MyLexer> createLexer(std::istream *inputStream);
 
 /**
  * @brief Gets the name given the token type. 

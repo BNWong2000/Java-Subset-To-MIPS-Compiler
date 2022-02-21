@@ -1,15 +1,31 @@
-all: flex main
-
-flex: scanner.l
-	flex --c++ scanner.l
-
-parser: parser.yy
-	bison -o parser.yy
+CC := clang++
+CXXFLAGS := -std=c++14
+objs := parser.o scanner.o main.o 
 
 
+all: main
 
-main: main.hpp lex.yy.cc main.cpp
-	g++ -Wall -std=c++14 -o scanner lex.yy.cc main.cpp
+%.cc %.hh: %.yy
+	bison -o $*.cc $<
+
+%.cc: %.l
+	flex --c++ -o $@ $<
+
+
+-include $(OBJ:.o=.d)
+
+%.o: %.cc
+	$(CC) $(CXXFLAGS) -c $< -MMD -MF $*.d
+
+%.o: %.cpp
+	$(CC) $(CXXFLAGS) -c $< -MMD -MF $*.d
+
+tools: parser.yy scanner.l
+	bison -o parser.cc parser.yy
+	flex --c++ -o scanner.cc scanner.l
+
+main: $(objs)
+	$(CC) $(CXXFLAGS) -o $@ $^
 
 clean:
-	rm -rf *.yy.cc scanner
+	rm -rf *.o *.hh *.cc parser *.d
