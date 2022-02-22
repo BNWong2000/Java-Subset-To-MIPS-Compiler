@@ -10,27 +10,21 @@
 %code requires{
     #include <string>
     #include <memory>
-    #include "AST.hpp"
+    #include "ast.hpp"
 
     class Driver;
 }
-
-%define api.token.prefix {T_}
 
 %parse-param {Driver &driver}
 
 %code{
     #include <iostream>
-    #include "Driver.hpp"
-    #include "scanner.hpp"
+    #include "driver.hpp"
 
     #undef  yylex
     #define yylex driver.getToken
-
-
-
 }
-
+%define api.token.prefix {T_}
 
 
 %union{

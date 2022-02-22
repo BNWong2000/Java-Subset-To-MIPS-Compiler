@@ -1,5 +1,6 @@
-#ifndef MAIN_HPP
-#define MAIN_HPP
+#pragma once
+#ifndef SCANNER_HPP
+#define SCANNER_HPP
 
 #include <iostream>
 #include <fstream>
@@ -9,13 +10,13 @@
 #include <cerrno>
 #include <cstring>
 
-#include "Driver.hpp"
 
-#include "parser.hh"
-#include "location.hh"
 #if !defined(yyFlexLexerOnce)
 #include <FlexLexer.h>
 #endif
+
+#include "parser.hh"
+#include "location.hh"
 
 // Token enum
 enum

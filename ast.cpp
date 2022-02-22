@@ -1,7 +1,7 @@
 #include <iostream>
 #include <string>
 
-#include "AST.hpp"
+#include "ast.hpp"
 
 
 
