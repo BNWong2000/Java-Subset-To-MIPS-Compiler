@@ -4,7 +4,7 @@
 #include <iostream>
 // #include <FlexLexer.h>
 
-#include "main.hpp"
+#include "scanner.hpp"
 
 /**
  * The max number of warnings before the program closes.

@@ -9,6 +9,8 @@
 #include <cerrno>
 #include <cstring>
 
+#include "Driver.hpp"
+
 #include "parser.hh"
 #include "location.hh"
 #if !defined(yyFlexLexerOnce)

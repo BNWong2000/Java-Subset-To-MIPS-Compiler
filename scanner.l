@@ -7,7 +7,10 @@
     // Declarations
     #include <iostream>
     #include <fstream>
-    #include "main.hpp"
+    #include "scanner.hpp"
+    #include "parser.hh"
+
+    using Token = JCC::Parser::token;
 
     #undef  YY_DECL
     #define YY_DECL int JCC::MyLexer::yylex(JCC::Parser::semantic_type *yylval, JCC::Parser::location_type *loc)

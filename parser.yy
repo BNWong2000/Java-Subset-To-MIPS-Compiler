@@ -10,22 +10,22 @@
 %code requires{
     #include <string>
     #include <memory>
-    
-    namespace JCC{
-        class MyLexer;
-    }
+    #include "AST.hpp"
+
+    class Driver;
 }
 
 %define api.token.prefix {T_}
 
-%parse-param {std::unique_ptr<JCC::MyLexer> &lexer}
+%parse-param {Driver &driver}
 
 %code{
     #include <iostream>
-    #include "main.hpp"
+    #include "Driver.hpp"
+    #include "scanner.hpp"
 
     #undef  yylex
-    #define yylex lexer->yylex
+    #define yylex driver.getToken
 
 
 
