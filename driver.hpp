@@ -7,6 +7,7 @@
 #include <istream>
 #include "scanner.hpp"
 #include "parser.hh"
+#include "ast.hpp"
 
 class Driver
 {
@@ -15,6 +16,10 @@ public:
     Driver(const char* file) : file_name(file) {}
     ~Driver();
     int start(std::istream &inputStream);
+
+    AST* tree = nullptr;
+
+    std::string getFileName () { return file_name;}
 
     virtual int getToken(JCC::Parser::semantic_type *yylval, JCC::Parser::location_type *location);
 

@@ -70,7 +70,7 @@ ID {alphaUnderscore}{alphaNumUnderscore}*
 "int"       return T_INT;
 "void"      return T_VOID;
 
-{ID}        {lexeme = std::string(YYText()); return T_ID;}
+{ID}        {lexeme = std::string(YYText()); std::cout <<"ID here" << std::endl; return T_ID;}
 {num}       {lexeme = std::string(YYText()); return T_NUM;}
 
 "//"            BEGIN(COMMENT);

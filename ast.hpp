@@ -35,6 +35,7 @@ enum Variables
 class AST;
 
 class Prog;
+
 class Statement;
 class Block;
 class IfStatement;
@@ -43,7 +44,7 @@ class AssignStatement;
 class NullStatement;
 class ReturnStatement;
 class WhileStatement;
-class BreakStatemnt;
+class BreakStatement;
 
 class Expression;
 class Identifier;
@@ -83,12 +84,15 @@ public:
 class Prog : public AST
 {
 protected:
+    std::string file;
     void addChild(AST *child) override
     {
         children.push_back(child);
     }
 
 public:
+    Prog(std::string fileName) : file(fileName){}
+
     void addNode(AST *node)
     {
         addChild(node);
@@ -98,6 +102,9 @@ public:
     {
         std::cout << "\t"
                   << "Prog" << std::endl;
+        for(auto child : children){
+            child->print();
+        }
     }
 };
 
@@ -122,6 +129,27 @@ public:
     }
 };
 
+class Expression : public AST
+{
+protected:
+    void addChild(AST *child) override
+    {
+        children.push_back(child);
+    }
+
+public:
+    void addNode(AST *node)
+    {
+        addChild(node);
+    }
+
+    void print() override
+    {
+        std::cout << "\t"
+                  << "Expression" << std::endl;
+    }
+};
+
 class Declaration : public AST
 {
 protected:
@@ -142,5 +170,186 @@ public:
                   << "Statement" << std::endl;
     }
 };
+
+
+class IfStatement : public Statement {
+protected:
+    void addChild(AST *child) override
+    {
+        children.push_back(child);
+    }
+
+public:
+    void addNode(AST *node)
+    {
+        addChild(node);
+    }
+
+    void print() override
+    {
+        std::cout << "\t"
+                  << "Statement" << std::endl;
+    }
+};
+
+class IfElseStatement : public Statement{
+protected:
+    void addChild(AST *child) override
+    {
+        children.push_back(child);
+    }
+
+public:
+    void addNode(AST *node)
+    {
+        addChild(node);
+    }
+
+    void print() override
+    {
+        std::cout << "\t"
+                  << "Statement" << std::endl;
+    }
+};
+
+class AssignStatement : public Statement{
+protected:
+    void addChild(AST *child) override
+    {
+        children.push_back(child);
+    }
+
+public:
+    void addNode(AST *node)
+    {
+        addChild(node);
+    }
+
+    void print() override
+    {
+        std::cout << "\t"
+                  << "Statement" << std::endl;
+    }
+};
+class NullStatement : public Statement{
+protected:
+    void addChild(AST *child) override
+    {
+        children.push_back(child);
+    }
+
+public:
+    void addNode(AST *node)
+    {
+        addChild(node);
+    }
+
+    void print() override
+    {
+        std::cout << "\t"
+                  << "Statement" << std::endl;
+    }
+};
+
+class ReturnStatement : public Statement{
+protected:
+    void addChild(AST *child) override
+    {
+        children.push_back(child);
+    }
+
+public:
+    void addNode(AST *node)
+    {
+        addChild(node);
+    }
+
+    void print() override
+    {
+        std::cout << "\t"
+                  << "Statement" << std::endl;
+    }
+};
+
+class WhileStatement : public Statement{
+protected:
+    void addChild(AST *child) override
+    {
+        children.push_back(child);
+    }
+
+public:
+    void addNode(AST *node)
+    {
+        addChild(node);
+    }
+
+    void print() override
+    {
+        std::cout << "\t"
+                  << "Statement" << std::endl;
+    }
+};
+
+class BreakStatement : public Statement{
+protected:
+    void addChild(AST *child) override
+    {
+        children.push_back(child);
+    }
+
+public:
+    void addNode(AST *node)
+    {
+        addChild(node);
+    }
+
+    void print() override
+    {
+        std::cout << "\t"
+                  << "Statement" << std::endl;
+    }
+};
+
+
+class Identifier : public Expression{
+private:
+    std::string id;
+
+public:
+    Identifier(std::string myId) : id(myId){}
+};
+
+class Number : public Expression {
+private: 
+    int num;
+
+public:
+    Number(int myNum) : num(myNum){}
+};
+
+class Arithmetic : public Expression {
+private:
+    Operators op;
+
+
+public:
+    Arithmetic(Operators myOp, Expression e1, Expression e2);
+};
+
+
+class Comparison : public Expression {
+private: 
+    Operators op;
+
+
+public:
+    Comparison(Operators myOp, Expression e1, Expression e2);
+};
+
+class Actuals;
+class FunctionCalls;
+
+
 
 #endif

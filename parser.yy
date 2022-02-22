@@ -76,8 +76,8 @@
 %start start
 
 %%
-start           : /* empty */
-                | globaldeclarations
+start           : /* empty */       {std::cout <<"Here1" << std::endl; driver.tree = new Prog(driver.getFileName());}
+                | globaldeclarations {std::cout <<"Here2" << std::endl; }
                 ;
 
 literal         : NUM
