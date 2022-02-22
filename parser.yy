@@ -12,17 +12,20 @@
     #include <memory>
     #include "ast.hpp"
 
+    namespace JCC{
+        class MyLexer;
+    }
     class Driver;
 }
 
-%parse-param {Driver &driver}
+%parse-param {std::unique_ptr<JCC::MyLexer> &lexer}
 
 %code{
     #include <iostream>
     #include "driver.hpp"
 
     #undef  yylex
-    #define yylex driver.getToken
+    #define yylex lexer->yylex
 }
 %define api.token.prefix {T_}
 

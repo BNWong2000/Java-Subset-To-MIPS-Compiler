@@ -13,8 +13,8 @@
     using Token = JCC::Parser::token;
 
     #undef  YY_DECL
-    #define YY_DECL int JCC::MyLexer::yylex(JCC::Parser::semantic_type *yylval, JCC::Parser::location_type *loc)
-    #define YY_USER_ACTION loc->step();
+    #define YY_DECL int JCC::MyLexer::yylex(JCC::Parser::semantic_type *yylval, JCC::Parser::location_type *location)
+    #define YY_USER_ACTION location->step();
 %}
 
 /* Definitions: */
