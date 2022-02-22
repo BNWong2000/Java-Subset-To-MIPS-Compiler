@@ -18,14 +18,15 @@
     class Driver;
 }
 
-%parse-param {std::unique_ptr<JCC::MyLexer> &lexer}
+// %parse-param {std::unique_ptr<JCC::MyLexer> &lexer}
+%parse-param {Driver & driver}
 
 %code{
     #include <iostream>
     #include "driver.hpp"
 
     #undef  yylex
-    #define yylex lexer->yylex
+    #define yylex driver.getToken
 }
 %define api.token.prefix {T_}
 

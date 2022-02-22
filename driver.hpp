@@ -15,7 +15,7 @@ public:
     Driver(const char *file) : fileName(file) {}
     ~Driver();
 
-    int getToken(JCC::Parser::semantic_type *yylval, JCC::Parser::location_type *location);
+    virtual int getToken(JCC::Parser::semantic_type *yylval, JCC::Parser::location_type *location);
 
 private:
     std::string fileName;
