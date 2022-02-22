@@ -1,6 +1,6 @@
 CC := clang++
 CXXFLAGS := -std=c++14
-objs := parser.o scanner.o main.o 
+objs := parser.o scanner.o main.o driver.o
 
 
 all: main

@@ -59,10 +59,10 @@
 %token    BREAK
 %token    RET
 %token    STR
-%token    LB
-%token    RB
-%token    RCB
-%token    LCB
+%token    LB '('
+%token    RB ')'
+%token    RCB '{'
+%token    LCB '}'
 %token    SC
 %token    COM
 %token    TRUE

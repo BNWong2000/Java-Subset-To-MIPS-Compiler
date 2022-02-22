@@ -4,7 +4,8 @@
 #include <iostream>
 // #include <FlexLexer.h>
 
-#include "scanner.hpp"
+// #include "scanner.hpp"
+#include "driver.hpp"
 
 /**
  * The max number of warnings before the program closes.
@@ -14,6 +15,7 @@
 int main(int argc, char *argv[])
 {
     std::ifstream myFile;
+    Driver *myDriver;
 
     // First, check that an argument for the file can exist
     if (argc >= 2)
@@ -32,13 +34,18 @@ int main(int argc, char *argv[])
         std::cerr << "ERROR: No file Specified. " << std::endl;
         return EXIT_FAILURE;
     }
+  
+    myDriver = new Driver(argv[1]);
 
     std::istream *myStream = &myFile;
+    int rV = myDriver->start(*myStream);
+
+    if (myFile.is_open())
+        myFile.close();
+    return rV;
 
     // Create the Lexer.
-    auto lexer = createLexer(myStream);
-    int tok;
-    int warningCount = 0;
+    // auto lexer = createLexer(myStream);
 
     // Loop using the lexer, until we reach the end of the file
     // while ((tok = lexer->yylex()) != 0)
@@ -102,8 +109,4 @@ int main(int argc, char *argv[])
     //         std::cout << "\n";
     //     }
     // }
-
-    if (myFile.is_open())
-        myFile.close();
-    return EXIT_SUCCESS;
 }
