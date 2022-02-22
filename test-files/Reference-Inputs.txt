@@ -1,0 +1,54 @@
+comment-in-op.t5  
+// error
+
+&//comment
+&
+
+comments-only.t2  
+//
+//  just comments here..
+//
+
+comment-term-eof.t11 
+// comment terminated by eof
+
+eof-only.t1  
+
+
+illegal-chars.t6  
+// sample of illegal characters
+
+: \ ^ #
+
+
+legit-token-salad.t3
+
+
+nul-in-str.t10  
+// yes, this *is* legal..
+
+"ab^@cd"
+
+space-in-operator.t4
+// error
+& &
+
+strings.t9  
+// strings
+
+"abc"
+"ab\t\ndef"
+"ab\"cd"
+"ab\\\"cd"
+
+str-term-eof.t8 
+// error
+
+"abc
+
+unterm-str.t7 
+// error
+
+"abc
+
+wtf.t12

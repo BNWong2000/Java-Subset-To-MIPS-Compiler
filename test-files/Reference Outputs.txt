@@ -1,0 +1,56 @@
+comment-in-op.t5  
+warning: ignoring bad character at or near line 3
+warning: ignoring bad character at or near line 4
+
+comments-only.t2  
+
+comment-term-eof.t11 
+
+eof-only.t1  
+
+illegal-chars.t6  
+warning: ignoring bad character at or near line 3
+warning: ignoring bad character at or near line 3
+warning: ignoring bad character at or near line 3
+warning: ignoring bad character at or near line 3
+
+legit-token-salad.t3
+[Token(+, 3, None), Token(-, 4, None), Token(*, 5, None), Token(/, 6, None), Token(%, 7, None), 
+Token((, 8, None), Token(), 9, None), Token({, 10, None), Token(}, 11, None), Token(;, 12, None), 
+Token(,, 13, None), Token(!, 17, None), Token(!=, 17, None), Token(=, 18, None), Token(==, 18, None),
+Token(<, 19, None), Token(<=, 19, None), Token(>, 20, None), Token(>=, 20, None), Token(>, 22, None),
+Token(=, 22, None), Token(&&, 26, None), Token(||, 27, None), Token(true, 31, None), Token(false, 32, None), 
+Token(boolean, 33, None), Token(int, 34, None), Token(void, 35, None), Token(if, 36, None), Token(else, 37, None), 
+Token(while, 38, None), Token(break, 39, None), Token(return, 40, None), Token(id, 44, for), Token(id, 45, String), 
+Token(id, 46, Break), Token(id, 47, switch), Token(id, 48, class), Token(id, 49, abcdef), Token(id, 50, abc123), 
+Token(id, 51, _), Token(id, 52, _abc_0), Token(number, 56, 0), Token(number, 57, 12345678901234567890), Token(number, 59, 0123)]
+
+nul-in-str.t10  
+[Token(string, 3, abcd)]
+
+space-in-operator.t4
+warning: ignoring bad character at or near line 2
+warning: ignoring bad character at or near line 2
+
+strings.t9  
+[Token(string, 3, abc), Token(string, 4, ab\t\ndef), Token(string, 5, ab\"cd), Token(string, 6, ab\\\"cd)]
+
+str-term-eof.t8 
+error: string missing closing quote at or near line 3
+
+unterm-str.t7 
+error: string missing closing quote at or near line 3
+
+wtf.t12
+warning: ignoring bad character at or near line 1
+warning: ignoring bad character at or near line 1
+warning: ignoring bad character at or near line 1
+warning: ignoring bad character at or near line 1
+warning: ignoring bad character at or near line 1
+warning: ignoring bad character at or near line 1
+warning: ignoring bad character at or near line 1
+warning: ignoring bad character at or near line 1
+warning: ignoring bad character at or near line 1
+warning: ignoring bad character at or near line 1
+warning: ignoring bad character at or near line 1
+error: too many warnings at or near line 1
