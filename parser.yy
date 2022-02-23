@@ -141,11 +141,10 @@ globaldeclaration       : variabledeclaration
                         | mainfunctiondeclaration {std::cout << "main" << std::endl;}
                         ;
 
-variabledeclaration     : type identifier ';'
+variabledeclaration     : type identifier SC
                         ;
 
-identifier              : ID                {std::cout << "Parser found an identifier: " << $1->c_str() << std::endl;
-                                             }
+identifier              : ID                {std::cout << "Parser found an identifier: " << $1->c_str() << std::endl;}
                         ;
 
 functiondeclaration     : functionheader block
@@ -155,12 +154,12 @@ functionheader          : type functiondeclarator
                         | VOID functiondeclarator
                         ;
 
-functiondeclarator      : identifier '(' formalparameterlist ')'
-                        | identifier '(' ')'	{std::cout << "Parser found a function declarator" << std::endl;}
+functiondeclarator      : identifier LB formalparameterlist RB
+                        | identifier LB RB	{std::cout << "Parser found a function declarator" << std::endl;}
                         ;
 
 formalparameterlist     : formalparameter
-                        | formalparameterlist ',' formalparameter
+                        | formalparameterlist COM formalparameter
                         ;
 
 formalparameter         : type identifier
@@ -185,14 +184,14 @@ blockstatement          : variabledeclaration
                         ;
 
 statement               : block
-                        | ';'
-                        | statementexpression ';'
-                        | BREAK ';'
-                        | RET expression ';'
-                        | RET ';'
-                        | IF '(' expression ')' statement
-                        | IF '(' expression ')' statement ELSE statement
-                        | WHILE '(' expression ')' statement
+                        | SC
+                        | statementexpression SC
+                        | BREAK SC
+                        | RET expression SC
+                        | RET SC
+                        | IF LB expression RB statement
+                        | IF LB expression RB statement ELSE statement
+                        | WHILE LB expression RB statement
                         ;
 
 statementexpression     : assignment
@@ -205,7 +204,7 @@ primary                 : literal
                         ;
 
 argumentlist            : expression
-                        | argumentlist ',' expression
+                        | argumentlist COM expression
                         ;
 
 functioninvocation      : identifier LB argumentlist RB
@@ -216,25 +215,25 @@ postfixexpression       : primary
                         | identifier
                         ;
 
-unaryexpression         : '-' unaryexpression
-                        | '!' unaryexpression
+unaryexpression         : SUB unaryexpression
+                        | NOT unaryexpression
                         | postfixexpression
                         ;
 
 multiplicativeexpression: unaryexpression
-                        | multiplicativeexpression '*' unaryexpression
-                        | multiplicativeexpression '/' unaryexpression
-                        | multiplicativeexpression '%' unaryexpression
+                        | multiplicativeexpression MULT unaryexpression
+                        | multiplicativeexpression DIV unaryexpression
+                        | multiplicativeexpression MOD unaryexpression
                         ;
 
 additiveexpression      : multiplicativeexpression
-                        | additiveexpression '+' multiplicativeexpression
-                        | additiveexpression '-' multiplicativeexpression
+                        | additiveexpression ADD multiplicativeexpression
+                        | additiveexpression SUB multiplicativeexpression
                         ;
 
 relationalexpression    : additiveexpression
-                        | relationalexpression '<' additiveexpression
-                        | relationalexpression '>' additiveexpression
+                        | relationalexpression LT additiveexpression
+                        | relationalexpression GT additiveexpression
                         | relationalexpression LE additiveexpression
                         | relationalexpression GE additiveexpression
                         ;
