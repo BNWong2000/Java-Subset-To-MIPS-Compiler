@@ -34,6 +34,12 @@
 %union{
     int ival;
     std::string *str;
+
+    Prog* prog;
+
+    Statement* stmt;
+    Expression* expn;
+    Declaration* decl;
 }
 
 %token    <str>  ID "identifier"
@@ -72,6 +78,40 @@
 %token    VOID
 %token    WARN
 %token    ERR
+
+%type <expn> literal 
+%type <decl> type
+%type <decl> globaldeclarations
+%type <decl> globaldeclaration
+%type <decl> variabledeclaration
+%type <expn> identifier
+%type <decl> functiondeclaration
+%type <decl> functionheader
+%type <decl> functiondeclarator
+%type <decl> formalparameterlist
+%type <decl> formalparameter
+%type <decl> mainfunctiondeclaration
+%type <decl> mainfunctiondeclarator
+%type <stmt> block
+%type <stmt> blockstatements
+%type <stmt> blockstatement
+%type <stmt> statement
+%type <stmt> statementexpression
+%type <expn> primary
+%type <decl> argumentlist
+%type <decl> functioninvocation
+%type <expn> postfixexpression
+%type <expn> unaryexpression
+%type <expn> multiplicativeexpression
+%type <expn> additiveexpression
+%type <expn> relationalexpression
+%type <expn> equalityexpression
+%type <expn> conditionalandexpression
+%type <expn> conditionalorexpression
+%type <expn> assignmentexpression
+%type <expn> assignment
+%type <expn> expression
+
 
 %start start
 
