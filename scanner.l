@@ -14,7 +14,7 @@
 
     #undef  YY_DECL
     #define YY_DECL int JCC::MyLexer::yylex(JCC::Parser::semantic_type *yylval, JCC::Parser::location_type *location)
-    #define YY_USER_ACTION location->step();
+    #define YY_USER_ACTION location->step(); location->columns(yyleng);
 %}
 
 /* Definitions: */
@@ -35,52 +35,52 @@ ID {alphaUnderscore}{alphaNumUnderscore}*
 
 %%
 [ \t\r]+    ;  /* Whitespace*/
-\n        ;
+\n        location->lines(); location->step();
 
 
-">"         return T_GT; /* All known reserved words and symbols */
-"<"         return T_LT;
-">="        return T_GE;
-"<="        return T_LE;
-"+"         return T_ADD;
-"-"         return T_SUB;
-"/"         return T_DIV;
-"*"         return T_MULT;
-"%"         return T_MOD;
-"="         return T_ASSIGN;
-"=="        return T_EQ;
-"!="        return T_NEQ;
-"!"         return T_NOT;
-"&&"        return T_AND;
-"||"        return T_OR;
-"if"        return T_IF;
-"else"      return T_ELSE;
-"while"     return T_WHILE;
-"break"     return T_BREAK;
-"return"    return T_RET;
-"("         return T_LB;
-")"         return T_RB;
-"{"         return T_LCB;
-"}"         return T_RCB;
-";"         return T_SC;
-","         return T_COM;
-"true"      return T_TRUE;
-"false"     return T_FALSE;
-"boolean"   return T_BOOL;
-"int"       return T_INT;
-"void"      return T_VOID;
+">"         return Token::T_GT; /* All known reserved words and symbols */
+"<"         return Token::T_LT;
+">="        return Token::T_GE;
+"<="        return Token::T_LE;
+"+"         return Token::T_ADD;
+"-"         return Token::T_SUB;
+"/"         return Token::T_DIV;
+"*"         return Token::T_MULT;
+"%"         return Token::T_MOD;
+"="         return Token::T_ASSIGN;
+"=="        return Token::T_EQ;
+"!="        return Token::T_NEQ;
+"!"         return Token::T_NOT;
+"&&"        return Token::T_AND;
+"||"        return Token::T_OR;
+"if"        return Token::T_IF;
+"else"      return Token::T_ELSE;
+"while"     return Token::T_WHILE;
+"break"     return Token::T_BREAK;
+"return"    return Token::T_RET;
+"("         return Token::T_LB;
+")"         return Token::T_RB;
+"{"         return Token::T_LCB;
+"}"         return Token::T_RCB;
+";"         return Token::T_SC;
+","         return Token::T_COM;
+"true"      return Token::T_TRUE;
+"false"     return Token::T_FALSE;
+"boolean"   return Token::T_BOOL;
+"int"       return Token::T_INT;
+"void"      return Token::T_VOID;
 
-{ID}        {lexeme = std::string(YYText()); std::cout <<"ID here" << std::endl; return T_ID;}
-{num}       {lexeme = std::string(YYText()); return T_NUM;}
+{ID}        {yylval->str = new std::string(yytext); return Token::T_ID;}
+{num}       {yylval->ival = std::stoi(yytext); return Token::T_NUM;}
 
 "//"            BEGIN(COMMENT);
 \"              {yymore(); BEGIN(STRING); }
 
 
-<STRING>\"          {BEGIN(INITIAL); return T_STR;}     /* Strings */
+<STRING>\"          {BEGIN(INITIAL); return Token::T_STR;}     /* Strings */
 <STRING>"\\\""      { yymore();}                        /* If a \" is inside of a string, then include it. */
-<STRING>\n          {std::cerr << "ERROR: Newline inside string." << std::endl; return T_ERR;}  /* Check for EOF or newline in strings */
-<STRING><<EOF>>     {std::cerr << "ERROR: Unterminated String." << std::endl; return T_ERR;}
+<STRING>\n          {std::cerr << "ERROR: Newline inside string." << std::endl; return Token::T_ERR;}  /* Check for EOF or newline in strings */
+<STRING><<EOF>>     {std::cerr << "ERROR: Unterminated String." << std::endl; return Token::T_ERR;}
 <STRING>.           { yymore();}
 
 <COMMENT>.

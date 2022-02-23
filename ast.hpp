@@ -46,310 +46,70 @@ class ReturnStatement;
 class WhileStatement;
 class BreakStatement;
 
-class Expression;
-class Identifier;
-class Number;
-class Arithmetic;
-class Comparison;
-class Actuals;
-class FunctionCalls;
 
-class Declaration;
-class FunctDecl;
-class VariableDecl;
-class Param;
-
-class AST
-{
-protected:
-    std::vector<AST *> children;
-
-    virtual void addChild(AST *newChild) = 0; // Pure virtual function
-public:
-    AST() = default;
-
-    virtual ~AST()
-    {
-        for (auto it : children)
-        {
-            delete it;
-        }
-
-        children.clear();
-    }
-
-    virtual void print() = 0;
+enum Stmt{
+    ifStmt,
+    ifElseStmt,
+    assignment,
+    null,
+    returnStmt,
+    whileStmt,
+    breakStmt,
+    blockStmt
 };
 
-class Prog : public AST
-{
-protected:
-    std::string file;
-    void addChild(AST *child) override
-    {
-        children.push_back(child);
-    }
-
-public:
-    Prog(std::string fileName) : file(fileName){}
-
-    void addNode(AST *node)
-    {
-        addChild(node);
-    }
-
-    void print() override
-    {
-        std::cout << "\t"
-                  << "Prog" << std::endl;
-        for(auto child : children){
-            child->print();
-        }
-    }
+enum Expr{
+    identifier,
+    number,
+    unary,
+    relational,
+    equality,
+    arithmetic,
+    functionCall,
+    actual
 };
 
-class Statement : public AST
-{
-protected:
-    void addChild(AST *child) override
-    {
-        children.push_back(child);
-    }
-
-public:
-    void addNode(AST *node)
-    {
-        addChild(node);
-    }
-
-    void print() override
-    {
-        std::cout << "\t"
-                  << "Statement" << std::endl;
-    }
+enum Decl{
+    function,
+    variable,
+    parameter
 };
 
-class Expression : public AST
-{
-protected:
-    void addChild(AST *child) override
-    {
-        children.push_back(child);
-    }
-
-public:
-    void addNode(AST *node)
-    {
-        addChild(node);
-    }
-
-    void print() override
-    {
-        std::cout << "\t"
-                  << "Expression" << std::endl;
-    }
-};
-
-class Declaration : public AST
-{
-protected:
-    void addChild(AST *child) override
-    {
-        children.push_back(child);
-    }
-
-public:
-    void addNode(AST *node)
-    {
-        addChild(node);
-    }
-
-    void print() override
-    {
-        std::cout << "\t"
-                  << "Statement" << std::endl;
-    }
-};
-
-
-class IfStatement : public Statement {
-protected:
-    void addChild(AST *child) override
-    {
-        children.push_back(child);
-    }
-
-public:
-    void addNode(AST *node)
-    {
-        addChild(node);
-    }
-
-    void print() override
-    {
-        std::cout << "\t"
-                  << "Statement" << std::endl;
-    }
-};
-
-class IfElseStatement : public Statement{
-protected:
-    void addChild(AST *child) override
-    {
-        children.push_back(child);
-    }
-
-public:
-    void addNode(AST *node)
-    {
-        addChild(node);
-    }
-
-    void print() override
-    {
-        std::cout << "\t"
-                  << "Statement" << std::endl;
-    }
-};
-
-class AssignStatement : public Statement{
-protected:
-    void addChild(AST *child) override
-    {
-        children.push_back(child);
-    }
-
-public:
-    void addNode(AST *node)
-    {
-        addChild(node);
-    }
-
-    void print() override
-    {
-        std::cout << "\t"
-                  << "Statement" << std::endl;
-    }
-};
-class NullStatement : public Statement{
-protected:
-    void addChild(AST *child) override
-    {
-        children.push_back(child);
-    }
-
-public:
-    void addNode(AST *node)
-    {
-        addChild(node);
-    }
-
-    void print() override
-    {
-        std::cout << "\t"
-                  << "Statement" << std::endl;
-    }
-};
-
-class ReturnStatement : public Statement{
-protected:
-    void addChild(AST *child) override
-    {
-        children.push_back(child);
-    }
-
-public:
-    void addNode(AST *node)
-    {
-        addChild(node);
-    }
-
-    void print() override
-    {
-        std::cout << "\t"
-                  << "Statement" << std::endl;
-    }
-};
-
-class WhileStatement : public Statement{
-protected:
-    void addChild(AST *child) override
-    {
-        children.push_back(child);
-    }
-
-public:
-    void addNode(AST *node)
-    {
-        addChild(node);
-    }
-
-    void print() override
-    {
-        std::cout << "\t"
-                  << "Statement" << std::endl;
-    }
-};
-
-class BreakStatement : public Statement{
-protected:
-    void addChild(AST *child) override
-    {
-        children.push_back(child);
-    }
-
-public:
-    void addNode(AST *node)
-    {
-        addChild(node);
-    }
-
-    void print() override
-    {
-        std::cout << "\t"
-                  << "Statement" << std::endl;
-    }
-};
-
-
-class Identifier : public Expression{
+class AST {
 private:
-    std::string id;
+    std::vector <AST *> children;
+    AST *sibling;
 
 public:
-    Identifier(std::string myId) : id(myId){}
+    void addChild();
+    void print();
+    
 };
 
-class Number : public Expression {
-private: 
-    int num;
-
-public:
-    Number(int myNum) : num(myNum){}
-};
-
-class Arithmetic : public Expression {
+class Prog : public AST{
 private:
-    Operators op;
-
-
+    std::string fileName;
 public:
-    Arithmetic(Operators myOp, Expression e1, Expression e2);
+    Prog(std::string name) : fileName(name){}
 };
 
-
-class Comparison : public Expression {
-private: 
-    Operators op;
-
-
-public:
-    Comparison(Operators myOp, Expression e1, Expression e2);
+class Statement : public AST{
+private:
+    Stmt theType;
+public:    
 };
 
-class Actuals;
-class FunctionCalls;
+class Expression : public AST{
+private:
+    Expr theType;
+public:
+};
 
+class Declaration : public AST{
+private:
+    Decl theType;
+public:
 
+};
 
 #endif

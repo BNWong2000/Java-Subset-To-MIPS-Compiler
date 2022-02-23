@@ -44,7 +44,7 @@
 
 %token    <str>  ID "identifier"
 %token    <ival> NUM "number"
-%token    ADD '+'
+%token    ADD "+"
 %token    SUB '-'
 %token    DIV '/'
 %token    MULT '*'
@@ -53,7 +53,7 @@
 %token    GT '>'
 %token    GE 
 %token    LE 
-%token    ASIGN '='
+%token    ASSIGN "="
 %token    EQ 
 %token    NEQ 
 %token    NOT '!'
@@ -69,7 +69,7 @@
 %token    RB ')'
 %token    RCB '{'
 %token    LCB '}'
-%token    SC
+%token    SC ';'
 %token    COM
 %token    TRUE
 %token    FALSE
@@ -99,7 +99,7 @@
 %type <stmt> statementexpression
 %type <expn> primary
 %type <decl> argumentlist
-%type <decl> functioninvocation
+%type <expn> functioninvocation
 %type <expn> postfixexpression
 %type <expn> unaryexpression
 %type <expn> multiplicativeexpression
@@ -116,8 +116,10 @@
 %start start
 
 %%
-start           : /* empty */       {std::cout <<"Here1" << std::endl; driver.tree = new Prog(driver.getFileName());}
-                | globaldeclarations {std::cout <<"Here2" << std::endl; }
+start           : /* empty */           {   std::cout <<"Here1" << std::endl; driver.tree = new Prog(driver.getFileName());}
+                | globaldeclarations    {   std::cout <<"Here2" << std::endl; 
+                                            driver.tree = $1;
+                                        }
                 ;
 
 literal         : NUM
@@ -127,22 +129,23 @@ literal         : NUM
                 ;
 
 type            : BOOL
-                | INT
+                | INT       {std::cout << "found an int type" << std::endl;}
                 ;
 
-globaldeclarations      : globaldeclaration
-                        | globaldeclarations globaldeclaration
+globaldeclarations      : globaldeclaration                     
+                        | globaldeclarations globaldeclaration  
                         ;
 
 globaldeclaration       : variabledeclaration
                         | functiondeclaration
-                        | mainfunctiondeclaration
+                        | mainfunctiondeclaration {std::cout << "main" << std::endl;}
                         ;
 
 variabledeclaration     : type identifier ';'
                         ;
 
-identifier              : ID
+identifier              : ID                {std::cout << "Parser found an identifier: " << $1->c_str() << std::endl;
+                                             }
                         ;
 
 functiondeclaration     : functionheader block
@@ -153,7 +156,7 @@ functionheader          : type functiondeclarator
                         ;
 
 functiondeclarator      : identifier '(' formalparameterlist ')'
-                        | identifier '(' ')'
+                        | identifier '(' ')'	{std::cout << "Parser found a function declarator" << std::endl;}
                         ;
 
 formalparameterlist     : formalparameter
@@ -163,14 +166,14 @@ formalparameterlist     : formalparameter
 formalparameter         : type identifier
                         ;
 
-mainfunctiondeclaration : mainfunctiondeclarator block
+mainfunctiondeclaration : mainfunctiondeclarator block {std::cout << "Main Function + block" << std::endl;}
                         ;
 
-mainfunctiondeclarator  : identifier '(' ')'
+mainfunctiondeclarator  : identifier LB RB {std::cout << "Main Function" << std::endl;}
                         ;
 
-block                   : '{' blockstatements '}'
-                        | '{' '}'
+block                   : LCB blockstatements RCB {std::cout << "Block Function" << std::endl;}
+                        | LCB RCB
                         ;
 
 blockstatements         : blockstatement
@@ -197,7 +200,7 @@ statementexpression     : assignment
                         ;
 
 primary                 : literal
-                        | '(' expression ')'
+                        | LB expression RB
                         | functioninvocation
                         ;
 
@@ -205,8 +208,8 @@ argumentlist            : expression
                         | argumentlist ',' expression
                         ;
 
-functioninvocation      : identifier '(' argumentlist ')'
-                        | identifier '(' ')'
+functioninvocation      : identifier LB argumentlist RB
+                        | identifier LB RB
                         ;
 
 postfixexpression       : primary
@@ -253,7 +256,7 @@ assignmentexpression    : conditionalorexpression
                         | assignment
                         ;
 
-assignment              : identifier '=' assignmentexpression
+assignment              : identifier ASSIGN assignmentexpression
                         ;
 
 expression              : assignmentexpression
