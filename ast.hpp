@@ -61,6 +61,7 @@ enum Expr{
 enum Decl{
     declarator,
     function,
+    functionHeader,
     variable,
     parameter
 };
@@ -175,7 +176,9 @@ public:
     Declaration(Decl declType) : theType(declType){}
 
     void setAsDeclarator(Expression *id);
+    void setAsDeclarator(Expression *id, Declaration *params);
     void setAsFunction(Declaration *dec, Statement *block);
+    void setAsFunctionHeader(Declaration *dec, Variables varType);
     void setAsVariable(Expression *id, Variables varType);
     void setAsParameter(Variables varType, Expression *ex); //type identifier
     // void setAsParameterList(std::vector<Declaration *> params);

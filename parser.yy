@@ -42,7 +42,7 @@
     Declaration* decl;
 }
 
-%token    <str>  ID "identifier"
+%token    <str>  ID 
 %token    <ival> NUM "number"
 %token    ADD "+"
 %token    SUB '-'
@@ -141,25 +141,40 @@ globaldeclaration       : variabledeclaration
                         | mainfunctiondeclaration {std::cout << "main" << std::endl;}
                         ;
 
-variabledeclaration     : type identifier SC
+variabledeclaration     : type identifier SC                        {$$ = new Declaration();
+                                                                     $$->setAsVariable($2, $1->getVar());
+                                                                    }
                         ;
 
-identifier              : ID                {std::cout << "Parser found an identifier: " << $1->c_str() << std::endl;}
+identifier              : ID                                        {$$ = new Expression();
+                                                                     $$->setAsIdentifier($1->c_str());}
                         ;
 
-functiondeclaration     : functionheader block
+functiondeclaration     : functionheader block                      {$$ = new Declaration();
+                                                                     $$->setAsFunction($1, $2);
+                                                                    }
                         ;
 
-functionheader          : type functiondeclarator
-                        | VOID functiondeclarator
+functionheader          : type functiondeclarator                   {$$ = new Declaration();
+                                                                     $$->setAsFunctionHeader($2, $1->getVar());
+                                                                    }
+                        | VOID functiondeclarator                   {$$ = new Declaration();
+                                                                     $$->setAsFunctionHeader($2, var_VOID);
+                                                                    }
                         ;
 
-functiondeclarator      : identifier LB formalparameterlist RB
-                        | identifier LB RB	{std::cout << "Parser found a function declarator" << std::endl;}
+functiondeclarator      : identifier LB formalparameterlist RB      {$$ = new Declaration();
+                                                                     $$->setAsDeclarator($1, $3);
+                                                                    }
+                        | identifier LB RB	                        {$$ = new Declaration();
+                                                                     $$->setAsDeclarator($1);
+                                                                    }
                         ;
 
-formalparameterlist     : formalparameter
-                        | formalparameterlist COM formalparameter
+formalparameterlist     : formalparameter                           {$$ = $1;}
+                        | formalparameterlist COM formalparameter   {$$ = $1;
+                                                                     $$->addSibling($3);
+                                                                    }
                         ;
 
 formalparameter         : type identifier               {$$ = new Declaration();

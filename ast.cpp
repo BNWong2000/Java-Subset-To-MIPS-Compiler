@@ -173,10 +173,22 @@ void Declaration::setAsDeclarator(Expression *id){
     theType = declarator;
 };
 
+void Declaration::setAsDeclarator(Expression *id, Declaration *params){
+    addChild(id);
+    addChild(params);
+    theType = declarator;
+};
+
 void Declaration::setAsFunction(Declaration *dec, Statement *block){
     addChild(dec);
     addChild(block);
     theType = function;
+};
+
+void Declaration::setAsFunctionHeader(Declaration *dec, Variables varType){
+    addChild(dec);
+    theVar = varType;
+    theType = functionHeader;
 };
 
 void Declaration::setAsVariable(Expression *id, Variables varType){
