@@ -165,46 +165,78 @@ formalparameterlist     : formalparameter
 formalparameter         : type identifier
                         ;
 
-mainfunctiondeclaration : mainfunctiondeclarator block {std::cout << "Main Function + block" << std::endl;}
+mainfunctiondeclaration : mainfunctiondeclarator block {}
                         ;
 
-mainfunctiondeclarator  : identifier LB RB {std::cout << "Main Function" << std::endl;}
+mainfunctiondeclarator  : identifier LB RB                  {$$ = new Declaration();}
                         ;
 
-block                   : LCB blockstatements RCB {std::cout << "Block Function" << std::endl;}
-                        | LCB RCB
+block                   : LCB blockstatements RCB           {$$ = $2;
+                                                             if($2->hasSibling()){
+                                                                AST* temp = $2;
+                                                                while(temp->hasSibling()){
+                                                                    temp = temp->getSibling();
+                                                                    $$->addChild(temp);
+                                                                }
+                                                             }
+                                                            }
+                        | LCB RCB                           {$$ = new Statement();
+                                                             $$->setAsEmptyBlock();
+                                                            }
                         ;
 
-blockstatements         : blockstatement
-                        | blockstatements blockstatement
+blockstatements         : blockstatement                    {$$ = $1;}
+                        | blockstatements blockstatement    {$$ = $1;
+                                                             $$->addSibling($2);
+                                                            }
                         ;
 
-blockstatement          : variabledeclaration
-                        | statement
+blockstatement          : variabledeclaration       {$$ = new Statement();
+                                                     $$->setAsBlock($1);}
+                        | statement                 {$$ = $1;}
                         ;
 
-statement               : block
-                        | SC
-                        | statementexpression SC
-                        | BREAK SC
-                        | RET expression SC
-                        | RET SC
-                        | IF LB expression RB statement
-                        | IF LB expression RB statement ELSE statement
-                        | WHILE LB expression RB statement
+statement               : block                                         {$$ = $1;}
+                        | SC                                            {$$ = new Statement();
+                                                                         $$->setAsNull();
+                                                                        }
+                        | statementexpression SC                        {$$ = $1;
+                                                                        }
+                        | BREAK SC                                      {$$ = new Statement();
+                                                                         $$->setAsBreak();
+                                                                        }
+                        | RET expression SC                             {$$ = new Statement();
+                                                                         $$->setAsReturn($2);
+                                                                        }
+                        | RET SC                                        {$$ = new Statement();
+                                                                         $$->setAsReturn();
+                                                                        }
+                        | IF LB expression RB statement                 {$$ = new Statement();
+                                                                         $$->setAsIf($3, $5);
+                                                                        }
+                        | IF LB expression RB statement ELSE statement  {$$ = new Statement();
+                                                                         $$->setAsIfElse($3, $5, $7);
+                                                                        }
+                        | WHILE LB expression RB statement              {$$ = new Statement();
+                                                                         $$->setAsWhile($3, $5);
+                                                                        }
                         ;
 
-statementexpression     : assignment
-                        | functioninvocation
+statementexpression     : assignment                    {$$ = $1;}
+                        | functioninvocation            {$$ = new Statement();
+                                                         $$->setAsFunctionStatement($1);
+                                                        }
                         ;
 
-primary                 : literal
-                        | LB expression RB
-                        | functioninvocation
+primary                 : literal                       {$$ = $1;}
+                        | LB expression RB              {$$ = $2;}
+                        | functioninvocation            {$$ = $1;}
                         ;
 
-argumentlist            : expression
-                        | argumentlist COM expression
+argumentlist            : expression                    {$$ = $1;}
+                        | argumentlist COM expression   {$$ = $1;
+                                                         $$->addSibling($3);
+                                                        }
                         ;
 
 functioninvocation      : identifier LB argumentlist RB {$$ = new Expression();

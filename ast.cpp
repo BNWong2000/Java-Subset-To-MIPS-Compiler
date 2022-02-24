@@ -50,6 +50,10 @@ void Statement::setAsNull(){
     theType = nullType;
 };
 
+void Statement::setAsReturn(){
+    theType = returnStmt;
+};
+
 void Statement::setAsReturn(Expression *ex){
     addChild(ex);
     theType = returnStmt;
@@ -74,6 +78,15 @@ void Statement::setAsBlock(Declaration *decl){
     addChild(decl);
     theType = blockStmt;
 };
+
+void Statement::setAsFunctionStatement(Expression *functionCall){
+    addChild(functionCall);
+    theType = funcCallStmt;
+};
+
+void Statement::setAsEmptyBlock(){
+    theType = emptyBlockStmt;
+}
 
 
 
@@ -144,6 +157,7 @@ void Expression::setAsAssignment(Statement *assignStmt){
     addChild(assignStmt);
     theType = assignExpr;
 };
+
 
 
 //-------------------------------------------------

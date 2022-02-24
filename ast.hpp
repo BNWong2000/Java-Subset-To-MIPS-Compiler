@@ -41,7 +41,9 @@ enum Stmt{
     returnStmt,
     whileStmt,
     breakStmt,
-    blockStmt
+    blockStmt,
+    funcCallStmt,
+    emptyBlockStmt
 };
 
 enum Expr{
@@ -80,6 +82,13 @@ public:
     
     void addChild(AST* child);
     void addSibling(AST* theSibling);
+    bool hasSibling(){
+        return sibling == NULL;
+    }
+
+    AST *getSibling(){
+        return sibling;
+    }
     virtual void print() = 0;
     
 };
@@ -109,11 +118,14 @@ public:
     void setAsIfElse(Expression *ex, Statement *ifBlock, Statement *elseBlock);
     void setAsAssignment(Expression *identifier, Expression *assignExp);
     void setAsNull();
+    void setAsReturn();
     void setAsReturn(Expression *ex);
     void setAsWhile(Expression *ex, Statement *block);
     void setAsBreak();
     void setAsBlock(Statement *stat);
     void setAsBlock(Declaration *decl);
+    void setAsFunctionStatement(Expression *functionCall);
+    void setAsEmptyBlock();
     
     void print() override;
 };
