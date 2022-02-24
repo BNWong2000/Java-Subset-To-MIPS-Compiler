@@ -10,7 +10,7 @@ void Prog::print(int indentLvl) {
     for(int i = 0; i < indentLvl; i++){
         std::cout << "    ";
     }
-    std::cout << "{ Prog }" << std::endl;
+    std::cout << "{ Program: " << fileName << " }" << std::endl;
     for(auto child : children){
         child->print(indentLvl + 1);
     }
@@ -34,29 +34,29 @@ void Statement::print(int indentLvl) {
     for(int i = 0; i < indentLvl; i++){
         std::cout << "    ";
     }
-    std::cout << "{ Statement: ";
+    std::cout << "{ ";
 
     switch (theType){
         case ifStmt:
-            std::cout << "if";
+            std::cout << "if statement";
             break;
         case ifElseStmt:
-            std::cout << "if else";
+            std::cout << "if-else statement";
             break;
         case assignment:
-            std::cout << "assign";
+            std::cout << "assignment";
             break;
         case nullType:
-            std::cout << "null";
+            std::cout << "null statement";
             break;
         case returnStmt:
-            std::cout << "return";
+            std::cout << "return statement";
             break;
         case whileStmt:
-            std::cout << "while";
+            std::cout << "while statement";
             break;
         case breakStmt:
-            std::cout << "break";
+            std::cout << "break statement";
             break;
         case blockStmt:
             std::cout << "block";
@@ -148,44 +148,112 @@ void Expression::print(int indentLvl) {
     for(int i = 0; i < indentLvl; i++){
         std::cout << "    ";
     }
-    std::cout << "{ Expression: ";
+    std::cout << "{ ";
 
     switch (theType){
         case identifier:
-            std::cout << "identifier";
+            std::cout << "identifier - " << "\"" << name << "\"";
             break;
         case number:
-            std::cout << "number";
+            std::cout << "number - " << num;
             break;
         case stringLit:
-            std::cout << "string";
+            std::cout << "string - "  << name;
             break;
         case boolLit:
-            std::cout << "bool";
-            break;
+            {std::string boolVal;
+            boolVal = num == 1 ? "True" : "False";
+            std::cout << "boolean - " << boolVal;
+            break;}
         case unary:
-            std::cout << "unary";
-            break;
+            {std::cout << "Unary Op - ";
+            switch(theOp){
+                case op_SUB:
+                    std::cout << "\'-\'";
+                    break;
+                case op_NOT:
+                    std::cout << "\'!\'";
+                    break;
+                default:
+                    break;
+            }
+            break;}
         case relational:
-            std::cout << "relational";
-            break;
+            {std::cout << "Relation Op - ";
+            switch(theOp){
+                
+                case op_LT:
+                    std::cout << "\'<\'";
+                    break;
+                case op_GT:
+                    std::cout << "\'>\'";
+                    break;
+                case op_GE:
+                    std::cout << "\'>=\'";
+                    break;
+                case op_LE:
+                    std::cout << "\'<=\'";
+                    break;
+                default:
+                    break;
+            }
+            break;}
         case equality:
-            std::cout << "equality";
-            break;
+            {std::cout << "Equality Op - ";
+            switch(theOp){
+                case op_EQ:
+                    std::cout << "\'==\'";
+                    break;
+                case op_NEQ:
+                    std::cout << "\'!=\'";
+                    break;
+                default:
+                    break;
+            }
+            break;}
         case conditional:
-            std::cout << "conditional";
-            break;
+            {std::cout << "Conditional Op - ";
+            switch(theOp){
+                case op_AND:
+                    std::cout << "\'&&\'";
+                    break;
+                case op_OR:
+                    std::cout << "\'||\'";
+                    break;
+                default:
+                    break;
+            }
+            break;}
         case arithmetic:
-            std::cout << "arithmetic";
-            break;
+            {std::cout << "Arithmetic Op - ";
+            switch(theOp){
+                case op_ADD:
+                    std::cout << "\'+\'";
+                    break;
+                case op_SUB:
+                    std::cout << "\'-\'";
+                    break;
+                case op_MULT:
+                    std::cout << "\'*\'";
+                    break;
+                case op_DIV:
+                    std::cout << "\'/\'";
+                    break;
+                case op_MOD:
+                    std::cout << "\'%\'";
+                    break;
+                default:
+                    break;
+            }
+            break;}
         case functionCall:
-            std::cout << "function";
+            std::cout << "Function Invocation" ;
             break;
         case assignExpr:
-            std::cout << "assignExpr";
+            std::cout << "Assignment";
             break;
         default:
-        ;
+            break;
     }
 
     std::cout << ", line: " << lineNo << " }" << std::endl;
@@ -204,8 +272,8 @@ void Expression::setAsNumber(int myNumber){
     theType = number;
 };
 
-void Expression::setAsString(std::string *literal){
-    name = *literal;
+void Expression::setAsString(std::string literal){
+    name = literal;
     theType = stringLit;
 };
 
@@ -279,27 +347,94 @@ void Declaration::print(int indentLvl) {
     for(int i = 0; i < indentLvl; i++){
         std::cout << "    ";
     }
-    std::cout << "{ Declaration: ";
+    std::cout << "{ ";
 
     switch(theType){
         case declarator:
-            std::cout << "declarator";
+            std::cout << "Function Declarator";
             break;
         case function:
-            std::cout << "function";
+            std::cout << "Function";
             break;
         case functionHeader:
-            std::cout << "function header";
-            break;
+            {std::cout << "Function Header: ";
+            std::cout << "Return type - ";
+            switch(theVar){
+                case var_BOOL:
+                    std::cout << "Boolean";
+                    break;
+                case var_INT:
+                    std::cout << "Integer";
+                    break;
+                case var_STRING:
+                    std::cout << "String";
+                    break;
+                case var_VOID:
+                    std::cout << "Void";
+                    break;
+                default:
+                    std::cerr << "Error: illegal Type" << std::endl;
+            }
+            break;}
         case variable:
-            std::cout << "variable";
-            break;
+            {std::cout << "Variable: ";
+            std::cout << "Type - ";
+            switch(theVar){
+                case var_BOOL:
+                    std::cout << "Boolean";
+                    break;
+                case var_INT:
+                    std::cout << "Integer";
+                    break;
+                case var_STRING:
+                    std::cout << "String";
+                    break;
+                case var_VOID:
+                    std::cout << "Void";
+                    break;
+                default:
+                    std::cerr << "Error: illegal Type" << std::endl;
+            }
+            break;}
         case parameter:
-            std::cout << "parameter";
-            break;
+            {std::cout << "Parameter: ";
+            std::cout << "Type - ";
+            switch(theVar){
+                case var_BOOL:
+                    std::cout << "Boolean";
+                    break;
+                case var_INT:
+                    std::cout << "Integer";
+                    break;
+                case var_STRING:
+                    std::cout << "String";
+                    break;
+                case var_VOID:
+                    std::cout << "Void";
+                    break;
+                default:
+                    std::cerr << "Error: illegal Type" << std::endl;
+            }
+            break;}
         case typeDecl:
-            std::cout << "type";
-            break;
+            {std::cout << "Type - ";
+            switch(theVar){
+                case var_BOOL:
+                    std::cout << "Boolean";
+                    break;
+                case var_INT:
+                    std::cout << "Integer";
+                    break;
+                case var_STRING:
+                    std::cout << "String";
+                    break;
+                case var_VOID:
+                    std::cout << "Void";
+                    break;
+                default:
+                    std::cerr << "Error: illegal Type" << std::endl;
+            }
+            break;}
         default:
         ;
     }

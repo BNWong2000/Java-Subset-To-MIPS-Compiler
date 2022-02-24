@@ -127,7 +127,7 @@ start           : /* empty */           {   driver.tree = new Prog(driver.getFil
                                                     temp = temp->getSibling();
                                                     driver.tree->addChild(temp);
                                                 }
-                                                std::cout << "HI4" << std::endl;
+                                                
                                             }
                                         }
                 ;
@@ -136,7 +136,7 @@ literal         : NUM                   {$$ = new Expression(@$.begin.line);
                                          $$->setAsNumber($1); 
                                         }
                 | STR                   {$$ = new Expression(@$.begin.line);
-                                         $$->setAsString($1); 
+                                         $$->setAsString($1->c_str()); 
                                         }
                 | TRUE                  {$$ = new Expression(@$.begin.line);
                                          $$->setAsBool(true);
@@ -241,17 +241,13 @@ block                   : LCB blockstatements RCB           {$$ = new Statement(
                                                                     $$->addChild(temp);
                                                                 }
                                                              }
-                                                             std::cout << "block " << " on line: " << @$.begin.line << std::endl;
-                                                             $$->print(1);
                                                             }
                         | LCB RCB                           {$$ = new Statement(@$.begin.line);
                                                              $$->setAsEmptyBlock();
                                                             }
                         ;
 
-blockstatements         : blockstatement                    {$$ = $1;
-                                                             std::cout << "block stmts single" << " on line: " << @$.begin.line << std::endl;
-                                                             $$->print(1);}
+blockstatements         : blockstatement                    {$$ = $1;}
                         | blockstatements blockstatement    {$$ = $1;
                                                              AST *temp = $1;
                                                              while(temp->hasSibling()){
@@ -263,10 +259,7 @@ blockstatements         : blockstatement                    {$$ = $1;
 
 blockstatement          : variabledeclaration       {$$ = new Statement(@$.begin.line);
                                                      $$->setAsBlock($1);}
-                        | statement                 {$$ = $1;
-                                                     std::cout << "block stmt" << " on line: " << @$.begin.line << std::endl;
-                                                     // $$->print(1);
-                                                    }
+                        | statement                 {$$ = $1;}
                         ;
 
 statement               : block                                         {$$ = $1;}
@@ -402,17 +395,14 @@ conditionalorexpression : conditionalandexpression	{$$ = $1;}
                                                                                 }
                         ;
 
-assignmentexpression    : conditionalorexpression                   {$$ = $1; std::cout << "assignExp" << " on line: " << @$.begin.line << std::endl;}
+assignmentexpression    : conditionalorexpression                   {$$ = $1;}
                         | assignment			                    {$$ = new Expression(@$.begin.line);
                                                                      $$->setAsAssignment($1);
                                                                     }
                         ;
 
 assignment              : identifier ASSIGN assignmentexpression {$$ = new Statement(@$.begin.line); 
-                                                                  $$->setAsAssignment($1, $3);
-                                                                  std::cout << "Assignment" << " on line: " << @$.begin.line << std::endl;
-                                                                  $$->print(1);
-                                                                 }
+                                                                  $$->setAsAssignment($1, $3);}
                         ;
 
 expression              : assignmentexpression                  {$$ = $1;}

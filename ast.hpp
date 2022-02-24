@@ -151,7 +151,7 @@ public:
     
     void setAsIdentifier(std::string myName);
     void setAsNumber(int myNumber);
-    void setAsString(std::string *literal);
+    void setAsString(std::string literal);
     void setAsBool(bool isTrue);
     void setAsUnary(Operators op, Expression *ex);
     void setAsRelational(Expression *e1, Operators op, Expression *e2);

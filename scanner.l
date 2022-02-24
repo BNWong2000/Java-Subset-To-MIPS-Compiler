@@ -77,7 +77,7 @@ ID {alphaUnderscore}{alphaNumUnderscore}*
 \"              {yymore(); BEGIN(STRING); }
 
 
-<STRING>\"          {BEGIN(INITIAL); return Token::T_STR;}     /* Strings */
+<STRING>\"          {BEGIN(INITIAL); yylval->str = new std::string(yytext); return Token::T_STR;}     /* Strings */
 <STRING>"\\\""      { yymore();}                        /* If a \" is inside of a string, then include it. */
 <STRING>\n          {std::cerr << "ERROR: Newline inside string." << std::endl; return Token::T_ERR;}  /* Check for EOF or newline in strings */
 <STRING><<EOF>>     {std::cerr << "ERROR: Unterminated String." << std::endl; return Token::T_ERR;}
