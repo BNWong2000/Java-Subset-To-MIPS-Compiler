@@ -10,14 +10,14 @@ void Prog::print(int indentLvl) {
     for(int i = 0; i < indentLvl; i++){
         std::cout << "    ";
     }
-    std::cout << "Prog" << std::endl;
+    std::cout << "{ Prog }" << std::endl;
     for(auto child : children){
         child->print(indentLvl + 1);
     }
 };
 
 void AST::addChild(AST *child){
-    std::cout << "adding child \n" << std::endl;
+    // std::cout << "adding child \n" << std::endl;
     children.push_back(child);
 }
 
@@ -71,7 +71,7 @@ void Statement::print(int indentLvl) {
         ;
     } 
 
-    std::cout << " }" << std::endl;
+    std::cout << ", line: " << lineNo << " }" << std::endl;
     for(auto child : children){
         child->print(indentLvl + 1);
     }
@@ -188,7 +188,7 @@ void Expression::print(int indentLvl) {
         ;
     }
 
-    std::cout << " }" << std::endl;
+    std::cout << ", line: " << lineNo << " }" << std::endl;
     for(auto child : children){
         child->print(indentLvl + 1);
     }
@@ -304,7 +304,7 @@ void Declaration::print(int indentLvl) {
         ;
     }
 
-    std::cout << " }" << std::endl;
+    std::cout << ", line: " << lineNo << " }" << std::endl;
     for(auto child : children){
         child->print(indentLvl + 1);
     }

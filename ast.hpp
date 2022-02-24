@@ -88,10 +88,7 @@ public:
     void addChild(AST* child);
     void addSibling(AST* theSibling);
     bool hasSibling(){
-        std::cout << "checking for sibling.... ";
-        std::string temp;
-        temp = sibling != nullptr ? "true" : "false";
-        std::cout << "Has sibling? " << temp << std::endl;
+        
         return sibling != nullptr;
     }
 
@@ -118,9 +115,10 @@ class Expression;
 class Statement : public AST{
 private:
     Stmt theType;
+    int lineNo;
 public:    
     virtual ~Statement();
-    Statement(){}    
+    Statement(int line) : lineNo(line){}    
     Statement(Stmt stmtType) : theType(stmtType){}    
     
     void setAsIf(Expression *ex, Statement *ifBlock);
@@ -145,9 +143,10 @@ private:
     Operators theOp;
     std::string name;
     int num;
+    int lineNo;
 public:
     virtual ~Expression();
-    Expression(){}
+    Expression(int line) : lineNo(line){}
     Expression(Expr exprType) : theType(exprType){}
     
     void setAsIdentifier(std::string myName);
@@ -178,10 +177,10 @@ class Declaration : public AST{
 private:
     Decl theType;
     Variables theVar;
-
+    int lineNo;
 public:
     virtual ~Declaration();
-    Declaration(){}
+    Declaration(int line) : lineNo(line){}
     Declaration(Decl declType) : theType(declType){}
 
     void setAsDeclarator(Expression *id);
