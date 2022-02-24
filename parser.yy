@@ -240,10 +240,10 @@ argumentlist            : expression                    {$$ = $1;}
                         ;
 
 functioninvocation      : identifier LB argumentlist RB {$$ = new Expression();
-                                                         $$->setAsFunctionCall($1->getName(), $3); 
+                                                         $$->setAsFunctionCall($1, $3); 
                                                         }
                         | identifier LB RB              {$$ = new Expression();
-                                                         $$->setAsFunctionCall($1->getName());
+                                                         $$->setAsFunctionCall($1);
                                                         }
                         ;
 

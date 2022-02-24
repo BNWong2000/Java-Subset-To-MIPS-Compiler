@@ -148,8 +148,8 @@ public:
     void setAsEquality(Expression *e1, Operators op, Expression *e2);
     void setAsConditional(Expression *e1, Operators op, Expression *e2);
     void setAsArithmetic(Expression *e1, Operators op, Expression *e2);
-    void setAsFunctionCall(std::string myName);
-    void setAsFunctionCall(std::string myName, Expression *args);
+    void setAsFunctionCall(Expression *id);
+    void setAsFunctionCall(Expression *id, Expression *args);
     void setAsAssignment(Statement *assignStmt);
 
     std::string getName(){
@@ -167,13 +167,13 @@ class Declaration : public AST{
 private:
     Decl theType;
     Variables theVar;
-    std::string name;
+
 public:
     virtual ~Declaration();
     Declaration(){}
     Declaration(Decl declType) : theType(declType){}
     
-    void setAsFunction(std::string myName, Declaration *dec);
+    void setAsFunction(Expression *id, Declaration *dec);
     void setAsVariable(Expression *id, Variables varType);
     void setAsParameter(Variables varType, Expression *ex); //type identifier
     // void setAsParameterList(std::vector<Declaration *> params);

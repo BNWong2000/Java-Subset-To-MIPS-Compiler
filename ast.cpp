@@ -142,13 +142,13 @@ void Expression::setAsArithmetic(Expression *e1, Operators op, Expression *e2){
     theType = arithmetic;
 };
 
-void Expression::setAsFunctionCall(std::string myName){
-    name = myName;
+void Expression::setAsFunctionCall(Expression *id){
+    addChild(id);
     theType = functionCall;
 };
 
-void Expression::setAsFunctionCall(std::string myName, Expression *args){
-    name = myName;
+void Expression::setAsFunctionCall(Expression *id, Expression *args){
+    addChild(id);
     addChild(args);
     theType = functionCall;
 };
@@ -168,8 +168,8 @@ void Declaration::print() {
     std::cout << "Declaration" << std::endl;
 };
 
-void Declaration::setAsFunction(std::string myName, Declaration *dec){
-    name = myName;
+void Declaration::setAsFunction(Expression *id, Declaration *dec){
+    addChild(id);
     addChild(dec);
     theType = function;
 };
