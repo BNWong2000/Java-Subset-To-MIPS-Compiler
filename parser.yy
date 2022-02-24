@@ -161,7 +161,6 @@ globaldeclarations      : globaldeclaration                         {$$ = $1;}
                                                                          temp = temp->getSibling();
                                                                      }
                                                                      temp->addSibling($2);
-                                                                     // $$->addSibling($2);
                                                                     }
                         ;
 
@@ -214,7 +213,6 @@ formalparameterlist     : formalparameter                           {$$ = $1;}
                                                                          temp = temp->getSibling();
                                                                      }
                                                                      temp->addSibling($3);
-                                                                     // $$->addSibling($3);
                                                                     }
                         ;
 
@@ -260,10 +258,6 @@ blockstatements         : blockstatement                    {$$ = $1;
                                                                  temp = temp->getSibling();
                                                              }
                                                              temp->addSibling($2);
-                                                             // $$->addSibling($2);
-                                                             // std::cout << "block stmtsssss" << " on line: " << @$.begin.line << std::endl;
-                                                             // $1->print(1);
-                                                             // $2->print(1);
                                                             }
                         ;
 
@@ -319,7 +313,6 @@ argumentlist            : expression                    {$$ = $1;}
                                                              temp = temp->getSibling();
                                                          }
                                                          temp->addSibling($3);
-                                                         // $$->addSibling($3);
                                                         }
                         ;
 

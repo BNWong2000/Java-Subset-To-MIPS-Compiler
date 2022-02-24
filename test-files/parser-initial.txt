@@ -3,4 +3,5 @@ main(){
     i = i + 1;
     boolean bol;
     bol = true;
+    print("hi");
 }
