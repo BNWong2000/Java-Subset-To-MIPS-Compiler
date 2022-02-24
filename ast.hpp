@@ -139,6 +139,14 @@ public:
     void setAsFunctionCall(std::string myName);
     void setAsFunctionCall(std::string myName, Expression *args);
     void setAsAssignment(Statement *assignStmt);
+
+    std::string getName(){
+        return name;
+    }
+
+    int getNum(){
+        return num;
+    }
     
     void print() override;
 };

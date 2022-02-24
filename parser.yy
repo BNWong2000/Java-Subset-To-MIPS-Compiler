@@ -207,66 +207,96 @@ argumentlist            : expression
                         | argumentlist COM expression
                         ;
 
-functioninvocation      : identifier LB argumentlist RB
-                        | identifier LB RB
+functioninvocation      : identifier LB argumentlist RB {$$ = new Expression();
+                                                         $$->setAsFunctionCall($1->getName(), $3); 
+                                                        }
+                        | identifier LB RB              {$$ = new Expression();
+                                                         $$->setAsFunctionCall($1->getName());
+                                                        }
                         ;
 
-postfixexpression       : primary
-                        | identifier
+postfixexpression       : primary                   {$$ = $1;}
+                        | identifier                {$$ = $1;}
                         ;
 
-unaryexpression         : SUB unaryexpression
-                        | NOT unaryexpression
-                        | postfixexpression
+unaryexpression         : SUB unaryexpression       {$$ = new Expression();
+                                                     $$->setAsUnary(op_SUB, $2);
+                                                    }
+                        | NOT unaryexpression       {$$ = new Expression();
+                                                     $$->setAsUnary(op_NOT, $2);
+                                                    }
+                        | postfixexpression         {$$ = $1;}
                         ;
 
-multiplicativeexpression: unaryexpression
-                        | multiplicativeexpression MULT unaryexpression
-                        | multiplicativeexpression DIV unaryexpression
-                        | multiplicativeexpression MOD unaryexpression
+multiplicativeexpression: unaryexpression                       {$$ = $1;}
+                        | multiplicativeexpression MULT unaryexpression     {$$ = new Expression();
+                                                                             $$->setAsArithmetic($1, op_MULT, $3);
+                                                                            }
+                        | multiplicativeexpression DIV unaryexpression      {$$ = new Expression();
+                                                                             $$->setAsArithmetic($1, op_DIV, $3);
+                                                                            }
+                        | multiplicativeexpression MOD unaryexpression      {$$ = new Expression();
+                                                                             $$->setAsArithmetic($1, op_MOD, $3);
+                                                                            }
                         ;
 
-additiveexpression      : multiplicativeexpression
-                        | additiveexpression ADD multiplicativeexpression
-                        | additiveexpression SUB multiplicativeexpression
+additiveexpression      : multiplicativeexpression              {$$ = $1;}
+                        | additiveexpression ADD multiplicativeexpression   {$$ = new Expression();
+                                                                             $$->setAsArithmetic($1, op_ADD, $3);
+                                                                            }
+                        | additiveexpression SUB multiplicativeexpression   {$$ = new Expression();
+                                                                             $$->setAsArithmetic($1, op_SUB, $3);
+                                                                            }
                         ;
 
-relationalexpression    : additiveexpression
-                        | relationalexpression LT additiveexpression
-                        | relationalexpression GT additiveexpression
-                        | relationalexpression LE additiveexpression
-                        | relationalexpression GE additiveexpression
+relationalexpression    : additiveexpression                    {$$ = $1;}    
+                        | relationalexpression LT additiveexpression    {$$ = new Expression();
+                                                                         $$->setAsRelational($1, op_LT, $3);
+                                                                        }
+                        | relationalexpression GT additiveexpression    {$$ = new Expression();
+                                                                         $$->setAsRelational($1, op_GT, $3);
+                                                                        }
+                        | relationalexpression LE additiveexpression    {$$ = new Expression();
+                                                                         $$->setAsRelational($1, op_LE, $3);
+                                                                        }
+                        | relationalexpression GE additiveexpression    {$$ = new Expression();
+                                                                         $$->setAsRelational($1, op_GE, $3);
+                                                                        }		
                         ;
 
-equalityexpression      : relationalexpression
-                        | equalityexpression EQ relationalexpression
-                        | equalityexpression NEQ relationalexpression
+equalityexpression      : relationalexpression                      {$$ = $1;}
+                        | equalityexpression EQ relationalexpression		{$$ = new Expression();
+                                                                             $$->setAsEquality($1, op_EQ, $3);
+                                                                            }
+                        | equalityexpression NEQ relationalexpression		{$$ = new Expression();
+                                                                             $$->setAsEquality($1, op_NEQ, $3);
+                                                                            }
                         ;
 
-conditionalandexpression: equalityexpression
+conditionalandexpression: equalityexpression                        {$$ = $1;}
                         | conditionalandexpression AND equalityexpression 	{$$ = new Expression();
-										 $$->setAsConditional($1, op_AND, $3);	
-										}
+                                                                             $$->setAsConditional($1, op_AND, $3);	
+                                                                            }
                         ;
 
 conditionalorexpression : conditionalandexpression	{$$ = $1;}
                         | conditionalorexpression OR conditionalandexpression	{$$ = new Expression();
-										 $$->setAsConditional($1, op_OR, $3);
-										}
+                                                                                 $$->setAsConditional($1, op_OR, $3);
+                                                                                }
                         ;
 
-assignmentexpression    : conditionalorexpression	{$$ = $1;}
-                        | assignment			{$$ = new Expression();
-							 $$->setAsAssignment($1);
-							}
+assignmentexpression    : conditionalorexpression                   {$$ = $1;}
+                        | assignment			                    {$$ = new Expression();
+                                                                     $$->setAsAssignment($1);
+                                                                    }
                         ;
 
 assignment              : identifier ASSIGN assignmentexpression {$$ = new Statement(); 
-								  $$->setAsAssignment($1, $3);
-								 }
+                                                                  $$->setAsAssignment($1, $3);
+                                                                 }
                         ;
 
-expression              : assignmentexpression		{$$ = $1;}
+expression              : assignmentexpression                  {$$ = $1;}
                         ;
 %%
 
