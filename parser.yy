@@ -64,7 +64,7 @@
 %token    WHILE
 %token    BREAK
 %token    RET
-%token    STR
+%token    <str> STR
 %token    LB '('
 %token    RB ')'
 %token    RCB '{'
@@ -112,33 +112,57 @@
 %type <stmt> assignment
 %type <expn> expression
 
+%destructor { delete $$; } literal type globaldeclarations globaldeclaration variabledeclaration identifier functiondeclaration functionheader functiondeclarator formalparameterlist formalparameter mainfunctiondeclaration mainfunctiondeclarator block blockstatements blockstatement statement statementexpression primary argumentlist functioninvocation postfixexpression unaryexpression multiplicativeexpression additiveexpression relationalexpression equalityexpression conditionalandexpression conditionalorexpression assignmentexpression assignment expression 
 
 %start start
 
 %%
-start           : /* empty */           {   std::cout <<"Here1" << std::endl; driver.tree = new Prog(driver.getFileName());}
-                | globaldeclarations    {   std::cout <<"Here2" << std::endl; 
-                                            driver.tree = $1;
+start           : /* empty */           {   driver.tree = new Prog(driver.getFileName());}
+                | globaldeclarations    {   
+                                            driver.tree = new Prog(driver.getFileName());
+                                            driver.tree->addChild($1);
+                                            if($1->hasSibling()){
+                                                AST* temp = $1;
+                                                while(temp->hasSibling()){
+                                                    temp = temp->getSibling();
+                                                    driver.tree->addChild(temp);
+                                                }
+                                            }
+                                            std::cout <<"Here2" << std::endl; 
                                         }
                 ;
 
-literal         : NUM
-                | STR
-                | TRUE
-                | FALSE
+literal         : NUM                   {$$ = new Expression();
+                                         $$->setAsNumber($1); 
+                                        }
+                | STR                   {$$ = new Expression();
+                                         $$->setAsString($1); 
+                                        }
+                | TRUE                  {$$ = new Expression();
+                                         $$->setAsBool(true);
+                                        }
+                | FALSE                 {$$ = new Expression();
+                                         $$->setAsBool(false);
+                                        }
                 ;
 
-type            : BOOL
-                | INT       {std::cout << "found an int type" << std::endl; }
+type            : BOOL                                              {$$ = new Declaration();
+                                                                     $$->setAsType(var_BOOL); 
+                                                                    }
+                | INT                                               {$$ = new Declaration();
+                                                                     $$->setAsType(var_INT); 
+                                                                    }
                 ;
 
-globaldeclarations      : globaldeclaration                     
-                        | globaldeclarations globaldeclaration  
+globaldeclarations      : globaldeclaration                         {$$ = $1;}           
+                        | globaldeclarations globaldeclaration      {$$ = $1;
+                                                                     $$->addSibling($2);
+                                                                    }
                         ;
 
-globaldeclaration       : variabledeclaration
-                        | functiondeclaration
-                        | mainfunctiondeclaration {std::cout << "main" << std::endl;}
+globaldeclaration       : variabledeclaration                       {$$ = $1;}
+                        | functiondeclaration                       {$$ = $1;}
+                        | mainfunctiondeclaration                   {$$ = $1;}
                         ;
 
 variabledeclaration     : type identifier SC                        {$$ = new Declaration();
@@ -165,6 +189,13 @@ functionheader          : type functiondeclarator                   {$$ = new De
 
 functiondeclarator      : identifier LB formalparameterlist RB      {$$ = new Declaration();
                                                                      $$->setAsDeclarator($1, $3);
+                                                                     if($3->hasSibling()){
+                                                                        AST* temp = $3;
+                                                                        while(temp->hasSibling()){
+                                                                            temp = temp->getSibling();
+                                                                            $$->addChild(temp);
+                                                                        }
+                                                                     }
                                                                     }
                         | identifier LB RB	                        {$$ = new Declaration();
                                                                      $$->setAsDeclarator($1);
@@ -262,6 +293,13 @@ argumentlist            : expression                    {$$ = $1;}
 
 functioninvocation      : identifier LB argumentlist RB {$$ = new Expression();
                                                          $$->setAsFunctionCall($1, $3); 
+                                                         if($3->hasSibling()){
+                                                            AST* temp = $3;
+                                                            while(temp->hasSibling()){
+                                                                temp = temp->getSibling();
+                                                                $$->addChild(temp);
+                                                            }
+                                                        }
                                                         }
                         | identifier LB RB              {$$ = new Expression();
                                                          $$->setAsFunctionCall($1);

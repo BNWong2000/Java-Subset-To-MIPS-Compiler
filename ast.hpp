@@ -49,6 +49,8 @@ enum Stmt{
 enum Expr{
     identifier,
     number,
+    stringLit,
+    boolLit,
     unary,
     relational,
     equality,
@@ -63,7 +65,8 @@ enum Decl{
     function,
     functionHeader,
     variable,
-    parameter
+    parameter,
+    typeDecl
 };
 
 class AST {
@@ -145,6 +148,8 @@ public:
     
     void setAsIdentifier(std::string myName);
     void setAsNumber(int myNumber);
+    void setAsString(std::string *literal);
+    void setAsBool(bool isTrue);
     void setAsUnary(Operators op, Expression *ex);
     void setAsRelational(Expression *e1, Operators op, Expression *e2);
     void setAsEquality(Expression *e1, Operators op, Expression *e2);
@@ -181,7 +186,8 @@ public:
     void setAsFunctionHeader(Declaration *dec, Variables varType);
     void setAsVariable(Expression *id, Variables varType);
     void setAsParameter(Variables varType, Expression *ex); //type identifier
-    // void setAsParameterList(std::vector<Declaration *> params);
+    void setAsType(Variables varType);
+
     Variables getVar(){
         return theVar;
     }

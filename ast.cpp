@@ -108,6 +108,21 @@ void Expression::setAsNumber(int myNumber){
     theType = number;
 };
 
+void Expression::setAsString(std::string *literal){
+    name = *literal;
+    theType = stringLit;
+};
+
+void Expression::setAsBool(bool isTrue){
+    if(isTrue){
+        num = 1;
+    }else{
+        num = 0;
+    }
+    theType = boolLit;
+};
+
+
 void Expression::setAsUnary(Operators op, Expression *ex){
     theOp = op;
     addChild(ex);
@@ -201,5 +216,10 @@ void Declaration::setAsParameter(Variables varType, Expression *ex){
     theVar = varType;
     addChild(ex);
     theType = parameter;
+};
+
+void Declaration::setAsType(Variables varType){
+    theVar = varType;
+    theType = typeDecl;
 };
 
