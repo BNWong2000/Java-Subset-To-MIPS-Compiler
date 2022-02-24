@@ -27,7 +27,7 @@ int Driver::start(std::istream &inputStream)
 
     if (rV == 0)
     {
-        // print the tree
+        tree->print(0);
     }
     return rV;
 }

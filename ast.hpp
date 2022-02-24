@@ -98,7 +98,7 @@ public:
     AST *getSibling(){
         return sibling;
     }
-    virtual void print() = 0;
+    virtual void print(int indentLvl) = 0;
     
 };
 
@@ -108,7 +108,7 @@ private:
 public:
     virtual ~Prog();
     Prog(std::string name) : fileName(name){}    
-    void print() override;
+    void print(int indentLvl) override;
 };
 
 // Forward Declaration of Declaration and Expression
@@ -136,7 +136,7 @@ public:
     void setAsFunctionStatement(Expression *functionCall);
     void setAsEmptyBlock();
     
-    void print() override;
+    void print(int indentLvl) override;
 };
 
 class Expression : public AST{
@@ -171,7 +171,7 @@ public:
         return num;
     }
     
-    void print() override;
+    void print(int indentLvl) override;
 };
 
 class Declaration : public AST{
@@ -195,7 +195,7 @@ public:
     Variables getVar(){
         return theVar;
     }
-    void print() override;
+    void print(int indentLvl) override;
 };
 
 #endif

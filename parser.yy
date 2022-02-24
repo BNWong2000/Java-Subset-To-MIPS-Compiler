@@ -124,17 +124,11 @@ start           : /* empty */           {   driver.tree = new Prog(driver.getFil
                                             if($1->hasSibling()){
                                                 AST* temp = $1;
                                                 while(temp->hasSibling()){
-                                                    std::cout << "HI" << std::endl;
                                                     temp = temp->getSibling();
-                                                    std::cout << "HI2" << std::endl;
                                                     driver.tree->addChild(temp);
-                                                    std::cout << "HI3" << std::endl;
-                                                    temp->hasSibling();
                                                 }
                                                 std::cout << "HI4" << std::endl;
-                                                
                                             }
-                                            std::cout <<"Here2" << std::endl; 
                                         }
                 ;
 

@@ -6,8 +6,14 @@
 
 Prog::~Prog(){};
 
-void Prog::print() {
+void Prog::print(int indentLvl) {
+    for(int i = 0; i < indentLvl; i++){
+        std::cout << "    ";
+    }
     std::cout << "Prog" << std::endl;
+    for(auto child : children){
+        child->print(indentLvl + 1);
+    }
 };
 
 void AST::addChild(AST *child){
@@ -24,8 +30,51 @@ void AST::addSibling(AST *theSibling){
 
 Statement::~Statement(){};
 
-void Statement::print() {
-    std::cout << "Statement" << std::endl;
+void Statement::print(int indentLvl) {
+    for(int i = 0; i < indentLvl; i++){
+        std::cout << "    ";
+    }
+    std::cout << "{ Statement: ";
+
+    switch (theType){
+        case ifStmt:
+            std::cout << "if";
+            break;
+        case ifElseStmt:
+            std::cout << "if else";
+            break;
+        case assignment:
+            std::cout << "assign";
+            break;
+        case nullType:
+            std::cout << "null";
+            break;
+        case returnStmt:
+            std::cout << "return";
+            break;
+        case whileStmt:
+            std::cout << "while";
+            break;
+        case breakStmt:
+            std::cout << "break";
+            break;
+        case blockStmt:
+            std::cout << "block";
+            break;
+        case funcCallStmt:
+            std::cout << "function call";
+            break;
+        case emptyBlockStmt:
+            std::cout << "empty block";
+            break;
+        default:
+        ;
+    } 
+
+    std::cout << " }" << std::endl;
+    for(auto child : children){
+        child->print(indentLvl + 1);
+    }
 };
 
 void Statement::setAsIf(Expression *ex, Statement *ifBlock){
@@ -95,8 +144,54 @@ void Statement::setAsEmptyBlock(){
 
 Expression::~Expression(){};
 
-void Expression::print() {
-    std::cout << "Expression" << std::endl;
+void Expression::print(int indentLvl) {
+    for(int i = 0; i < indentLvl; i++){
+        std::cout << "    ";
+    }
+    std::cout << "{ Expression: ";
+
+    switch (theType){
+        case identifier:
+            std::cout << "identifier";
+            break;
+        case number:
+            std::cout << "number";
+            break;
+        case stringLit:
+            std::cout << "string";
+            break;
+        case boolLit:
+            std::cout << "bool";
+            break;
+        case unary:
+            std::cout << "unary";
+            break;
+        case relational:
+            std::cout << "relational";
+            break;
+        case equality:
+            std::cout << "equality";
+            break;
+        case conditional:
+            std::cout << "conditional";
+            break;
+        case arithmetic:
+            std::cout << "arithmetic";
+            break;
+        case functionCall:
+            std::cout << "function";
+            break;
+        case assignExpr:
+            std::cout << "assignExpr";
+            break;
+        default:
+        ;
+    }
+
+    std::cout << " }" << std::endl;
+    for(auto child : children){
+        child->print(indentLvl + 1);
+    }
 };
 
 void Expression::setAsIdentifier(std::string myName){
@@ -180,8 +275,39 @@ void Expression::setAsAssignment(Statement *assignStmt){
 
 Declaration::~Declaration(){};
 
-void Declaration::print() {
-    std::cout << "Declaration" << std::endl;
+void Declaration::print(int indentLvl) {
+    for(int i = 0; i < indentLvl; i++){
+        std::cout << "    ";
+    }
+    std::cout << "{ Declaration: ";
+
+    switch(theType){
+        case declarator:
+            std::cout << "declarator";
+            break;
+        case function:
+            std::cout << "function";
+            break;
+        case functionHeader:
+            std::cout << "function header";
+            break;
+        case variable:
+            std::cout << "variable";
+            break;
+        case parameter:
+            std::cout << "parameter";
+            break;
+        case typeDecl:
+            std::cout << "type";
+            break;
+        default:
+        ;
+    }
+
+    std::cout << " }" << std::endl;
+    for(auto child : children){
+        child->print(indentLvl + 1);
+    }
 };
 
 void Declaration::setAsDeclarator(Expression *id){
