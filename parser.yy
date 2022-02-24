@@ -162,13 +162,19 @@ formalparameterlist     : formalparameter
                         | formalparameterlist COM formalparameter
                         ;
 
-formalparameter         : type identifier
+formalparameter         : type identifier               {$$ = new Declaration();
+                                                         $$->setAsParameter($1->getVar(), $2);
+                                                        }
                         ;
 
-mainfunctiondeclaration : mainfunctiondeclarator block {}
+mainfunctiondeclaration : mainfunctiondeclarator block  {$$ = new Declaration();
+                                                         $$->setAsFunction($1, $2);
+                                                        }
                         ;
 
-mainfunctiondeclarator  : identifier LB RB                  {$$ = new Declaration();}
+mainfunctiondeclarator  : identifier LB RB                  {$$ = new Declaration();
+                                                             $$->setAsDeclarator($1);
+                                                            }
                         ;
 
 block                   : LCB blockstatements RCB           {$$ = $2;

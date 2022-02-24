@@ -168,9 +168,14 @@ void Declaration::print() {
     std::cout << "Declaration" << std::endl;
 };
 
-void Declaration::setAsFunction(Expression *id, Declaration *dec){
+void Declaration::setAsDeclarator(Expression *id){
     addChild(id);
+    theType = declarator;
+};
+
+void Declaration::setAsFunction(Declaration *dec, Statement *block){
     addChild(dec);
+    addChild(block);
     theType = function;
 };
 

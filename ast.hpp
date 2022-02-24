@@ -59,6 +59,7 @@ enum Expr{
 };
 
 enum Decl{
+    declarator,
     function,
     variable,
     parameter
@@ -172,12 +173,15 @@ public:
     virtual ~Declaration();
     Declaration(){}
     Declaration(Decl declType) : theType(declType){}
-    
-    void setAsFunction(Expression *id, Declaration *dec);
+
+    void setAsDeclarator(Expression *id);
+    void setAsFunction(Declaration *dec, Statement *block);
     void setAsVariable(Expression *id, Variables varType);
     void setAsParameter(Variables varType, Expression *ex); //type identifier
     // void setAsParameterList(std::vector<Declaration *> params);
-
+    Variables getVar(){
+        return theVar;
+    }
     void print() override;
 };
 
