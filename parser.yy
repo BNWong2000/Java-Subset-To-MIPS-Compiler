@@ -53,7 +53,7 @@
 %token    GT '>'
 %token    GE 
 %token    LE 
-%token    ASSIGN "="
+%token    ASSIGN 
 %token    EQ 
 %token    NEQ 
 %token    NOT '!'
@@ -98,7 +98,7 @@
 %type <stmt> statement
 %type <stmt> statementexpression
 %type <expn> primary
-%type <decl> argumentlist
+%type <expn> argumentlist
 %type <expn> functioninvocation
 %type <expn> postfixexpression
 %type <expn> unaryexpression
@@ -129,7 +129,7 @@ literal         : NUM
                 ;
 
 type            : BOOL
-                | INT       {std::cout << "found an int type" << std::endl;}
+                | INT       {std::cout << "found an int type" << std::endl; }
                 ;
 
 globaldeclarations      : globaldeclaration                     
