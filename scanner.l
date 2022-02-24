@@ -84,7 +84,7 @@ ID {alphaUnderscore}{alphaNumUnderscore}*
 <STRING>.           { yymore();}
 
 <COMMENT>.
-<COMMENT>\n     {BEGIN(INITIAL); }
+<COMMENT>\n     {location->lines(); location->step(); BEGIN(INITIAL); }
 
 
 .               {return T_WARN;} /* Send warning on illegal character */
