@@ -72,7 +72,7 @@ enum Decl{
 class AST {
 protected:
     std::vector <AST *> children;
-    AST *sibling;
+    AST *sibling = nullptr;
 
 public:
     AST() = default;
@@ -88,7 +88,11 @@ public:
     void addChild(AST* child);
     void addSibling(AST* theSibling);
     bool hasSibling(){
-        return sibling == NULL;
+        std::cout << "checking for sibling.... ";
+        std::string temp;
+        temp = sibling != nullptr ? "true" : "false";
+        std::cout << "Has sibling? " << temp << std::endl;
+        return sibling != nullptr;
     }
 
     AST *getSibling(){

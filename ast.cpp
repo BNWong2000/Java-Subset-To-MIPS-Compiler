@@ -11,6 +11,7 @@ void Prog::print() {
 };
 
 void AST::addChild(AST *child){
+    std::cout << "adding child \n" << std::endl;
     children.push_back(child);
 }
 
