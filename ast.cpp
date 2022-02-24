@@ -28,39 +28,51 @@ void Statement::print() {
 };
 
 void Statement::setAsIf(Expression *ex, Statement *ifBlock){
-
+    addChild(ex);
+    addChild(ifBlock);
+    theType = ifStmt;
 };
 
 void Statement::setAsIfElse(Expression *ex, Statement *ifBlock, Statement *elseBlock){
-
+    addChild(ex);
+    addChild(ifBlock);
+    addChild(elseBlock);
+    theType = ifElseStmt;
 };
 
 void Statement::setAsAssignment(Expression *identifier, Expression *assignExp){
-
+    addChild(identifier);
+    addChild(assignExp);
+    theType = assignment;
 };
 
 void Statement::setAsNull(){
-
+    theType = nullType;
 };
 
 void Statement::setAsReturn(Expression *ex){
-
+    addChild(ex);
+    theType = returnStmt;
 };
 
 void Statement::setAsWhile(Expression *ex, Statement *block){
-
+    addChild(ex);
+    addChild(block);
+    theType = whileStmt;
 };
 
 void Statement::setAsBreak(){
-
+    theType = breakStmt;
 };
 
 void Statement::setAsBlock(Statement *stat){
-
+    addChild(stat);
+    theType = blockStmt;
 };
 
 void Statement::setAsBlock(Declaration *decl){
-
+    addChild(decl);
+    theType = blockStmt;
 };
 
 
@@ -74,35 +86,63 @@ void Expression::print() {
 };
 
 void Expression::setAsIdentifier(std::string myName){
-
+    name = myName;
+    theType = identifier;
 };
 
 void Expression::setAsNumber(int myNumber){
-
+    num = myNumber;
+    theType = number;
 };
 
 void Expression::setAsUnary(Operators op, Expression *ex){
-
+    theOp = op;
+    addChild(ex);
+    theType = unary;
 };
 
 void Expression::setAsRelational(Expression *e1, Operators op, Expression *e2){
-
+    addChild(e1);
+    addChild(e2);
+    theOp = op;
+    theType = relational;
 };
 
 void Expression::setAsEquality(Expression *e1, Operators op, Expression *e2){
+    addChild(e1);
+    addChild(e2);
+    theOp = op;
+    theType = equality;
+};
 
+void Expression::setAsConditional(Expression *e1, Operators op, Expression *e2){
+    addChild(e1);
+    addChild(e2);
+    theOp = op;
+    theType = conditional;
 };
 
 void Expression::setAsArithmetic(Expression *e1, Operators op, Expression *e2){
-
+    addChild(e1);
+    addChild(e2);
+    theOp = op;
+    theType = arithmetic;
 };
 
 void Expression::setAsFunctionCall(std::string myName){
-
+    name = myName;
+    theType = functionCall;
 };
 
 void Expression::setAsFunctionCall(std::string myName, Expression *args){
+    name = myName;
+    addChild(args);
+    theType = functionCall;
+};
 
+void Expression::setAsAssignment(Statement *assignStmt){
+    addChild(assignStmt);
+    theType = assignExpr;
 };
 
 
@@ -115,14 +155,20 @@ void Declaration::print() {
 };
 
 void Declaration::setAsFunction(std::string myName, Declaration *dec){
-
+    name = myName;
+    addChild(dec);
+    theType = function;
 };
 
-void Declaration::setAsVariable(Expression id, Variables *varType){
-
+void Declaration::setAsVariable(Expression *id, Variables varType){
+    addChild(id);
+    theVar = varType;
+    theType = variable;
 };
 
 void Declaration::setAsParameter(Variables varType, Expression *ex){
-
+    theVar = varType;
+    addChild(ex);
+    theType = parameter;
 };
 

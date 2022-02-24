@@ -9,35 +9,35 @@
 
 enum Operators
 {
-    ADD,
-    SUB,
-    MULT,
-    DIV,
-    MOD,
-    LT,
-    GT,
-    GE,
-    LE,
-    EQ,
-    NEQ,
-    NOT,
-    AND,
-    OR
+    op_ADD,
+    op_SUB,
+    op_MULT,
+    op_DIV,
+    op_MOD,
+    op_LT,
+    op_GT,
+    op_GE,
+    op_LE,
+    op_EQ,
+    op_NEQ,
+    op_NOT,
+    op_AND,
+    op_OR
 };
 
 enum Variables
 {
-    INT,
-    BOOL,
-    VOID,
-    STRING
+    var_INT,
+    var_BOOL,
+    var_VOID,
+    var_STRING
 };
 
 enum Stmt{
     ifStmt,
     ifElseStmt,
     assignment,
-    null,
+    nullType,
     returnStmt,
     whileStmt,
     breakStmt,
@@ -50,8 +50,10 @@ enum Expr{
     unary,
     relational,
     equality,
+    conditional,
     arithmetic,
-    functionCall
+    functionCall,
+    assignExpr,
 };
 
 enum Decl{
@@ -100,6 +102,7 @@ private:
     Stmt theType;
 public:    
     virtual ~Statement();
+    Statement(){}    
     Statement(Stmt stmtType) : theType(stmtType){}    
     
     void setAsIf(Expression *ex, Statement *ifBlock);
@@ -120,9 +123,10 @@ private:
     Expr theType;
     Operators theOp;
     std::string name;
-    int number;
+    int num;
 public:
     virtual ~Expression();
+    Expression(){}
     Expression(Expr exprType) : theType(exprType){}
     
     void setAsIdentifier(std::string myName);
@@ -130,9 +134,11 @@ public:
     void setAsUnary(Operators op, Expression *ex);
     void setAsRelational(Expression *e1, Operators op, Expression *e2);
     void setAsEquality(Expression *e1, Operators op, Expression *e2);
+    void setAsConditional(Expression *e1, Operators op, Expression *e2);
     void setAsArithmetic(Expression *e1, Operators op, Expression *e2);
     void setAsFunctionCall(std::string myName);
     void setAsFunctionCall(std::string myName, Expression *args);
+    void setAsAssignment(Statement *assignStmt);
     
     void print() override;
 };
@@ -140,13 +146,15 @@ public:
 class Declaration : public AST{
 private:
     Decl theType;
+    Variables theVar;
     std::string name;
 public:
     virtual ~Declaration();
+    Declaration(){}
     Declaration(Decl declType) : theType(declType){}
     
     void setAsFunction(std::string myName, Declaration *dec);
-    void setAsVariable(Expression id, Variables *varType);
+    void setAsVariable(Expression *id, Variables varType);
     void setAsParameter(Variables varType, Expression *ex); //type identifier
     // void setAsParameterList(std::vector<Declaration *> params);
 

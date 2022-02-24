@@ -109,7 +109,7 @@
 %type <expn> conditionalandexpression
 %type <expn> conditionalorexpression
 %type <expn> assignmentexpression
-%type <expn> assignment
+%type <stmt> assignment
 %type <expn> expression
 
 
@@ -244,21 +244,29 @@ equalityexpression      : relationalexpression
                         ;
 
 conditionalandexpression: equalityexpression
-                        | conditionalandexpression AND equalityexpression
+                        | conditionalandexpression AND equalityexpression 	{$$ = new Expression();
+										 $$->setAsConditional($1, op_AND, $3);	
+										}
                         ;
 
-conditionalorexpression : conditionalandexpression
-                        | conditionalorexpression OR conditionalandexpression
+conditionalorexpression : conditionalandexpression	{$$ = $1;}
+                        | conditionalorexpression OR conditionalandexpression	{$$ = new Expression();
+										 $$->setAsConditional($1, op_OR, $3);
+										}
                         ;
 
-assignmentexpression    : conditionalorexpression
-                        | assignment
+assignmentexpression    : conditionalorexpression	{$$ = $1;}
+                        | assignment			{$$ = new Expression();
+							 $$->setAsAssignment($1);
+							}
                         ;
 
-assignment              : identifier ASSIGN assignmentexpression
+assignment              : identifier ASSIGN assignmentexpression {$$ = new Statement(); 
+								  $$->setAsAssignment($1, $3);
+								 }
                         ;
 
-expression              : assignmentexpression
+expression              : assignmentexpression		{$$ = $1;}
                         ;
 %%
 
