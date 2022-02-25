@@ -77,11 +77,12 @@ ID {alphaUnderscore}{alphaNumUnderscore}*
 \"              {yymore(); BEGIN(STRING); }
 
 
-<STRING>\"          {BEGIN(INITIAL); yylval->str = new std::string(yytext, yyleng); return Token::T_STR;}     /* Strings */
-<STRING>"\\\""      { yymore();}                        /* If a \" is inside of a string, then include it. */
-<STRING>\n          {std::cerr << "ERROR: Newline inside string." << std::endl; return Token::T_ERR;}  /* Check for EOF or newline in strings */
-<STRING><<EOF>>     {std::cerr << "ERROR: Unterminated String." << std::endl; return Token::T_ERR;}
-<STRING>.           { yymore();}
+<STRING>\"                  {BEGIN(INITIAL); yylval->str = new std::string(yytext, yyleng); return Token::T_STR;}     /* Strings */
+<STRING>\n                  {std::cerr << "ERROR: Newline inside string." << std::endl; return Token::T_ERR;}  /* Check for EOF or newline in strings */
+<STRING><<EOF>>             {std::cerr << "ERROR: Unterminated String." << std::endl; return Token::T_ERR;}
+<STRING>\\[\\|b|f|n|t|r|'|"]    { yymore(); }
+<STRING>\\.                 {std::cerr << "ERROR: Unknown escape character inside String" << std::endl; return Token::T_ERR;}
+<STRING>.                               { yymore();}
 
 <COMMENT>.
 <COMMENT>\n     {location->lines(); location->step(); BEGIN(INITIAL); }
