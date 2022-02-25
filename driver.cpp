@@ -13,9 +13,13 @@ Driver::~Driver()
 int Driver::getToken(JCC::Parser::semantic_type *yylval, JCC::Parser::location_type *location)
 {
     int token = lexer->yylex(yylval, location);
-    // if(token == JCC::Parser::token::T_STR){
-    //     std::cout << " HIHIHIHIHIH String" << std::endl;
-    // }
+    if(token == JCC::Parser::token::T_ERR){
+        std::cout << " ERROR" << std::endl;
+    }
+    std::cout << "lexing" << std::endl;
+    if(token == JCC::Parser::token::T_WARN){
+        std::cout << " warning " << std::endl;
+    }
     return token;
 }
 

@@ -402,7 +402,8 @@ assignmentexpression    : conditionalorexpression                   {$$ = $1;}
                         ;
 
 assignment              : identifier ASSIGN assignmentexpression {$$ = new Statement(@$.begin.line); 
-                                                                  $$->setAsAssignment($1, $3);}
+                                                                  $$->setAsAssignment($1, $3);
+                                                                 }
                         ;
 
 expression              : assignmentexpression                  {$$ = $1;}

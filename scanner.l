@@ -87,7 +87,7 @@ ID {alphaUnderscore}{alphaNumUnderscore}*
 <COMMENT>\n     {location->lines(); location->step(); BEGIN(INITIAL); }
 
 
-.               {return T_WARN;} /* Send warning on illegal character */
+.               {std::cerr << "WARNING: illegal character" << std::endl; return Token::T_WARN;} /* Send warning on illegal character */
 %%
 
 /* This code was obtained from the TA (Shankar) in tutorial.*/

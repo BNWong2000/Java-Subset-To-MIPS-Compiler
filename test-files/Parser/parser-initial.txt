@@ -1,0 +1,28 @@
+main(){
+
+    coolguy = hi;
+    coolguy = hi;
+    coolguy = hi;
+    int i;
+    i = 1;
+    i = i + 1;
+    boolean bol;
+    if(1 == 2 && 1 == 1 || true){
+        i = 7;
+    }
+    while(3 * i || true){
+
+    }
+    bol = true;
+    print("hi");
+}
+
+void ungetc(int ch)
+{
+	if (_havechar) {
+		prints("Internal error: too many ungets!\n");
+		halt();
+	}
+	_havechar = true;
+	_char = ch;
+}
