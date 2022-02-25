@@ -1,3 +1,5 @@
+int globalVar;
+
 main(){
 
     coolguy = hi;
