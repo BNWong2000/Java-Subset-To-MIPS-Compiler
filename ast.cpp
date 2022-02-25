@@ -280,8 +280,8 @@ void Expression::setAsNumber(int myNumber){
     theType = number;
 };
 
-void Expression::setAsString(std::string literal){
-    name = literal;
+void Expression::setAsString(std::string *literal){
+    name = *literal;
     theType = stringLit;
 };
 

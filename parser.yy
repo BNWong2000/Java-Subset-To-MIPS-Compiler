@@ -136,7 +136,7 @@ literal         : NUM                   {$$ = new Expression(@$.begin.line);
                                          $$->setAsNumber($1); 
                                         }
                 | STR                   {$$ = new Expression(@$.begin.line);
-                                         $$->setAsString($1->c_str()); 
+                                         $$->setAsString($1); 
                                         }
                 | TRUE                  {$$ = new Expression(@$.begin.line);
                                          $$->setAsBool(true);
