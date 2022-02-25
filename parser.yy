@@ -40,6 +40,8 @@
     Statement* stmt;
     Expression* expn;
     Declaration* decl;
+
+    AST *ast_t;
 }
 
 %token    <str>  ID 
@@ -93,8 +95,8 @@
 %type <decl> mainfunctiondeclaration
 %type <decl> mainfunctiondeclarator
 %type <stmt> block
-%type <stmt> blockstatements
-%type <stmt> blockstatement
+%type <ast_t> blockstatements
+%type <ast_t> blockstatement
 %type <stmt> statement
 %type <stmt> statementexpression
 %type <expn> primary
@@ -257,9 +259,14 @@ blockstatements         : blockstatement                    {$$ = $1;}
                                                             }
                         ;
 
-blockstatement          : variabledeclaration       {$$ = new Statement(@$.begin.line);
-                                                     $$->setAsBlock($1);}
-                        | statement                 {$$ = $1;}
+blockstatement          : variabledeclaration       { //$$ = new Statement(@$.begin.line);
+                                                      //$$->setAsBlock($1);
+                                                      $$ = $1;
+                                                    }
+                        | statement                 { //$$ = new Statement(@$.begin.line);
+                                                      //$$->setAsBlock($1);
+                                                      $$ = $1;
+                                                    }
                         ;
 
 statement               : block                                         {$$ = $1;}

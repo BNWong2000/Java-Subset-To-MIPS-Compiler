@@ -11,7 +11,6 @@
     #include "parser.hh"
 
     using Token = JCC::Parser::token;
-
     #undef  YY_DECL
     #define YY_DECL int JCC::MyLexer::yylex(JCC::Parser::semantic_type *yylval, JCC::Parser::location_type *location)
     #define YY_USER_ACTION location->step(); location->columns(yyleng);

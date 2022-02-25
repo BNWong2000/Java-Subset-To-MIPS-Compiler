@@ -129,6 +129,7 @@ public:
     void setAsReturn(Expression *ex);
     void setAsWhile(Expression *ex, Statement *block);
     void setAsBreak();
+    void setAsBlock(AST *node);
     void setAsBlock(Statement *stat);
     void setAsBlock(Declaration *decl);
     void setAsFunctionStatement(Expression *functionCall);

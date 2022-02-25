@@ -1,0 +1,5 @@
+main(){
+    boolean test1;
+    int test1;
+    boolean test2;
+}

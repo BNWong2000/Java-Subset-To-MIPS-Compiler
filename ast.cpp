@@ -124,6 +124,11 @@ void Statement::setAsBreak(){
     theType = breakStmt;
 };
 
+void Statement::setAsBlock(AST *node){
+    addChild(node);
+    theType = blockStmt;
+};
+
 void Statement::setAsBlock(Statement *stat){
     addChild(stat);
     theType = blockStmt;

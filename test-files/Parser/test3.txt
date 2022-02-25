@@ -1,0 +1,24 @@
+main(){
+    boolean test; 
+    {
+    
+        int test1; 
+
+        boolean x;
+
+        {
+            int bingo;
+        }
+
+    }
+
+    {
+
+    }
+
+    boolean test2;
+
+    {
+        int z;
+    }
+}
