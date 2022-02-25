@@ -16,7 +16,7 @@ int Driver::getToken(JCC::Parser::semantic_type *yylval, JCC::Parser::location_t
     if(token == JCC::Parser::token::T_ERR){
         std::cout << " ERROR" << std::endl;
     }
-    std::cout << "lexing" << std::endl;
+    // std::cout << "lexing" << std::endl;
     if(token == JCC::Parser::token::T_WARN){
         std::cout << " warning " << std::endl;
     }
