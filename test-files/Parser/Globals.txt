@@ -1,0 +1,29 @@
+int i;
+boolean k;
+
+main(){
+    i = 10;
+    k = false;
+    k = true;
+    if(k){
+        {}
+        return;
+    }
+}
+
+void foo(int i, int j, int k, boolean booo){
+    print("HAHAHAHAHAH");
+    i = j = k = 10;
+    booo = true;
+}
+
+int bar(boolean a){
+    return 1;
+}
+
+void _thing(){
+    print("asdasda");
+    while(true){
+        break;
+    }
+}

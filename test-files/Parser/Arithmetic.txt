@@ -1,0 +1,56 @@
+boolean is_prime(int n)
+{
+  // handle trivial cases
+  if (n < 2) {return false;}
+  if (n <= 3) {return true;} // 2 and 3 are primes
+  if (n % 2 == 0) {return false;} // handle multiples of 2
+  if (n % 3 == 0) {return false;} // handle multiples of 3
+  // try to divide n by every number 5 .. sqrt(n)
+  int i;
+  i = 5;
+  int max;
+  max = sqrt(n);
+  while (i <= max) {
+    if (n % i == 0) {return false;}
+    if (n % (i + 2) == 0) {return false;}
+    i = i + 6;
+  }
+  // didn't find any divisors, so it must be a prime
+  return true;
+}
+
+
+main(){
+    int i;
+    int j;
+    int k;
+    int l;
+    int y;
+    int sdfemvb;
+
+    i = 2;
+    j = 20;
+    k = 21;
+    l = 3;
+    y = 5;
+    sdfemvb = 223;
+
+    if(is_prime(i)){
+        print(i, "is a prime");
+    }
+    if(is_prime(j)){
+        print(j, "is a prime");
+    }
+    if(is_prime(k)){
+        print(k, "is a prime");
+    }
+    if(is_prime(y)){
+        print(y, "is a prime");
+    }
+    if(is_prime(sdfemvb)){
+        print(sdfemvb, "is a prime");
+    }
+
+}
+
+
