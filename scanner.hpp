@@ -66,12 +66,14 @@ enum
  */
 namespace JCC {
     class MyLexer : public yyFlexLexer {
+    private:
+        using yyFlexLexer::yylex;
 
     public:
         MyLexer(std::istream *inputStream) : yyFlexLexer(inputStream) {}
 
         virtual ~MyLexer() = default;
-
+        
         virtual int yylex(JCC::Parser::semantic_type *yylval, JCC::Parser::location_type *location);
 
         // int getLine() { return yylineno; }
