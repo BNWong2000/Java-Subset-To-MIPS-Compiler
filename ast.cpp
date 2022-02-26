@@ -7,6 +7,7 @@
 Prog::~Prog(){};
 
 void Prog::print(int indentLvl) {
+    // formats the printing of the program (practically, the indentation should never be anything other than 0)
     std::cout << "├";
     for(int i = 0; i < indentLvl; i++){
         std::cout << "|    ";
@@ -33,6 +34,7 @@ Statement::~Statement(){};
 
 void Statement::print(int indentLvl) {
     
+    // Formats the printing of the outermost children. adds proper spacing
     if(indentLvl > 0){
         for(int i = 1; i < indentLvl; i++){
             std::cout << "|     ";
@@ -40,7 +42,7 @@ void Statement::print(int indentLvl) {
         std::cout << "├----";
     }
     
-
+    // prints out the type
     switch (theType){
         case ifStmt:
             std::cout << "If statement";
@@ -76,7 +78,10 @@ void Statement::print(int indentLvl) {
         ;
     } 
 
+    // prints out the line number
     std::cout << " { line: " << lineNo << " }" << std::endl;
+
+    // prints out the remaining children of this node
     for(auto child : children){
         child->print(indentLvl + 1);
     }
@@ -129,16 +134,6 @@ void Statement::setAsBlock(AST *node){
     theType = blockStmt;
 };
 
-void Statement::setAsBlock(Statement *stat){
-    addChild(stat);
-    theType = blockStmt;
-};
-
-void Statement::setAsBlock(Declaration *decl){
-    addChild(decl);
-    theType = blockStmt;
-};
-
 void Statement::setAsFunctionStatement(Expression *functionCall){
     addChild(functionCall);
     theType = funcCallStmt;
@@ -155,7 +150,7 @@ void Statement::setAsEmptyBlock(){
 Expression::~Expression(){};
 
 void Expression::print(int indentLvl) {
-    
+    // Formats the spacing of the tree properly
     if(indentLvl > 0){
         for(int i = 1; i < indentLvl; i++){
             std::cout << "|     ";
@@ -163,6 +158,7 @@ void Expression::print(int indentLvl) {
         std::cout << "├----";
     }
 
+    // Prints out the type, and, if necessary, other details
     switch (theType){
         case identifier:
             std::cout << "Identifier { Name: " << "\"" << name << "\",";
@@ -269,7 +265,10 @@ void Expression::print(int indentLvl) {
             break;
     }
 
+    // Prints out the line number
     std::cout << " line: " << lineNo << " }" << std::endl;
+
+    // Prints out the children of the node. 
     for(auto child : children){
         child->print(indentLvl + 1);
     }
@@ -357,14 +356,14 @@ void Expression::setAsAssignment(Statement *assignStmt){
 Declaration::~Declaration(){};
 
 void Declaration::print(int indentLvl) {
-    
+    // Ensures proper spacing when printing. 
     if(indentLvl > 0){
         for(int i = 1; i < indentLvl; i++){
             std::cout << "|     ";
         }
         std::cout << "├----";
     }
-
+    // Prints out the type and any other necessary details
     switch(theType){
         case declarator:
             std::cout << "Function Declarator {";
@@ -452,7 +451,10 @@ void Declaration::print(int indentLvl) {
         ;
     }
 
+    // prints out the line number
     std::cout << " line: " << lineNo << " }" << std::endl;
+
+    // Prints out the children of the node. 
     for(auto child : children){
         child->print(indentLvl + 1);
     }

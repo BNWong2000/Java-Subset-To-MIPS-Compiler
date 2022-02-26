@@ -64,15 +64,11 @@ enum
  * The purpose of this is to lex the input file, and return the necessary information
  * to generate a token.
  */
-namespace JCC
-{
-    class MyLexer : public yyFlexLexer
-    {
+namespace JCC {
+    class MyLexer : public yyFlexLexer {
 
     public:
-        MyLexer(std::istream *inputStream) : yyFlexLexer(inputStream)
-        {
-        }
+        MyLexer(std::istream *inputStream) : yyFlexLexer(inputStream) {}
 
         virtual ~MyLexer() = default;
 
@@ -80,8 +76,7 @@ namespace JCC
 
         // int getLine() { return yylineno; }
 
-        std::string getLexeme()
-        {
+        std::string getLexeme() {
             return lexeme;
         }
 

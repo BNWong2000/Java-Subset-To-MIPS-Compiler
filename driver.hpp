@@ -21,26 +21,28 @@ public:
 
     std::string getFileName () { return file_name;}
 
+    // records the position of the error, and sets the error flag
     void errorAtPos(int line, int col){
         hasError = true; 
         errorLine = line;
         errorCol = col;
     };
 
-    std::string getText(){
-        std::string result (lexer->YYText());
-        return result;
-    };
 
     virtual int getToken(JCC::Parser::semantic_type *yylval, JCC::Parser::location_type *location);
 
 private:
     int parse(std::istream &inputStream);
+
+    // Error information
     bool hasError;
     int errorLine;
     int errorCol;
     
+    // file name
     std::string file_name;
+
+    // parser and lexer
     std::unique_ptr<JCC::Parser> parser{nullptr};
     std::unique_ptr<JCC::MyLexer> lexer{nullptr};
 };

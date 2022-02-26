@@ -12,8 +12,7 @@
  */
 #define MAXNUMWARNINGS 10
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     std::ifstream myFile;
     Driver *myDriver;
 
@@ -25,10 +24,10 @@ int main(int argc, char *argv[])
         // attempt to open the file name argument
     }
 
-    
+    // Create a driver with the file. 
     myDriver = new Driver(argv[1]);
 
-    
+    // run it, and see what the return status is. 
     int rV = myDriver->start();
     return rV;
 
