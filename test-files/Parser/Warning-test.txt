@@ -1,0 +1,11 @@
+int i;
+
+int j;
+
+int k; 
+
+there should be an error here;
+
+int main(){
+    ;
+}

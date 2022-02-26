@@ -419,5 +419,6 @@ expression              : assignmentexpression                  {$$ = $1;}
 
 void JCC::Parser::error(const location_type &loc, const std::string &errmsg)
 {
-   std::cerr << "Error: " << errmsg << " at " << loc << "\n";
+   std::cerr << "Error: " << errmsg << " at line " << loc.begin.line << ", character " << loc.begin.column << "\n";
+   driver.errorAtPos(loc.begin.line, loc.begin.column);
 }

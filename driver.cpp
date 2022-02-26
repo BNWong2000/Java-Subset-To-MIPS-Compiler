@@ -10,6 +10,7 @@ Driver::~Driver()
     parser.reset();
 }
 
+
 int Driver::getToken(JCC::Parser::semantic_type *yylval, JCC::Parser::location_type *location)
 {
     int token = lexer->yylex(yylval, location);
@@ -24,17 +25,48 @@ int Driver::getToken(JCC::Parser::semantic_type *yylval, JCC::Parser::location_t
 }
 
 
-int Driver::start(std::istream &inputStream)
+int Driver::start()
 {
+    std::ifstream inputStream;
+    inputStream.open(file_name);
+    if (!inputStream.is_open()){
+        std::cerr << "ERROR: Failed to Open file: " << file_name << std::endl;
+        return 1;
+    }
     if (!(inputStream.good()) && inputStream.eof())
     {
         return 1;
     }
     int rV = parse(inputStream);
 
+    inputStream.close();
+
+    
+
     if (rV == 0)
     {
         tree->print(0);
+    }else{
+        std::cerr << "\nLine: " << errorLine << " is shown below: " << std::endl;
+        inputStream.open(file_name);
+        if (!inputStream.is_open()){
+            std::cerr << "ERROR: Failed to Open file: " << file_name << std::endl;
+            return 1;
+        }
+        if (!(inputStream.good()) && inputStream.eof())
+        {
+            return 1;
+        }
+        int i = 1;
+        std::string line;
+        while(std::getline(inputStream, line) && i < errorLine){
+            i++;
+        }
+        std::cerr << line << std::endl;
+        for(int i = 1; i < errorCol; i++){
+            std::cout << " ";
+        }
+        std::cout << "^" << std::endl;
     }
     return rV;
 }
