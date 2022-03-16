@@ -561,6 +561,9 @@ void Declaration::printWithoutChildren() {
         case function:
             std::cout << "Function {";
             break;
+        case mainFunction:
+            std::cout << "Main Function {";
+            break;
         case functionHeader:
             {
                 std::cout << "Function Header { Return type: ";
@@ -601,7 +604,29 @@ void Declaration::printWithoutChildren() {
                 default:
                     std::cerr << "Error: illegal Type" << std::endl;
             }
-            break;}
+            break;
+        }
+        case globalVariable:
+            {
+                std::cout << "Global variable { Type: ";
+                switch(theVar){
+                    case var_BOOL:
+                        std::cout << "Boolean,";
+                        break;
+                    case var_INT:
+                        std::cout << "Integer,";
+                        break;
+                    case var_STRING:
+                        std::cout << "String,";
+                        break;
+                    case var_VOID:
+                        std::cout << "Void,";
+                        break;
+                    default:
+                        std::cerr << "Error: illegal Type" << std::endl;
+                }
+                break;
+            }
         case parameter:
             {
                 std::cout << "Parameter { Type: ";
@@ -668,6 +693,9 @@ void Declaration::print(int indentLvl) {
         case function:
             std::cout << "Function {";
             break;
+        case mainFunction:
+            std::cout << "Main Function {";
+            break;
         case functionHeader:
             {
                 std::cout << "Function Header { Return type: ";
@@ -692,23 +720,45 @@ void Declaration::print(int indentLvl) {
         case variable:
             {
                 std::cout << "Variable { Type: ";
-            switch(theVar){
-                case var_BOOL:
-                    std::cout << "Boolean,";
-                    break;
-                case var_INT:
-                    std::cout << "Integer,";
-                    break;
-                case var_STRING:
-                    std::cout << "String,";
-                    break;
-                case var_VOID:
-                    std::cout << "Void,";
-                    break;
-                default:
-                    std::cerr << "Error: illegal Type" << std::endl;
+                switch(theVar){
+                    case var_BOOL:
+                        std::cout << "Boolean,";
+                        break;
+                    case var_INT:
+                        std::cout << "Integer,";
+                        break;
+                    case var_STRING:
+                        std::cout << "String,";
+                        break;
+                    case var_VOID:
+                        std::cout << "Void,";
+                        break;
+                    default:
+                        std::cerr << "Error: illegal Type" << std::endl;
             }
-            break;}
+            break;
+        }
+        case globalVariable:
+            {
+                std::cout << "Global variable { Type: ";
+                switch(theVar){
+                    case var_BOOL:
+                        std::cout << "Boolean,";
+                        break;
+                    case var_INT:
+                        std::cout << "Integer,";
+                        break;
+                    case var_STRING:
+                        std::cout << "String,";
+                        break;
+                    case var_VOID:
+                        std::cout << "Void,";
+                        break;
+                    default:
+                        std::cerr << "Error: illegal Type" << std::endl;
+                }
+            break;
+            }
         case parameter:
             {
                 std::cout << "Parameter { Type: ";
@@ -781,6 +831,12 @@ void Declaration::setAsFunction(Declaration *dec, Statement *block){
     theType = function;
 };
 
+void Declaration::setAsMainFunction(Declaration *dec, Statement *block){
+    addChild(dec);
+    addChild(block);
+    theType = mainFunction;
+}
+
 void Declaration::setAsFunctionHeader(Declaration *dec, Variables varType){
     addChild(dec);
     theVar = varType;
@@ -791,6 +847,10 @@ void Declaration::setAsVariable(Expression *id, Variables varType){
     addChild(id);
     theVar = varType;
     theType = variable;
+};
+
+void Declaration::setAsGlobalVariable(){
+    theType = globalVariable;
 };
 
 void Declaration::setAsParameter(Variables varType, Expression *ex){

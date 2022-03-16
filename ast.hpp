@@ -69,9 +69,11 @@ enum Expr
 enum Decl
 {
     declarator,
+    mainFunction,
     function,
     functionHeader,
     variable,
+    globalVariable,
     parameter,
     typeDecl
 };
@@ -240,8 +242,10 @@ public:
     void setAsDeclarator(Expression *id);
     void setAsDeclarator(Expression *id, Declaration *params);
     void setAsFunction(Declaration *dec, Statement *block);
+    void setAsMainFunction(Declaration *dec, Statement *block);
     void setAsFunctionHeader(Declaration *dec, Variables varType);
     void setAsVariable(Expression *id, Variables varType);
+    void setAsGlobalVariable();
     void setAsParameter(Variables varType, Expression *ex); // type identifier
     void setAsType(Variables varType);
 

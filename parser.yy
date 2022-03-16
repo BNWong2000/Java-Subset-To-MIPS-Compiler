@@ -166,7 +166,9 @@ globaldeclarations      : globaldeclaration                         {$$ = $1;}
                                                                     }
                         ;
 
-globaldeclaration       : variabledeclaration                       {$$ = $1;}
+globaldeclaration       : variabledeclaration                       {$$ = $1;
+                                                                     $$->setAsGlobalVariable();
+                                                                    }
                         | functiondeclaration                       {$$ = $1;}
                         | mainfunctiondeclaration                   {$$ = $1;}
                         ;
@@ -224,7 +226,7 @@ formalparameter         : type identifier               {$$ = new Declaration(@$
                         ;
 
 mainfunctiondeclaration : mainfunctiondeclarator block  {$$ = new Declaration(@$.begin.line);
-                                                         $$->setAsFunction($1, $2);
+                                                         $$->setAsMainFunction($1, $2);
 
                                                         }
                         ;
