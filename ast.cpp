@@ -5,10 +5,7 @@
 #include "ast.hpp"
 
 
-
-Prog::~Prog(){};
-
-void Prog::print(int indentLvl) {
+void AST::printProg(int indentLvl) {
     // formats the printing of the program (practically, the indentation should never be anything other than 0)
     std::cout << "├";
     for(int i = 0; i < indentLvl; i++){
@@ -20,7 +17,7 @@ void Prog::print(int indentLvl) {
     }
 };
 
-void Prog::printWithoutChildren(){
+void AST::printProgWithoutChildren(){
     std::cout << "{ Program: " << fileName << " }" << std::endl;
 };
 
@@ -36,9 +33,7 @@ void AST::addSibling(AST *theSibling){
 
 //-------------------------------------------------
 
-Statement::~Statement(){};
-
-void Statement::print(int indentLvl) {
+void AST::printStmt(int indentLvl) {
     
     // Formats the printing of the outermost children. adds proper spacing
     if(indentLvl > 0){
@@ -49,7 +44,7 @@ void Statement::print(int indentLvl) {
     }
     
     // prints out the type
-    switch (theType){
+    switch (theStmtType){
         case ifStmt:
             std::cout << "If statement";
             break;
@@ -93,9 +88,9 @@ void Statement::print(int indentLvl) {
     }
 };
 
-void Statement::printWithoutChildren(){
+void AST::printStmtWithoutChildren(){
     // prints out the type
-    switch (theType){
+    switch (theStmtType){
         case ifStmt:
             std::cout << "If statement";
             break;
@@ -135,72 +130,81 @@ void Statement::printWithoutChildren(){
 };
 
 
-void Statement::setAsIf(Expression *ex, Statement *ifBlock){
+void AST::setAsIf(AST *ex, AST *ifBlock){
+    theNode = statement;
     addChild(ex);
     addChild(ifBlock);
-    theType = ifStmt;
+    theStmtType = ifStmt;
 };
 
-void Statement::setAsIfElse(Expression *ex, Statement *ifBlock, Statement *elseBlock){
+void AST::setAsIfElse(AST *ex, AST *ifBlock, AST *elseBlock){
+    theNode = statement;
     addChild(ex);
     addChild(ifBlock);
     addChild(elseBlock);
-    theType = ifElseStmt;
+    theStmtType = ifElseStmt;
 };
 
-void Statement::setAsAssignment(Expression *identifier, Expression *assignExp){
+void AST::setAsAssignment(AST *identifier, AST *assignExp){
+    theNode = statement;
     addChild(identifier);
     addChild(assignExp);
-    theType = assignment;
+    theStmtType = assignment;
 };
 
-void Statement::setAsNull(){
-    theType = nullType;
+void AST::setAsNull(){
+    theNode = statement;
+    theStmtType = nullType;
 };
 
-void Statement::setAsReturn(){
-    theType = returnStmt;
+void AST::setAsReturn(){
+    theNode = statement;
+    theStmtType = returnStmt;
 };
 
-void Statement::setAsReturn(Expression *ex){
+void AST::setAsReturn(AST *ex){
+    theNode = statement;
     addChild(ex);
-    theType = returnStmt;
+    theStmtType = returnStmt;
 };
 
-void Statement::setAsWhile(Expression *ex, Statement *block){
+void AST::setAsWhile(AST *ex, AST *block){
+    theNode = statement;
     addChild(ex);
     addChild(block);
-    theType = whileStmt;
+    theStmtType = whileStmt;
 };
 
-void Statement::setAsBreak(){
-    theType = breakStmt;
+void AST::setAsBreak(){
+    theNode = statement;
+    theStmtType = breakStmt;
 };
 
-void Statement::setAsBlock(AST *node){
+void AST::setAsBlock(AST *node){
+    theNode = statement;
     addChild(node);
-    theType = blockStmt;
+    theStmtType = blockStmt;
 };
 
-void Statement::setAsFunctionStatement(Expression *functionCall){
+void AST::setAsFunctionStatement(AST *functionCall){
+    theNode = statement;
     addChild(functionCall);
-    theType = funcCallStmt;
+    theStmtType = funcCallStmt;
 };
 
-void Statement::setAsEmptyBlock(){
-    theType = emptyBlockStmt;
+void AST::setAsEmptyBlock(){
+    theNode = statement;
+    theStmtType = emptyBlockStmt;
 }
 
 
 
 //-------------------------------------------------
 
-Expression::~Expression(){};
 
-void Expression::printWithoutChildren() {
-
+void AST::printExprWithoutChildren() {
     // Prints out the type, and, if necessary, other details
-    switch (theType){
+    switch (theExprType){
         case identifier:
             std::cout << "Identifier { Name: " << "\"" << name << "\",";
             break;
@@ -328,7 +332,7 @@ void Expression::printWithoutChildren() {
     std::cout << " line: " << lineNo << " }" << std::endl;
 };
 
-void Expression::print(int indentLvl) {
+void AST::printExpr(int indentLvl) {
     // Formats the spacing of the tree properly
     if(indentLvl > 0){
         for(int i = 1; i < indentLvl; i++){
@@ -338,7 +342,7 @@ void Expression::print(int indentLvl) {
     }
 
     // Prints out the type, and, if necessary, other details
-    switch (theType){
+    switch (theExprType){
         case identifier:
             std::cout << "Identifier { Name: " << "\"" << name << "\",";
             break;
@@ -471,90 +475,98 @@ void Expression::print(int indentLvl) {
     }
 };
 
-void Expression::setAsIdentifier(std::string myName){
+void AST::setAsIdentifier(std::string myName){
+    theNode = expression;
     name = myName;
-    theType = identifier;
+    theExprType = identifier;
 };
 
-void Expression::setAsNumber(int myNumber){
+void AST::setAsNumber(int myNumber){
+    theNode = expression;
     num = myNumber;
-    theType = number;
+    theExprType = number;
 };
 
-void Expression::setAsString(std::string *literal){
+void AST::setAsString(std::string *literal){
+    theNode = expression;
     name = *literal;
-    theType = stringLit;
+    theExprType = stringLit;
 };
 
-void Expression::setAsBool(bool isTrue){
+void AST::setAsBool(bool isTrue){
+    theNode = expression;
     if(isTrue){
         num = 1;
     }else{
         num = 0;
     }
-    theType = boolLit;
+    theExprType = boolLit;
 };
 
 
-void Expression::setAsUnary(Operators op, Expression *ex){
+void AST::setAsUnary(Operators op, AST *ex){
+    theNode = expression;
     theOp = op;
     addChild(ex);
-    theType = unary;
+    theExprType = unary;
 };
 
-void Expression::setAsRelational(Expression *e1, Operators op, Expression *e2){
+void AST::setAsRelational(AST *e1, Operators op, AST *e2){
+    theNode = expression;
     addChild(e1);
     addChild(e2);
     theOp = op;
-    theType = relational;
+    theExprType = relational;
 };
 
-void Expression::setAsEquality(Expression *e1, Operators op, Expression *e2){
+void AST::setAsEquality(AST *e1, Operators op, AST *e2){
+    theNode = expression;
     addChild(e1);
     addChild(e2);
     theOp = op;
-    theType = equality;
+    theExprType = equality;
 };
 
-void Expression::setAsConditional(Expression *e1, Operators op, Expression *e2){
+void AST::setAsConditional(AST *e1, Operators op, AST *e2){
+    theNode = expression;
     addChild(e1);
     addChild(e2);
     theOp = op;
-    theType = conditional;
+    theExprType = conditional;
 };
 
-void Expression::setAsArithmetic(Expression *e1, Operators op, Expression *e2){
+void AST::setAsArithmetic(AST *e1, Operators op, AST *e2){
+    theNode = expression;
     addChild(e1);
     addChild(e2);
     theOp = op;
-    theType = arithmetic;
+    theExprType = arithmetic;
 };
 
-void Expression::setAsFunctionCall(Expression *id){
+void AST::setAsFunctionCall(AST *id){
+    theNode = expression;
     addChild(id);
-    theType = functionCall;
+    theExprType = functionCall;
 };
 
-void Expression::setAsFunctionCall(Expression *id, Expression *args){
+void AST::setAsFunctionCall(AST *id, AST *args){
+    theNode = expression;
     addChild(id);
     addChild(args);
-    theType = functionCall;
+    theExprType = functionCall;
 };
 
-void Expression::setAsAssignment(Statement *assignStmt){
+void AST::setAsAssignment(AST *assignStmt){
+    theNode = expression;
     addChild(assignStmt);
-    theType = assignExpr;
+    theExprType = assignExpr;
 };
-
-
 
 //-------------------------------------------------
 
-Declaration::~Declaration(){};
-
-void Declaration::printWithoutChildren() {
+void AST::printDeclWithoutChildren() {
     // Prints out the type and any other necessary details
-    switch(theType){
+    switch(theDeclType){
         case declarator:
             std::cout << "Function Declarator {";
             break;
@@ -677,7 +689,7 @@ void Declaration::printWithoutChildren() {
     std::cout << " line: " << lineNo << " }" << std::endl;
 };
 
-void Declaration::print(int indentLvl) {
+void AST::printDecl(int indentLvl) {
     // Ensures proper spacing when printing. 
     if(indentLvl > 0){
         for(int i = 1; i < indentLvl; i++){
@@ -686,7 +698,7 @@ void Declaration::print(int indentLvl) {
         std::cout << "├----";
     }
     // Prints out the type and any other necessary details
-    switch(theType){
+    switch(theDeclType){
         case declarator:
             std::cout << "Function Declarator {";
             break;
@@ -814,53 +826,95 @@ void Declaration::print(int indentLvl) {
     }
 };
 
-void Declaration::setAsDeclarator(Expression *id){
+void AST::setAsDeclarator(AST *id){
+    theNode = declaration;
     addChild(id);
-    theType = declarator;
+    theDeclType = declarator;
 };
 
-void Declaration::setAsDeclarator(Expression *id, Declaration *params){
+void AST::setAsDeclarator(AST *id, AST *params){
+    theNode = declaration;
     addChild(id);
     addChild(params);
-    theType = declarator;
+    theDeclType = declarator;
 };
 
-void Declaration::setAsFunction(Declaration *dec, Statement *block){
+void AST::setAsFunction(AST *dec, AST *block){
+    theNode = declaration;
     addChild(dec);
     addChild(block);
-    theType = function;
+    theDeclType = function;
 };
 
-void Declaration::setAsMainFunction(Declaration *dec, Statement *block){
+void AST::setAsMainFunction(AST *dec, AST *block){
+    theNode = declaration;
     addChild(dec);
     addChild(block);
-    theType = mainFunction;
+    theDeclType = mainFunction;
 }
 
-void Declaration::setAsFunctionHeader(Declaration *dec, Variables varType){
+void AST::setAsFunctionHeader(AST *dec, Variables varType){
+    theNode = declaration;
     addChild(dec);
     theVar = varType;
-    theType = functionHeader;
+    theDeclType = functionHeader;
 };
 
-void Declaration::setAsVariable(Expression *id, Variables varType){
+void AST::setAsVariable(AST *id, Variables varType){
+    theNode = declaration;
     addChild(id);
     theVar = varType;
-    theType = variable;
+    theDeclType = variable;
 };
 
-void Declaration::setAsGlobalVariable(){
-    theType = globalVariable;
+void AST::setAsGlobalVariable(){
+    theDeclType = globalVariable;
 };
 
-void Declaration::setAsParameter(Variables varType, Expression *ex){
+void AST::setAsParameter(Variables varType, AST *ex){
+    theNode = declaration;
     theVar = varType;
     addChild(ex);
-    theType = parameter;
+    theDeclType = parameter;
 };
 
-void Declaration::setAsType(Variables varType){
+void AST::setAsType(Variables varType){
+    theNode = declaration;
     theVar = varType;
-    theType = typeDecl;
+    theDeclType = typeDecl;
 };
+
+void AST::print(int indentLvl){
+    switch (theNode){
+        case prog:
+            printProg(indentLvl);
+            break;
+        case statement:
+            printStmt(indentLvl);
+            break;
+        case expression:
+            printExpr(indentLvl);
+            break;
+        case declaration:
+            printDecl(indentLvl);
+            break;
+    };
+}
+
+void AST::printWithoutChildren(){
+    switch (theNode){
+        case prog:
+            printProgWithoutChildren();
+            break;
+        case statement:
+            printStmtWithoutChildren();
+            break;
+        case expression:
+            printExprWithoutChildren();
+            break;
+        case declaration:
+            printDeclWithoutChildren();
+            break;
+    };
+}
 
