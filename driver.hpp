@@ -8,6 +8,7 @@
 #include "scanner.hpp"
 #include "parser.hh"
 #include "ast.hpp"
+#include "semantic.hpp"
 
 class Driver
 {
@@ -38,6 +39,7 @@ private:
     bool hasError;
     int errorLine;
     int errorCol;
+    Semantic checker;
     
     // file name
     std::string file_name;

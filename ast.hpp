@@ -35,7 +35,8 @@ enum Variables
 };
 
 // Statement types - to be used to define the type of statement for each class instance
-enum Stmt{
+enum Stmt
+{
     ifStmt,
     ifElseStmt,
     assignment,
@@ -49,7 +50,8 @@ enum Stmt{
 };
 
 // Expression types - to be used to define the type of expression for each class instance
-enum Expr{
+enum Expr
+{
     identifier,
     number,
     stringLit,
@@ -64,7 +66,8 @@ enum Expr{
 };
 
 // Declaration types - to be used to define the type of declaration for each class instance
-enum Decl{
+enum Decl
+{
     declarator,
     function,
     functionHeader,
@@ -73,12 +76,12 @@ enum Decl{
     typeDecl
 };
 
-// Parent class. 
-class AST {
+// Parent class.
+class AST
+{
 protected:
-
     // A vector for all the children of a node
-    std::vector <AST *> children;
+    std::vector<AST *> children;
 
     // A pointer to the sibling of the node
     AST *sibling = nullptr;
@@ -86,41 +89,45 @@ protected:
 public:
     AST() = default;
 
-    virtual ~AST(){
-    	for(auto child : children){
-	        delete child;
-	    }
-	    children.clear();
+    virtual ~AST()
+    {
+        for (auto child : children)
+        {
+            delete child;
+        }
+        children.clear();
     }
 
-    void preOrder(AST *curr, void (*callback)(AST *));
-    
-    void postOrder(AST *curr, void (*callback)(AST *));
+    void addChild(AST *child);
+    void addSibling(AST *theSibling);
 
-    
-    void addChild(AST* child);
-    void addSibling(AST* theSibling);
+    std::vector<AST *>& getChildren(){
+        return children;
+    }
 
-    bool hasSibling(){
+    bool hasSibling()
+    {
         return sibling != nullptr;
     }
 
-    AST *getSibling(){
+    AST *getSibling()
+    {
         return sibling;
     }
 
     // Pure virtual function to be defined by the children classes
     virtual void print(int indentLvl) = 0;
-    
 };
 
-class Prog : public AST{
+class Prog : public AST
+{
 private:
     // Top level node, which stores the file name.
     std::string fileName;
+
 public:
     virtual ~Prog();
-    Prog(std::string name) : fileName(name){}    
+    Prog(std::string name) : fileName(name) {}
     void print(int indentLvl) override;
 };
 
@@ -129,16 +136,18 @@ class Declaration;
 class Expression;
 
 // Node which stores information on statements
-class Statement : public AST{
+class Statement : public AST
+{
 private:
     Stmt theType;
 
     // Line number of the statement, for printing/debugging
     int lineNo;
-public:    
+
+public:
     virtual ~Statement();
-    Statement(int line) : lineNo(line){}    
-    Statement(Stmt stmtType) : theType(stmtType){}    
+    Statement(int line) : lineNo(line) {}
+    Statement(Stmt stmtType) : theType(stmtType) {}
 
     // The following functions are meant to be called after the constructor is called.
     // They set the type, and add any mandatory children
@@ -150,36 +159,38 @@ public:
     void setAsReturn(Expression *ex);
     void setAsWhile(Expression *ex, Statement *block);
     void setAsBreak();
-    // This setAsBlock allows for any type of node to be added to a block. 
+    // This setAsBlock allows for any type of node to be added to a block.
     void setAsBlock(AST *node);
     void setAsBlock(Statement *stat);
     void setAsBlock(Declaration *decl);
     void setAsFunctionStatement(Expression *functionCall);
     void setAsEmptyBlock();
-    
+
     void print(int indentLvl) override;
 };
 
-class Expression : public AST{
+class Expression : public AST
+{
 private:
     Expr theType;
 
     // Expressions (arithmetic and logical) often require an operator
     Operators theOp;
 
-    // a string, to store information for identifiers, or strings. 
+    // a string, to store information for identifiers, or strings.
     std::string name;
 
     // an int to store information for integer literals
     int num;
     int lineNo;
+
 public:
     virtual ~Expression();
-    Expression(int line) : lineNo(line){}
-    Expression(Expr exprType) : theType(exprType){}
+    Expression(int line) : lineNo(line) {}
+    Expression(Expr exprType) : theType(exprType) {}
 
     // The following functions are meant to be called after the constructor is called.
-    // They set the type, and add any mandatory children    
+    // They set the type, and add any mandatory children
     void setAsIdentifier(std::string myName);
     void setAsNumber(int myNumber);
     void setAsString(std::string *literal);
@@ -193,28 +204,32 @@ public:
     void setAsFunctionCall(Expression *id, Expression *args);
     void setAsAssignment(Statement *assignStmt);
 
-    std::string getName(){
+    std::string getName()
+    {
         return name;
     }
 
-    int getNum(){
+    int getNum()
+    {
         return num;
     }
-    
+
     void print(int indentLvl) override;
 };
 
-class Declaration : public AST{
+class Declaration : public AST
+{
 private:
     Decl theType;
 
     // Variable to store information on variable types for certain declarations
     Variables theVar;
     int lineNo;
+
 public:
     virtual ~Declaration();
-    Declaration(int line) : lineNo(line){}
-    Declaration(Decl declType) : theType(declType){}
+    Declaration(int line) : lineNo(line) {}
+    Declaration(Decl declType) : theType(declType) {}
 
     // The following functions are meant to be called after the constructor is called.
     // They set the type, and add any mandatory children
@@ -223,10 +238,11 @@ public:
     void setAsFunction(Declaration *dec, Statement *block);
     void setAsFunctionHeader(Declaration *dec, Variables varType);
     void setAsVariable(Expression *id, Variables varType);
-    void setAsParameter(Variables varType, Expression *ex); //type identifier
+    void setAsParameter(Variables varType, Expression *ex); // type identifier
     void setAsType(Variables varType);
 
-    Variables getVar(){
+    Variables getVar()
+    {
         return theVar;
     }
     void print(int indentLvl) override;

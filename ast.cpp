@@ -5,19 +5,6 @@
 #include "ast.hpp"
 
 
-void AST::preOrder(AST *curr, void (*callback)(AST*)){
-    callback(curr);
-    for(int i = 0; i < curr->children.size(); i++){
-        preOrder(curr->children[i], callback);
-    }
-}
-
-void AST::postOrder(AST *curr, void (*callback)(AST *)){
-    for(int i = 0; i < curr->children.size(); i++){
-        postOrder(curr->children[i], callback);
-    }
-    callback(curr);
-}
 
 Prog::~Prog(){};
 
