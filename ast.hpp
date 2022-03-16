@@ -93,6 +93,10 @@ public:
 	    children.clear();
     }
 
+    void preOrder(AST *curr, void (*callback)(AST *));
+    
+    void postOrder(AST *curr, void (*callback)(AST *));
+
     
     void addChild(AST* child);
     void addSibling(AST* theSibling);

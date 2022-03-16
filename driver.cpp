@@ -2,8 +2,6 @@
 #include "driver.hpp"
 
 
-
-
 Driver::~Driver()
 {
     lexer.reset();
