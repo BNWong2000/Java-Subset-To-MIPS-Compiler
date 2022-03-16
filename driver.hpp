@@ -39,7 +39,7 @@ private:
     bool hasError;
     int errorLine;
     int errorCol;
-    Semantic checker;
+    Semantic *checker;
     
     // file name
     std::string file_name;

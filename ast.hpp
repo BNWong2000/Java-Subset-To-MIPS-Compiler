@@ -117,6 +117,7 @@ public:
 
     // Pure virtual function to be defined by the children classes
     virtual void print(int indentLvl) = 0;
+    virtual void printWithoutChildren() = 0;
 };
 
 class Prog : public AST
@@ -129,6 +130,7 @@ public:
     virtual ~Prog();
     Prog(std::string name) : fileName(name) {}
     void print(int indentLvl) override;
+    void printWithoutChildren() override;
 };
 
 // Forward Declaration of Declaration and Expression
@@ -167,6 +169,7 @@ public:
     void setAsEmptyBlock();
 
     void print(int indentLvl) override;
+    void printWithoutChildren() override;
 };
 
 class Expression : public AST
@@ -215,6 +218,7 @@ public:
     }
 
     void print(int indentLvl) override;
+    void printWithoutChildren() override;
 };
 
 class Declaration : public AST
@@ -246,6 +250,7 @@ public:
         return theVar;
     }
     void print(int indentLvl) override;
+    void printWithoutChildren() override;
 };
 
 #endif

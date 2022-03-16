@@ -13,17 +13,22 @@ private:
     std::unordered_map<std::string, int> symbolTable;
     AST *root;
 
-    void preOrder(AST *curr, void (*callback)(AST *));
+    // void preOrder(AST *curr, void (Semantic::*callback)(AST *));
 
-    void postOrder(AST *curr, void (*callback)(AST *));
+    // void postOrder(AST *curr, void (Semantic::*callback)(AST *));
 
-    void prePostOrder(AST *curr, void (*preCall)(AST *), void (*postCall)(AST *));
+    // void prePostOrder(AST *curr, void (Semantic::*preCall)(AST *), void (Semantic::*postCall)(AST *));
 
-    void pass1_callback(AST *node);
+    void globalCheck_callback(AST *node);
     void pass2_callback(AST *node);
 
 public:
+    Semantic(){};
+    ~Semantic(){};
     void setRoot(AST *myRoot){root = myRoot;};
+    void checkTree();
+
+    void checkGlobals();
 
 };
 

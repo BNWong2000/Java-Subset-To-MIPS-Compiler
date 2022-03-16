@@ -1,30 +1,38 @@
 #include "semantic.hpp"
 
-void Semantic::pass1_callback(AST *node)
-{
-    //
+void Semantic::globalCheck_callback(AST *node){
+    node->printWithoutChildren();
 }
 
 void Semantic::pass2_callback(AST *node) {}
 
-void Semantic::preOrder(AST *curr, void (*callback)(AST*)){
-    callback(curr);
+void preOrder(AST *curr, void (Semantic::*callback)(AST*), Semantic *semantic){
+    (semantic->*callback)(curr);
     for(int i = 0; i < curr->getChildren().size(); i++){
-        preOrder(curr->getChildren()[i], callback);
+        preOrder(curr->getChildren()[i], callback, semantic);
     }
 }
 
-void Semantic::postOrder(AST *curr, void (*callback)(AST *)){
+void postOrder(AST *curr, void (Semantic::*callback)(AST *), Semantic *semantic){
     for(int i = 0; i < curr->getChildren().size(); i++){
-        postOrder(curr->getChildren()[i], callback);
+        postOrder(curr->getChildren()[i], callback, semantic);
     }
-    callback(curr);
+    (semantic->*callback)(curr);
 }
 
-void Semantic::prePostOrder(AST *curr, void (*preCall)(AST *), void (*postCall)(AST *)){
-    preCall(curr);
+void prePostOrder(AST *curr, void (Semantic::*preCall)(AST *), void (Semantic::*postCall)(AST *), Semantic *semantic){
+    (semantic->*preCall)(curr);
     for(int i = 0; i < curr->getChildren().size(); i++){
-        prePostOrder(curr->getChildren()[i], preCall, postCall);
+        prePostOrder(curr->getChildren()[i], preCall, postCall, semantic);
     }
-    postCall(curr);
+    (semantic->*postCall)(curr);
+}
+
+void Semantic::checkGlobals(){
+    postOrder(root, &Semantic::globalCheck_callback, this);
+}
+
+void Semantic::checkTree(){
+    std::cout << "checking globals\n" << std::endl;
+    checkGlobals();
 }
