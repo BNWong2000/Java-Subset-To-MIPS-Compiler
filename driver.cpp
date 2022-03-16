@@ -53,10 +53,16 @@ int Driver::start() {
     if (rV == 0) {
         checker = new Semantic();
         checker->setRoot(tree);
-        std::cout << "checking tree..." << std::endl;
-        checker->checkTree();
-        std::cout << "\n\n\n" << std::endl;
         tree->print(0);
+        std::cout << "\n\n\n" << std::endl;
+        std::cout << "checking tree..." << std::endl;
+        bool good = checker->checkTree();
+        if(!good){
+            std::cerr << "Semantic Error detected. Terminating......" << std::endl;
+            return 1;
+        }
+        
+        
     } else {
         // otherwise, we print the error
         std::cerr << "\nLine: " << errorLine << " is shown below: " << std::endl;

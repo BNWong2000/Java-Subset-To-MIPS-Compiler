@@ -11,6 +11,7 @@ main(){
     }
 }
 
+
 void foo(int i, int j, int k, boolean booo){
     print("HAHAHAHAHAH");
     i = j = k = 10;
@@ -20,6 +21,7 @@ void foo(int i, int j, int k, boolean booo){
 int bar(boolean a){
     return 1;
 }
+
 
 void _thing(){
     print("asdasda");
