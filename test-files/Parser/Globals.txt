@@ -9,7 +9,9 @@ main(){
         {}
         return;
     }
-    foo(1,1,1,true);
+    _thing();
+    i = bar(true);
+    foo(1,1,1,1);
 }
 
 void foo(int i, int j, int k, boolean booo){    

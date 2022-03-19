@@ -9,13 +9,28 @@
 #include <deque>
 #include <vector>
 
-class Semantic
-{
+class symEntry {
+public:
+    Variables type;
+    std::vector<Variables> params;
+    
+    symEntry(){}
+    symEntry(Variables var){
+        type = var;
+    }
+
+    void addParam(Variables var){
+        params.push_back(var);
+    }
+
+};
+
+class Semantic {
 private:
     // std::unordered_map<std::string, std::string> symbolTable;
 
     // Vector which stores all the symbol tables for each scope
-    std::vector <std::unordered_map<std::string, std::string>> tables;
+    std::vector <std::unordered_map<std::string, symEntry *>> tables;
 
     // Stack which is used to manage scope (contains index of symbols tables for each scope)
     // These are indices of 'tables' which are pushed and popped, from the stack
@@ -33,10 +48,11 @@ private:
     bool globalCheck_callback(AST *node);
     bool idCheckPre(AST *node);
     bool idCheckPost(AST *node);
+    bool typeCheck(AST *node);
 
 public:
     Semantic(AST *myRoot){
-        std::unordered_map<std::string, std::string> globalTable;
+        std::unordered_map<std::string, symEntry *> globalTable;
         tables.push_back(globalTable);
         scopeStack.push_back(0);
         depth = 1;
@@ -48,6 +64,7 @@ public:
 
     bool checkGlobals();
     bool checkIds();
+    bool checkTypes();
 
 };
 

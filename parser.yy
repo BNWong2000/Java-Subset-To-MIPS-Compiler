@@ -291,8 +291,9 @@ statement               : block                                         {$$ = $1
 
 statementexpression     : assignment                    {$$ = $1;
                                                         }
-                        | functioninvocation            {$$ = new AST(@$.begin.line);
-                                                         $$->setAsFunctionStatement($1);
+                        | functioninvocation            { $$ = $1;
+                                                         // $$ = new AST(@$.begin.line);
+                                                         // $$->setAsFunctionStatement($1);
                                                         }
                         ;
 
@@ -398,8 +399,9 @@ conditionalorexpression : conditionalandexpression	{$$ = $1;}
                         ;
 
 assignmentexpression    : conditionalorexpression                   {$$ = $1;}
-                        | assignment			                    {$$ = new AST(@$.begin.line);
-                                                                     $$->setAsAssignment($1);
+                        | assignment			                    {$$ = $1;
+                                                                     // $$ = new AST(@$.begin.line);
+                                                                     // $$->setAsAssignment($1);
                                                                     }
                         ;
 

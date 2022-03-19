@@ -94,7 +94,7 @@ enum Expr
     conditional,
     arithmetic,
     functionCall,
-    assignExpr,
+    // assignExpr,
 };
 
 // Declaration types - to be used to define the type of declaration for each class instance
@@ -247,7 +247,7 @@ public:
     void setAsArithmetic(AST *e1, Operators op, AST *e2);
     void setAsFunctionCall(AST *id);
     void setAsFunctionCall(AST *id, AST *args);
-    void setAsAssignment(AST *assignStmt);
+    // void setAsAssignment(AST *assignStmt);
 
     // The following functions are meant to be called after the constructor is called.
     // They set the type, and add any mandatory children

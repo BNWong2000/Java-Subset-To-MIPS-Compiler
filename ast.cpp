@@ -319,11 +319,11 @@ void AST::printExprWithoutChildren() {
                 break;
             }
         case functionCall:
-            std::cout << "Function Invocation {" ;
+            std::cout << "Function Call {" ;
             break;
-        case assignExpr:
-            std::cout << "Assignment {";
-            break;
+        // case assignExpr:
+        //     std::cout << "Assignment Expression {";
+        //     break;
         default:
             break;
     }
@@ -457,11 +457,11 @@ void AST::printExpr(int indentLvl) {
                 break;
             }
         case functionCall:
-            std::cout << "Function Invocation {" ;
+            std::cout << "Function Call {" ;
             break;
-        case assignExpr:
-            std::cout << "Assignment {";
-            break;
+        // case assignExpr:
+        //     std::cout << "Assignment Expression {";
+        //     break;
         default:
             break;
     }
@@ -482,12 +482,14 @@ void AST::setAsIdentifier(std::string myName){
 };
 
 void AST::setAsNumber(int myNumber){
+    theVar = var_INT;
     theNode = expression;
     num = myNumber;
     theExprType = number;
 };
 
 void AST::setAsString(std::string *literal){
+    theVar = var_STRING;
     theNode = expression;
     name = *literal;
     theExprType = stringLit;
@@ -495,6 +497,7 @@ void AST::setAsString(std::string *literal){
 
 void AST::setAsBool(bool isTrue){
     theNode = expression;
+    theVar = var_BOOL;
     if(isTrue){
         num = 1;
     }else{
@@ -512,6 +515,7 @@ void AST::setAsUnary(Operators op, AST *ex){
 };
 
 void AST::setAsRelational(AST *e1, Operators op, AST *e2){
+    theVar = var_BOOL;
     theNode = expression;
     addChild(e1);
     addChild(e2);
@@ -520,6 +524,7 @@ void AST::setAsRelational(AST *e1, Operators op, AST *e2){
 };
 
 void AST::setAsEquality(AST *e1, Operators op, AST *e2){
+    theVar = var_BOOL;
     theNode = expression;
     addChild(e1);
     addChild(e2);
@@ -528,6 +533,7 @@ void AST::setAsEquality(AST *e1, Operators op, AST *e2){
 };
 
 void AST::setAsConditional(AST *e1, Operators op, AST *e2){
+    theVar = var_BOOL;
     theNode = expression;
     addChild(e1);
     addChild(e2);
@@ -536,6 +542,7 @@ void AST::setAsConditional(AST *e1, Operators op, AST *e2){
 };
 
 void AST::setAsArithmetic(AST *e1, Operators op, AST *e2){
+    theVar = var_INT;
     theNode = expression;
     addChild(e1);
     addChild(e2);
@@ -556,11 +563,11 @@ void AST::setAsFunctionCall(AST *id, AST *args){
     theExprType = functionCall;
 };
 
-void AST::setAsAssignment(AST *assignStmt){
-    theNode = expression;
-    addChild(assignStmt);
-    theExprType = assignExpr;
-};
+// void AST::setAsAssignment(AST *assignStmt){
+//     theNode = expression;
+//     addChild(assignStmt);
+//     theExprType = assignExpr;
+// };
 
 //-------------------------------------------------
 
