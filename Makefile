@@ -1,5 +1,5 @@
 CC := clang++
-CXXFLAGS := -std=c++14 -Wall
+CXXFLAGS := -std=c++14 -Wall -ggdb
 objs := parser.o scanner.o main.o driver.o ast.o semantic.o
 
 

@@ -17,9 +17,9 @@ private:
     // Vector which stores all the symbol tables for each scope
     std::vector <std::unordered_map<std::string, std::string>> tables;
 
-    // Stack which is used to manage stack (contains symbols tables for each scope)
-    // These are references which are pushed and popped, from the stack, but retained in the tables vector
-    // Using a vector instead of stack, since it allows me to iterate through
+    // Stack which is used to manage scope (contains index of symbols tables for each scope)
+    // These are indices of 'tables' which are pushed and popped, from the stack
+    // Using a vector instead of stack, since it allows me to iterate through it
     std::vector <int> scopeStack;
     AST *root;
 

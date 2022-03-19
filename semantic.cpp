@@ -76,19 +76,17 @@ bool Semantic::globalCheck_callback(AST *node){
 bool Semantic::idCheckPre(AST *node){
     // check for block. if there is one, push onto stack. 
     // if it's not a stack, check for vars and add them onto symbol table for top of stack.
-    if(node->theNode == declaration && node->theDeclType == declarator){
-        std::cout << "function decl- line" << node->getLine() << std::endl;
+    if(node->theNode == declaration && node->theDeclType == function){
         // function or main declaration (both have declarator children)
         std::unordered_map<std::string, std::string> currScope;
         scopeStack.push_back(tables.size());
         tables.push_back(currScope); 
     }else if(node->theNode == declaration){
         if(node->theDeclType == variable || node->theDeclType == parameter){
-            std::cout << "Variable/param decl- line" << node->getLine() << std::endl;
+            std::string name = node->getFirstChild()->getName();
             // variable
             std::unordered_map<std::string, std::string> &top = tables[scopeStack.back()];
-            std::string name = node->getFirstChild()->getName();
-            if(top.find(name) != top.end()){ 
+            if(top.find(name) == top.end()){ 
                 // not inside of the top scope
                 top.insert({name, varToString(node->getTheVar())});
             }else{
@@ -98,11 +96,11 @@ bool Semantic::idCheckPre(AST *node){
             }
         }
     }else if(node->theNode == expression && node->theExprType == identifier){
-        std::cout << "identifier - line" << node->getLine() << std::endl;
         // any identifier
         bool found = false;
         std::string name = node->getName();
         // iterate through stack from top down
+    
         for(int i = scopeStack.size()-1; i >= 0; i--){
             int currInd = scopeStack[i];
             if(tables[currInd].find(name) != tables[currInd].end()){
@@ -124,7 +122,7 @@ bool Semantic::idCheckPre(AST *node){
 
 bool Semantic::idCheckPost(AST *node){
     // pop from stack.
-    if(node->theNode == declaration && node->theDeclType == declarator){
+    if(node->theNode == declaration && node->theDeclType == function){
         scopeStack.pop_back();
     }
     return true;
