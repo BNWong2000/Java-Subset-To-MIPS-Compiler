@@ -218,7 +218,13 @@ public:
     // Function to print either with or without the children.
     void print(int indentLvl);
     void printWithoutChildren();
+    Operators getTheOp(){
+        return theOp;
+    }
 
+    void setTheVar(Variables var){
+        theVar = var;
+    }
 
     // The following functions are meant to be called after the constructor is called.
     // They set the type, and add any mandatory children
@@ -261,10 +267,10 @@ public:
     void setAsParameter(Variables varType, AST *ex); // type identifier
     void setAsType(Variables varType);
 
-    Variables getVar()
-    {
-        return theVar;
-    }
+    // Variables getVar()
+    // {
+    //     return theVar;
+    // }
 
     std::string getName()
     {

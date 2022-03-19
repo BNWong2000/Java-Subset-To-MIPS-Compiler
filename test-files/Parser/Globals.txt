@@ -5,13 +5,21 @@ main(){
     i = 10;
     k = false;
     k = true;
-    if(k){
+    if(!k){
         {}
         return;
     }
+    while(k){
+        break;
+    }
+    if(true){
+        ;
+    }else{
+        ;
+    }
     _thing();
-    i = bar(true);
-    foo(1,1,1,1);
+    i = bar(!true);
+    foo(1,1,1,k);
 }
 
 void foo(int i, int j, int k, boolean booo){    

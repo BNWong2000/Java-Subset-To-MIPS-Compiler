@@ -13,7 +13,7 @@ class symEntry {
 public:
     Variables type;
     std::vector<Variables> params;
-    
+
     symEntry(){}
     symEntry(Variables var){
         type = var;
@@ -71,7 +71,7 @@ public:
 // No main declaration found. ***Done***
 // Multiple main declarations found. ***Done (sorta)***
 // A local declaration was not in an outermost block. ***Done***
-// The number/type of arguments in a function call doesn't match the function's declaration.
+// The number/type of arguments in a function call doesn't match the function's declaration. ***Done***
 // The main function can't be called. 
 // Break statements must be inside a while statement.
 // Type mismatch for an operator (||, &&, ==, !=, =, <, >, <=, >=, +, - (unary and binary), *, /, %, !).

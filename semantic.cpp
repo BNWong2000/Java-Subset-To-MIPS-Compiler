@@ -136,29 +136,60 @@ bool Semantic::typeCheck(AST *node){
     if(node->theNode == expression){
         switch (node->theExprType){
             case identifier:
-                std::cout << "identifier on line: " << node->getLine() << std::endl;
+                node->setTheVar(tables[node->getTableEntry()][node->getName()]->type);
                 break;
-            case functionCall:
-                std::cout << "function call on line: " << node->getLine() << std::endl;
+            case functionCall:{
+                symEntry *lookup = tables[0][node->getFirstChild()->getName()];
+                node->setTheVar(lookup->type);
+                if((node->getChildren().size()-1) != lookup->params.size()){
+                    std::cerr << "Function call on line " << node->getLine() << " has a different number of parameters than the function requires." << std::endl;
+                    return false;
+                }
+                for(int i = 1; i < node->getChildren().size(); i++){
+                    if(node->getChildren()[i]->getTheVar() != lookup->params[i-1]){
+                        std::cerr << "Function call on line " << node->getLine() 
+                        << " has one or more parameter type mismatches." << std::endl;
+                        return false;
+                    }
+                }
                 break;
-            case number:
-                std::cout << "number on line: " << node->getLine() << std::endl;
+            }
+            case unary:
+                if(node->getTheOp() == op_SUB){
+                    node->setTheVar(var_INT);
+                }else{
+                    node->setTheVar(var_BOOL);
+                }
+                if(node->getFirstChild()->getTheVar() != node->getTheVar()){
+                    std::cerr << "Error on line " << node->getLine() << ": unary operator type mismatch." << std::endl;
+                    return false;
+                }
                 break;
-            case boolLit:
-                std::cout << "Boolean literal on line: " << node->getLine() << std::endl;
+            case relational:
+                break;
+            case equality:
+                break;
+            case conditional:
+                break;
+            case arithmetic:
                 break;
             default:
                 ;
         }
     }else if(node->theNode == statement){
         switch (node->theStmtType){
-        case ifStmt:
-            break;
-        case ifElseStmt:
-            break;
+        case ifStmt: // if, ifelse, and while should check for the same things. 
+        case ifElseStmt: // hence the lack of break.
         case whileStmt:
+            // look at it's conditional expression for bool type. 
+            if(node->getFirstChild()->getTheVar() != var_BOOL){
+                std::cerr << "Error on line " << node->getLine() << ": expected a boolean expression." << std::endl;
+                return false;
+            }
             break;
         case assignment:
+            // compare its children's types
+            break;
         default:
             break;
         }
