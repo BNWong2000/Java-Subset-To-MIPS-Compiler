@@ -20,7 +20,7 @@ private:
     // Stack which is used to manage stack (contains symbols tables for each scope)
     // These are references which are pushed and popped, from the stack, but retained in the tables vector
     // Using a vector instead of stack, since it allows me to iterate through
-    std::vector <std::unordered_map<std::string, std::string> *> scopeStack;
+    std::vector <int> scopeStack;
     AST *root;
 
     // void preOrder(AST *curr, void (Semantic::*callback)(AST *));
@@ -37,7 +37,7 @@ public:
     Semantic(AST *myRoot){
         std::unordered_map<std::string, std::string> globalTable;
         tables.push_back(globalTable);
-        scopeStack.push_back(&globalTable);
+        scopeStack.push_back(0);
         root = myRoot;
     };
     ~Semantic(){};

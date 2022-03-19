@@ -80,13 +80,13 @@ bool Semantic::idCheckPre(AST *node){
         std::cout << "function decl- line" << node->getLine() << std::endl;
         // function or main declaration (both have declarator children)
         std::unordered_map<std::string, std::string> currScope;
-        tables.push_back(currScope);
-        scopeStack.push_back(&currScope);
+        scopeStack.push_back(tables.size());
+        tables.push_back(currScope); 
     }else if(node->theNode == declaration){
         if(node->theDeclType == variable || node->theDeclType == parameter){
             std::cout << "Variable/param decl- line" << node->getLine() << std::endl;
             // variable
-            std::unordered_map<std::string, std::string> &top = *scopeStack.back();
+            std::unordered_map<std::string, std::string> &top = tables[scopeStack.back()];
             std::string name = node->getFirstChild()->getName();
             if(top.find(name) != top.end()){ 
                 // not inside of the top scope
@@ -104,21 +104,12 @@ bool Semantic::idCheckPre(AST *node){
         std::string name = node->getName();
         // iterate through stack from top down
         for(int i = scopeStack.size()-1; i >= 0; i--){
-            std::cout << "here " << scopeStack.size()<< std::endl;
-            //std::cout << "size is: " << *(*sTab).size() << std::endl;
-
-            // for(const auto & it : (**sTab)){
-            //     std::cout << "hi " << it.first << std::endl;
-            // }
-            std::cout << "here2" << std::endl;
-            if(scopeStack[i]->find(name) != scopeStack[i]->end()){
-                std::cout << "here" << std::endl;
+            int currInd = scopeStack[i];
+            if(tables[currInd].find(name) != tables[currInd].end()){
                 found = true;
-                // node->(**sTab)[name];
-                std::cout << "found " << name << std::endl;
                 break;
             }
-            std::cout << "not found" << std::endl;
+            
         }
 
         if(!found){
@@ -202,9 +193,6 @@ bool Semantic::checkTree(){
         return false;
     }
     std::cout << "checking Identifiers..." << std::endl;
-    for(const auto & it : (*scopeStack[0])){
-        std::cout << "item is " << it.first << std::endl;
-    }
     if(!checkIds()){
         return false;
     }
