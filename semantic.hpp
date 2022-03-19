@@ -22,6 +22,7 @@ private:
     // Using a vector instead of stack, since it allows me to iterate through it
     std::vector <int> scopeStack;
     AST *root;
+    int depth;
 
     // void preOrder(AST *curr, void (Semantic::*callback)(AST *));
 
@@ -38,6 +39,7 @@ public:
         std::unordered_map<std::string, std::string> globalTable;
         tables.push_back(globalTable);
         scopeStack.push_back(0);
+        depth = 1;
         root = myRoot;
     };
     ~Semantic(){};
@@ -48,5 +50,20 @@ public:
     bool checkIds();
 
 };
+
+// No main declaration found. ***Done***
+// Multiple main declarations found. ***Done (sorta)***
+// A local declaration was not in an outermost block. ***Done***
+// The number/type of arguments in a function call doesn't match the function's declaration.
+// The main function can't be called. 
+// Break statements must be inside a while statement.
+// Type mismatch for an operator (||, &&, ==, !=, =, <, >, <=, >=, +, - (unary and binary), *, /, %, !).
+// No return statement in a non-void function.
+// A void function can't return a value.
+// A non-void function must return a value. Note that you're only checking for the existence of an appropriate return statement at the semantic checking stage, not whether it's actually executed.
+// A value returned from a function has the wrong type.
+// An if- or while-condition must be of Boolean type.
+// An identifier is redefined within the same scope. ***Done***
+// An undeclared identifier is used. ***Done***
 
 #endif

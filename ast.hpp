@@ -131,8 +131,9 @@ protected:
     // Top level node, which stores the file name.
     std::string fileName;
 
-    // pointer to the AST's symbol tables. 
-
+    // index of the 'tables' vector 
+    // for this node (if it's an id)
+    int tableEntry;
 
     // Variable to store information on variable types for certain declarations
     Variables theVar;
@@ -207,6 +208,13 @@ public:
         return lineNo;
     }
 
+    int getTableEntry(){
+        return tableEntry;
+    }
+
+    void setTableEntry(int entry){
+        tableEntry = entry;
+    }
     // Function to print either with or without the children.
     void print(int indentLvl);
     void printWithoutChildren();

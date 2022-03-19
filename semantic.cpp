@@ -76,6 +76,9 @@ bool Semantic::globalCheck_callback(AST *node){
 bool Semantic::idCheckPre(AST *node){
     // check for block. if there is one, push onto stack. 
     // if it's not a stack, check for vars and add them onto symbol table for top of stack.
+    if(node->theNode == statement && node->theStmtType == blockStmt){
+        depth++;
+    }
     if(node->theNode == declaration && node->theDeclType == function){
         // function or main declaration (both have declarator children)
         std::unordered_map<std::string, std::string> currScope;
@@ -84,6 +87,10 @@ bool Semantic::idCheckPre(AST *node){
     }else if(node->theNode == declaration){
         if(node->theDeclType == variable || node->theDeclType == parameter){
             std::string name = node->getFirstChild()->getName();
+            if(depth >= 3){
+                // This indicates a nested block within a function
+                std::cerr << "ERROR: local declaration of \"" << name << "\" is not in outermost block at line " << node->getLine() << std::endl;  
+            }
             // variable
             std::unordered_map<std::string, std::string> &top = tables[scopeStack.back()];
             if(top.find(name) == top.end()){ 
@@ -105,9 +112,9 @@ bool Semantic::idCheckPre(AST *node){
             int currInd = scopeStack[i];
             if(tables[currInd].find(name) != tables[currInd].end()){
                 found = true;
+                node->setTableEntry(currInd);
                 break;
             }
-            
         }
 
         if(!found){
@@ -124,6 +131,10 @@ bool Semantic::idCheckPost(AST *node){
     // pop from stack.
     if(node->theNode == declaration && node->theDeclType == function){
         scopeStack.pop_back();
+    }
+
+    if(node->theNode == statement && node->theStmtType == blockStmt){
+        depth--;
     }
     return true;
 }
