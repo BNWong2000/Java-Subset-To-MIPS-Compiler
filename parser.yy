@@ -36,6 +36,7 @@
     std::string *str;
 
     AST *ast_t;
+    Variables varType;
 }
 
 %token    <str>  ID 
@@ -76,7 +77,7 @@
 %token    ERR
 
 %type <ast_t> literal 
-%type <ast_t> type
+%type <varType> type
 %type <ast_t> globaldeclarations
 %type <ast_t> globaldeclaration
 %type <ast_t> variabledeclaration
@@ -108,7 +109,7 @@
 %type <ast_t> assignment
 %type <ast_t> expression
 
-%destructor { delete $$; } literal type globaldeclarations globaldeclaration variabledeclaration identifier functiondeclaration functionheader functiondeclarator formalparameterlist formalparameter mainfunctiondeclaration mainfunctiondeclarator block blockstatements blockstatement statement statementexpression primary argumentlist functioninvocation postfixexpression unaryexpression multiplicativeexpression additiveexpression relationalexpression equalityexpression conditionalandexpression conditionalorexpression assignmentexpression assignment expression 
+%destructor { delete $$; } literal globaldeclarations globaldeclaration variabledeclaration identifier functiondeclaration functionheader functiondeclarator formalparameterlist formalparameter mainfunctiondeclaration mainfunctiondeclarator block blockstatements blockstatement statement statementexpression primary argumentlist functioninvocation postfixexpression unaryexpression multiplicativeexpression additiveexpression relationalexpression equalityexpression conditionalandexpression conditionalorexpression assignmentexpression assignment expression 
 
 %start start
 
@@ -142,11 +143,9 @@ literal         : NUM                   {$$ = new AST(@$.begin.line);
                                         }
                 ;
 
-type            : BOOL                                              {$$ = new AST(@$.begin.line);
-                                                                     $$->setAsType(var_BOOL); 
+type            : BOOL                                              {$$ = var_BOOL; 
                                                                     }
-                | INT                                               {$$ = new AST(@$.begin.line);
-                                                                     $$->setAsType(var_INT); 
+                | INT                                               {$$ = var_INT; 
                                                                     }
                 ;
 
@@ -168,7 +167,7 @@ globaldeclaration       : variabledeclaration                       {$$ = $1;
                         ;
 
 variabledeclaration     : type identifier SC                        {$$ = new AST(@$.begin.line);
-                                                                     $$->setAsVariable($2, $1->getVar());
+                                                                     $$->setAsVariable($2, $1);
                                                                     }
                         ;
 
@@ -182,7 +181,7 @@ functiondeclaration     : functionheader block                      {$$ = new AS
                         ;
 
 functionheader          : type functiondeclarator                   {$$ = new AST(@$.begin.line);
-                                                                     $$->setAsFunctionHeader($2, $1->getVar());
+                                                                     $$->setAsFunctionHeader($2, $1);
                                                                     }
                         | VOID functiondeclarator                   {$$ = new AST(@$.begin.line);
                                                                      $$->setAsFunctionHeader($2, var_VOID);
@@ -215,7 +214,7 @@ formalparameterlist     : formalparameter                           {$$ = $1;}
                         ;
 
 formalparameter         : type identifier               {$$ = new AST(@$.begin.line);
-                                                         $$->setAsParameter($1->getVar(), $2);
+                                                         $$->setAsParameter($1, $2);
                                                         }
                         ;
 

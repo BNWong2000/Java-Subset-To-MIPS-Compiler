@@ -9,11 +9,10 @@ main(){
         {}
         return;
     }
+    foo(1,1,1,true);
 }
 
-
-void foo(int i, int j, int k, boolean booo){
-    print("HAHAHAHAHAH");
+void foo(int i, int j, int k, boolean booo){    
     i = j = k = 10;
     booo = true;
 }
@@ -24,8 +23,9 @@ int bar(boolean a){
 
 
 void _thing(){
-    print("asdasda");
+    int i;
     while(true){
-        break;
+	break;
     }
+
 }

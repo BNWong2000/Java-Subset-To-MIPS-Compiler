@@ -1,7 +1,10 @@
 #include "semantic.hpp"
 
+
+
 bool Semantic::globalCheck_callback(AST *node){
     if(node->theNode == declaration){
+        
         switch(node->theDeclType){
             case mainFunction: {
 
@@ -9,11 +12,11 @@ bool Semantic::globalCheck_callback(AST *node){
                 std::cout << "main function" << std::endl;
                 std::string name = node->getChildren()[0]->getChildren()[0]->getName();
                 
-                if(symbolTable.find(name) != symbolTable.end()){
+                if(tables[0].find(name) != tables[0].end()){
                     std::cerr << "main function already exists!" << std::endl;
                     return false;
                 }
-                symbolTable.insert({name, "exists"});
+                tables[0].insert({name, "exists"});
                 break;
             }
             case function: {
@@ -21,7 +24,7 @@ bool Semantic::globalCheck_callback(AST *node){
                 AST *funcDecl = node->getChildren()[0]->getChildren()[0];
                 std::string name = funcDecl->getChildren()[0]->getName();
                 std::cout << name << std::endl;
-                if(symbolTable.find(name) != symbolTable.end()){
+                if(tables[0].find(name) != tables[0].end()){
                     std::cerr << "Duplicate function of name \"" << name << "\" being declared." << std::endl;
                     return false;
                 }
@@ -34,19 +37,19 @@ bool Semantic::globalCheck_callback(AST *node){
                 }
                 entry += ")";
                 std::cout << entry << std::endl;
-                symbolTable.insert({name, entry});
+                tables[0].insert({name, entry});
                 break;
             }
             case globalVariable: {
                 std::cout << "global var" << std::endl;
                 std::string name = node->getChildren()[0]->getName();
-                if(symbolTable.find(name) != symbolTable.end()){
+                if(tables[0].find(name) != tables[0].end()){
                     std::cerr << "Duplicate global variable \"" << name << "\" being declared." << std::endl;
                     return false;
                 }
                 std::string entry = varToString(node->getTheVar());
                 std::cout << name << " is a(n) " << entry << std::endl;
-                symbolTable.insert({name, entry});
+                tables[0].insert({name, entry});
                 break;
             }
             default:
@@ -57,7 +60,84 @@ bool Semantic::globalCheck_callback(AST *node){
     // node->printWithoutChildren();
 }
 
-void Semantic::pass2_callback(AST *node) {}
+/**
+ * Pseudo pseudo-code plan:
+ * check if main or regular function. 
+ *      if so, make new hash and push to stack (and to the tables vector)
+ * if not, then if it's an ID, do appropriate checks
+ *      if it's a declaration, check if it's already in current scope
+ *          if it isn't, in current scope, then add it.
+ *          if it is, then error. 
+ *      if it's a func call or variable, iterate through the stack and check. 
+ *          if exists, point to it.
+ *          if not, error.
+ * Ignore everything else.
+ */
+bool Semantic::idCheckPre(AST *node){
+    // check for block. if there is one, push onto stack. 
+    // if it's not a stack, check for vars and add them onto symbol table for top of stack.
+    if(node->theNode == declaration && node->theDeclType == declarator){
+        std::cout << "function decl- line" << node->getLine() << std::endl;
+        // function or main declaration (both have declarator children)
+        std::unordered_map<std::string, std::string> currScope;
+        tables.push_back(currScope);
+        scopeStack.push_back(&currScope);
+    }else if(node->theNode == declaration){
+        if(node->theDeclType == variable || node->theDeclType == parameter){
+            std::cout << "Variable/param decl- line" << node->getLine() << std::endl;
+            // variable
+            std::unordered_map<std::string, std::string> &top = *scopeStack.back();
+            std::string name = node->getFirstChild()->getName();
+            if(top.find(name) != top.end()){ 
+                // not inside of the top scope
+                top.insert({name, varToString(node->getTheVar())});
+            }else{
+                // error
+                std::cerr <<"Line: " << node->getLine() << " Error: an Identifier with name \"" << name << "\" already exists in this scope. " << std::endl;
+                return false;
+            }
+        }
+    }else if(node->theNode == expression && node->theExprType == identifier){
+        std::cout << "identifier - line" << node->getLine() << std::endl;
+        // any identifier
+        bool found = false;
+        std::string name = node->getName();
+        // iterate through stack from top down
+        for(int i = scopeStack.size()-1; i >= 0; i--){
+            std::cout << "here " << scopeStack.size()<< std::endl;
+            //std::cout << "size is: " << *(*sTab).size() << std::endl;
+
+            // for(const auto & it : (**sTab)){
+            //     std::cout << "hi " << it.first << std::endl;
+            // }
+            std::cout << "here2" << std::endl;
+            if(scopeStack[i]->find(name) != scopeStack[i]->end()){
+                std::cout << "here" << std::endl;
+                found = true;
+                // node->(**sTab)[name];
+                std::cout << "found " << name << std::endl;
+                break;
+            }
+            std::cout << "not found" << std::endl;
+        }
+
+        if(!found){
+            std::cerr <<"Line: " << node->getLine() << " Error: identifier \"" << name << "\" has not yet been declared. " << std::endl;
+            return false;
+        }
+
+    }
+    // otherwise ignore them. 
+    return true;
+}
+
+bool Semantic::idCheckPost(AST *node){
+    // pop from stack.
+    if(node->theNode == declaration && node->theDeclType == declarator){
+        scopeStack.pop_back();
+    }
+    return true;
+}
 
 bool preOrder(AST *curr, bool (Semantic::*callback)(AST*), Semantic *semantic){
     if(!(semantic->*callback)(curr)){
@@ -101,17 +181,31 @@ bool prePostOrder(AST *curr, bool (Semantic::*preCall)(AST *), bool (Semantic::*
 bool Semantic::checkGlobals(){
     if(!postOrder(root, &Semantic::globalCheck_callback, this)){
         return false;
-    };
-    if(symbolTable.find("main") == symbolTable.end()){
+    }
+    if(tables[0].find("main") == tables[0].end()){
         std::cerr << "ERROR: no main function found" << std::endl;
         return false;
     }
     return true;
 }
 
+bool Semantic::checkIds(){
+    if(!prePostOrder(root, &Semantic::idCheckPre, &Semantic::idCheckPost, this)){
+        return false;
+    }
+    return true;
+}
+
 bool Semantic::checkTree(){
-    std::cout << "checking globals\n" << std::endl;
+    std::cout << "checking globals..." << std::endl;
     if(!checkGlobals()){
+        return false;
+    }
+    std::cout << "checking Identifiers..." << std::endl;
+    for(const auto & it : (*scopeStack[0])){
+        std::cout << "item is " << it.first << std::endl;
+    }
+    if(!checkIds()){
         return false;
     }
     return true;

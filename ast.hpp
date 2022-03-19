@@ -5,6 +5,8 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <memory>
+#include <unordered_map>
 
 // All the arithmetic and logical operators
 enum Operators
@@ -129,6 +131,8 @@ protected:
     // Top level node, which stores the file name.
     std::string fileName;
 
+    // pointer to the AST's symbol tables. 
+
 
     // Variable to store information on variable types for certain declarations
     Variables theVar;
@@ -194,6 +198,15 @@ public:
         return sibling;
     }
 
+    // Helper function. often the first child is highly useful.
+    AST *getFirstChild(){
+        return children[0];
+    }
+
+    int getLine(){
+        return lineNo;
+    }
+
     // Function to print either with or without the children.
     void print(int indentLvl);
     void printWithoutChildren();
@@ -209,7 +222,6 @@ public:
     void setAsReturn(AST *ex);
     void setAsWhile(AST *ex, AST *block);
     void setAsBreak();
-    // This setAsBlock allows for any type of node to be added to a block.
     void setAsBlock(AST *node);
     void setAsFunctionStatement(AST *functionCall);
     void setAsEmptyBlock();

@@ -51,8 +51,8 @@ int Driver::start() {
 
     // if parsing didn't yield an error, then print the tree
     if (rV == 0) {
-        checker = new Semantic();
-        checker->setRoot(tree);
+        checker = new Semantic(tree);
+        // checker->setRoot(tree);
         tree->print(0);
         std::cout << "\n\n\n" << std::endl;
         std::cout << "checking tree..." << std::endl;
