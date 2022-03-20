@@ -19,14 +19,14 @@ bool Semantic::globalCheck_callback(AST *node){
                 break;
             }
             case function: {
-                AST *funcDecl = node->getChildren()[0]->getChildren()[0];
+                AST *funcDecl = node->getChildren()[0]; // ->getChildren()[0]
                 std::string name = funcDecl->getChildren()[0]->getName();
                 if(tables[0].find(name) != tables[0].end()){
                     std::cerr << "Duplicate function of name \"" << name << "\" being declared." << std::endl;
                     return false;
                 }
                 
-                symEntry *entry = new symEntry( node->getChildren()[0]->getTheVar());
+                symEntry *entry = new symEntry( node->getTheVar());
                 entry->isFunc = true;
                 for(int i = 1; i < funcDecl->getChildren().size(); i++){
                     entry->addParam(funcDecl->getChildren()[i]->getTheVar());
@@ -249,8 +249,24 @@ bool Semantic::miscCheckPre(AST* node){
                 return false;
             }
             break;
+        case returnStmt:
+            break;
         default:
             ;
+        }
+    }else if(node->theNode == declaration){
+        if(node->theDeclType == function ){
+            // Note that main() doesn't have a header, but other functions do. 
+            funcRetType = node->getTheVar();
+            
+            if(funcRetType == var_VOID){
+                returnSatisfied = true;
+            }else{
+                returnSatisfied = false;
+            }
+        }else if(node->theDeclType == mainFunction){
+            funcRetType = var_VOID;
+            returnSatisfied = true;
         }
     }
     return true;
@@ -262,8 +278,32 @@ bool Semantic::miscCheckPost(AST* node){
         case whileStmt:
             currLoopCount--;
             break;
+        case returnStmt:
+            returnSatisfied = true;
+            if(node->getChildren().size() > 0){
+                // There is something being returned.
+                if(node->getFirstChild()->getTheVar() != funcRetType){
+                    std::cerr << "Error on line " << node->getLine() << ": Improper return type." << std::endl;
+                    return false;
+                }
+            }else{
+                // There is no return value
+                if(funcRetType != var_VOID){
+                    std::cout << "Error on line " << node->getLine() << ": No return value specified." <<std::endl;
+                    return false;
+                }
+            }
+            // check if it's appropriate. if it is, reset retType to not_var.
+            break;
         default:
             ;
+        }
+    }else if(node->theNode == declaration){
+        if(node->theDeclType == function){
+            if(!returnSatisfied){
+                std::cerr << "Error on line " << node->getLine() << ": No return statement on non-void function." << std::endl;
+                return false;
+            }
         }
     }
     return true;

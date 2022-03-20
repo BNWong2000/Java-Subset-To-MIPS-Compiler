@@ -175,8 +175,10 @@ identifier              : ID                                        {$$ = new AS
                                                                      $$->setAsIdentifier($1->c_str());}
                         ;
 
-functiondeclaration     : functionheader block                      {$$ = new AST(@$.begin.line);
-                                                                     $$->setAsFunction($1, $2);
+functiondeclaration     : functionheader block                      {$$ = $1;
+                                                                     $$->setAsFunction($2);
+                                                                     //$$ = new AST(@$.begin.line);
+                                                                     //$$->setAsFunction($1, $2);
                                                                     }
                         ;
 

@@ -39,6 +39,8 @@ private:
     AST *root;
     int depth;
     int currLoopCount;
+    Variables funcRetType;
+    bool returnSatisfied; 
 
     // void preOrder(AST *curr, void (Semantic::*callback)(AST *));
 
@@ -61,6 +63,8 @@ public:
         depth = 1;
         currLoopCount = 0;
         root = myRoot;
+        funcRetType = not_var;
+        returnSatisfied = true;
     };
     ~Semantic(){};
     void setRoot(AST *myRoot){root = myRoot;};
@@ -80,9 +84,9 @@ public:
 // The main function can't be called. ***Done***
 // Break statements must be inside a while statement. ***Done***
 // Type mismatch for an operator (||, &&, ==, !=, =, <, >, <=, >=, +, - (unary and binary), *, /, %, !). ***Done***
-// No return statement in a non-void function.
-// A void function can't return a value.
-// A non-void function must return a value. 
+// No return statement in a non-void function. ***Done***
+// A void function can't return a value. ***Done***
+// A non-void function must return a value. ***Done***
 // A value returned from a function has the wrong type. ***Done***
 // An if- or while-condition must be of Boolean type. ***Done***
 // An identifier is redefined within the same scope. ***Done***

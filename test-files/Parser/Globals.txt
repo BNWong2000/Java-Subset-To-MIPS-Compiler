@@ -1,6 +1,10 @@
 int i;
 boolean k;
 
+int assss(){
+    return 1;
+}
+
 main(){
     i = 10;
     k = false;
@@ -10,7 +14,7 @@ main(){
     i = i + l * (i / i) + 2;
     if(k && true || k){
         {}
-        return;
+        
     }
     while( true == true){
         break;
@@ -29,26 +33,29 @@ main(){
     //foo(bar, 1,2,k);
     i = bar(k) + 1;
     i = bar(true);
-    
-    
+    return;
+
 }
+
 
 void foo(int i, int j, int k, boolean booo){    
     i = j = k = 10;
     int bar;
     booo = true;
     int main;
+    return ;
 }
 
 int bar(boolean a){
-    return 1;
+    return true;
+    return assss();
 }
 
 
 void _thing(){
     int i;
     while(true){
-	break;
+	    break;
     }
 
 }

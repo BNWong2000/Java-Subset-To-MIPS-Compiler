@@ -574,12 +574,31 @@ void AST::setAsFunctionCall(AST *id, AST *args){
 void AST::printDeclWithoutChildren() {
     // Prints out the type and any other necessary details
     switch(theDeclType){
-        case declarator:
-            std::cout << "Function Declarator {";
+        case declarator: {
+            std::cout << "Function Declarator { Return type: ";
             break;
+        }
         case function:
-            std::cout << "Function {";
+        {
+            std::cout << "Function { Return Type: ";
+            switch(theVar){
+                case var_BOOL:
+                    std::cout << "Boolean,";
+                    break;
+                case var_INT:
+                    std::cout << "Integer,";
+                    break;
+                case var_STRING:
+                    std::cout << "String,";
+                    break;
+                case var_VOID:
+                    std::cout << "Void,";
+                    break;
+                default:
+                    std::cerr << "Error: illegal Type" << std::endl;
+            }
             break;
+        }
         case mainFunction:
             std::cout << "Main Function {";
             break;
@@ -709,9 +728,26 @@ void AST::printDecl(int indentLvl) {
         case declarator:
             std::cout << "Function Declarator {";
             break;
-        case function:
-            std::cout << "Function {";
+        case function: {
+            std::cout << "Function { Return Type: ";
+            switch(theVar){
+                case var_BOOL:
+                    std::cout << "Boolean,";
+                    break;
+                case var_INT:
+                    std::cout << "Integer,";
+                    break;
+                case var_STRING:
+                    std::cout << "String,";
+                    break;
+                case var_VOID:
+                    std::cout << "Void,";
+                    break;
+                default:
+                    std::cerr << "Error: illegal Type" << std::endl;
+            }
             break;
+        }
         case mainFunction:
             std::cout << "Main Function {";
             break;
@@ -846,9 +882,8 @@ void AST::setAsDeclarator(AST *id, AST *params){
     theDeclType = declarator;
 };
 
-void AST::setAsFunction(AST *dec, AST *block){
+void AST::setAsFunction(AST *block){
     theNode = declaration;
-    addChild(dec);
     addChild(block);
     theDeclType = function;
 };

@@ -253,7 +253,8 @@ public:
     // They set the type, and add any mandatory children
     void setAsDeclarator(AST *id);
     void setAsDeclarator(AST *id, AST *params);
-    void setAsFunction(AST *dec, AST *block);
+    //void setAsFunction(AST *dec, AST *block);
+    void setAsFunction(AST *block);
     void setAsMainFunction(AST *dec, AST *block);
     void setAsFunctionHeader(AST *dec, Variables varType);
     void setAsVariable(AST *id, Variables varType);
