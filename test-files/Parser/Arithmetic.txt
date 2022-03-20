@@ -19,6 +19,11 @@ boolean is_prime(int n)
   return true;
 }
 
+int sqrt(int n)
+{
+    return n;
+}
+
 
 main(){
     int i;
@@ -36,19 +41,24 @@ main(){
     sdfemvb = 223;
 
     if(is_prime(i)){
-        print(i, "is a prime");
+        printi(i);
+        prints("is a prime");
     }
     if(is_prime(j)){
-        print(j, "is a prime");
+        printi(j);
+        prints("is a prime");
     }
     if(is_prime(k)){
-        print(k, "is a prime");
+        printi(k);
+        prints("is a prime");
     }
     if(is_prime(y)){
-        print(y, "is a prime");
+        printi(y);
+        prints("is a prime");
     }
     if(is_prime(sdfemvb)){
-        print(sdfemvb, "is a prime");
+        printi(sdfemvb);
+        prints("is a prime");
     }
 
 }

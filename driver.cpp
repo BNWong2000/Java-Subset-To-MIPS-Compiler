@@ -13,11 +13,11 @@ int Driver::getToken(JCC::Parser::semantic_type *yylval, JCC::Parser::location_t
 {
     int token = lexer->yylex(yylval, location);
     if(token == JCC::Parser::token::T_ERR){
-        std::cout << " ERROR" << std::endl;
+        std::cerr << " ERROR" << std::endl;
     }
     // std::cout << "lexing" << std::endl;
     if(token == JCC::Parser::token::T_WARN){
-        std::cout << " warning " << std::endl;
+        std::cerr << " warning " << std::endl;
     }
     return token;
 }
@@ -90,9 +90,9 @@ int Driver::start() {
 
         // put a marker at the character where the error occurs. 
         for(int i = 1; i < errorCol; i++){
-            std::cout << " ";
+            std::cerr << " ";
         }
-        std::cout << "^" << std::endl;
+        std::cerr << "^" << std::endl;
     }
     return rV;
 }

@@ -297,7 +297,7 @@ bool Semantic::miscCheckPost(AST* node){
             }else{
                 // There is no return value
                 if(funcRetType != var_VOID){
-                    std::cout << "Error on line " << node->getLine() << ": No return value specified." <<std::endl;
+                    std::cerr << "Error on line " << node->getLine() << ": No return value specified." <<std::endl;
                     return false;
                 }
             }
