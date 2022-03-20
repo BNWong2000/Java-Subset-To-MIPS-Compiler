@@ -69,6 +69,7 @@ bool Semantic::idCheckPre(AST *node){
     // check for block. if there is one, push onto stack. 
     // if it's not a stack, check for vars and add them onto symbol table for top of stack.
     if(node->theNode == statement && node->theStmtType == blockStmt){
+        
         depth++;
     }
     if(node->theNode == declaration && node->theDeclType == function){
@@ -80,8 +81,9 @@ bool Semantic::idCheckPre(AST *node){
         if(node->theDeclType == variable || node->theDeclType == parameter){
             std::string name = node->getFirstChild()->getName();
             if(depth >= 4){
-                // This indicates a nested block within a function
+                // This indicates a nested block.
                 std::cerr << "ERROR: local declaration of \"" << name << "\" is not in outermost block at line " << node->getLine() << std::endl;  
+                return false;
             }
             // variable
             std::unordered_map<std::string, SymEntry *> &top = tables[scopeStack.back()];
