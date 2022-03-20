@@ -7,7 +7,6 @@ bool Semantic::globalCheck_callback(AST *node){
         
         switch(node->theDeclType){
             case mainFunction: {
-
                 // Check if the main function has previously been declared. 
                 std::string name = node->getChildren()[0]->getChildren()[0]->getName();
                 if(tables[0].find(name) != tables[0].end()){
@@ -146,7 +145,12 @@ bool Semantic::typeCheck(AST *node){
                     // so that a function name can't be used as an identifier.
                 break;
             case functionCall: {
-                symEntry *lookup = tables[0][node->getFirstChild()->getName()];
+                std::string name = node->getFirstChild()->getName();
+                if(name.compare("main") == 0){
+                    std::cerr << "Error on line " << node->getLine() << ": cannot call main function" << std::endl;
+                    return false;
+                }
+                symEntry *lookup = tables[0][name];
                 node->setTheVar(lookup->type);
                 if((node->getChildren().size()-1) != lookup->params.size()){
                     std::cerr << "Function call on line " << node->getLine() << " has a different number of parameters than the function requires." << std::endl;
@@ -233,6 +237,14 @@ bool Semantic::typeCheck(AST *node){
     return true;
 }
 
+bool Semantic::miscCheckPre(AST* node){
+    return true;
+}
+
+bool Semantic::miscCheckPost(AST* node){
+    return true;
+}
+
 bool preOrder(AST *curr, bool (Semantic::*callback)(AST*), Semantic *semantic){
     if(!(semantic->*callback)(curr)){
         return false;
@@ -297,6 +309,13 @@ bool Semantic::checkTypes(){
     return true;
 }
 
+bool Semantic::checkMisc(){
+    if(!prePostOrder(root, &Semantic::miscCheckPre, &Semantic::miscCheckPost, this)){
+        return false;
+    }
+    return true;
+}
+
 bool Semantic::checkTree(){
     std::cout << "checking globals..." << std::endl;
     if(!checkGlobals()){
@@ -310,6 +329,10 @@ bool Semantic::checkTree(){
     if(!checkTypes()){
         return false;
     }
-
+    std::cout << "Checking the rest..." << std::endl;
+    if(!checkMisc()){
+        return false;
+    }
+    std::cout << "Semantically correct." << std::endl;
     return true;
 }

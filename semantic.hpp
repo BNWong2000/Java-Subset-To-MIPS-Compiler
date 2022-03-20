@@ -6,7 +6,6 @@
 #include "ast.hpp"
 #include <unordered_map>
 #include <string>
-#include <deque>
 #include <vector>
 
 class symEntry {
@@ -50,6 +49,8 @@ private:
     bool idCheckPre(AST *node);
     bool idCheckPost(AST *node);
     bool typeCheck(AST *node);
+    bool miscCheckPre(AST *node);
+    bool miscCheckPost(AST *node);
 
 public:
     Semantic(AST *myRoot){
@@ -66,6 +67,7 @@ public:
     bool checkGlobals();
     bool checkIds();
     bool checkTypes();
+    bool checkMisc();
 
 };
 
@@ -73,12 +75,12 @@ public:
 // Multiple main declarations found. ***Done (sorta)***
 // A local declaration was not in an outermost block. ***Done***
 // The number/type of arguments in a function call doesn't match the function's declaration. ***Done***
-// The main function can't be called. 
+// The main function can't be called. ***Done***
 // Break statements must be inside a while statement.
 // Type mismatch for an operator (||, &&, ==, !=, =, <, >, <=, >=, +, - (unary and binary), *, /, %, !). ***Done***
 // No return statement in a non-void function.
 // A void function can't return a value.
-// A non-void function must return a value. Note that you're only checking for the existence of an appropriate return statement at the semantic checking stage, not whether it's actually executed.
+// A non-void function must return a value. 
 // A value returned from a function has the wrong type. ***Done***
 // An if- or while-condition must be of Boolean type. ***Done***
 // An identifier is redefined within the same scope. ***Done***

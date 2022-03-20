@@ -21,16 +21,19 @@ main(){
         ;
     }
     _thing();
-    k = bar(!true);
+    i = bar(!true);
     foo(bar(true),1,1,k);
     //foo(bar, 1,2,k);
     i = bar(k) + 1;
     i = bar(true);
+    
 }
 
 void foo(int i, int j, int k, boolean booo){    
     i = j = k = 10;
+    int bar;
     booo = true;
+    int main;
 }
 
 int bar(boolean a){
