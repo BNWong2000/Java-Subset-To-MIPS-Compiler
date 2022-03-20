@@ -9,7 +9,7 @@ bool Semantic::globalCheck_callback(AST *node){
                 // Check if the main function has previously been declared. 
                 std::string name = node->getChildren()[0]->getChildren()[0]->getName();
                 if(tables[1].find(name) != tables[1].end()){
-                    std::cerr << "main function already exists!" << std::endl;
+                    std::cerr << "Error on line " << node->getLine() <<": main function already exists" << std::endl;
                     return false;
                 }
                 SymEntry *temp = new SymEntry();
@@ -21,7 +21,7 @@ bool Semantic::globalCheck_callback(AST *node){
                 AST *funcDecl = node->getChildren()[0]; // ->getChildren()[0]
                 std::string name = funcDecl->getChildren()[0]->getName();
                 if(tables[1].find(name) != tables[1].end()){
-                    std::cerr << "Duplicate function of name \"" << name << "\" being declared." << std::endl;
+                    std::cerr << "Error on line " << node->getLine() << ": duplicate function of name \"" << name << "\" being declared." << std::endl;
                     return false;
                 }
                 
@@ -36,7 +36,7 @@ bool Semantic::globalCheck_callback(AST *node){
             case globalVariable: {
                 std::string name = node->getChildren()[0]->getName();
                 if(tables[1].find(name) != tables[1].end()){
-                    std::cerr << "Duplicate global variable \"" << name << "\" being declared." << std::endl;
+                    std::cerr << "Error on line " << node->getLine() << ": duplicate global variable \"" << name << "\" being declared." << std::endl;
                     return false;
                 }
                 SymEntry *entry = new SymEntry(node->getTheVar());
@@ -82,7 +82,7 @@ bool Semantic::idCheckPre(AST *node){
             std::string name = node->getFirstChild()->getName();
             if(depth >= 4){
                 // This indicates a nested block.
-                std::cerr << "ERROR: local declaration of \"" << name << "\" is not in outermost block at line " << node->getLine() << std::endl;  
+                std::cerr << "Error on line " << node->getLine() << ": local declaration of \"" << name << "\" is not in outermost block at line " << node->getLine() << std::endl;  
                 return false;
             }
             // variable
@@ -94,7 +94,7 @@ bool Semantic::idCheckPre(AST *node){
                 top.insert({name, entry});
             }else{
                 // error
-                std::cerr <<"Line: " << node->getLine() << " Error: an Identifier with name \"" << name << "\" already exists in this scope. " << std::endl;
+                std::cerr << "Error on line " << node->getLine() << ": identifier \"" << name << "\" already exists in this scope. " << std::endl;
                 return false;
             }
         }
@@ -114,7 +114,7 @@ bool Semantic::idCheckPre(AST *node){
         }
 
         if(!found){
-            std::cerr <<"Line: " << node->getLine() << " Error: identifier \"" << name << "\" has not yet been declared. " << std::endl;
+            std::cerr << "Error on line " << node->getLine() << ": identifier \"" << name << "\" has not yet been declared. " << std::endl;
             return false;
         }
 
@@ -161,13 +161,13 @@ bool Semantic::typeCheck(AST *node){
                 node->setTableEntry(lookup);
                 node->setTheVar(lookup->type);
                 if((node->getChildren().size()-1) != lookup->params.size()){
-                    std::cerr << "Function call on line " << node->getLine() << " has a different number of parameters than the function requires." << std::endl;
+                    std::cerr << "Error on line " << node->getLine() << ": function call \"" << name << "\" has a different number of parameters than the function requires." << std::endl;
                     return false;
                 }
                 for(int i = 1; i < node->getChildren().size(); i++){
                     if(node->getChildren()[i]->getTheVar() != lookup->params[i-1]){
-                        std::cerr << "Function call on line " << node->getLine() 
-                        << " has one or more parameter type mismatches." << std::endl;
+                        std::cerr << "Error on line " << node->getLine() << ": function call \"" << name 
+                        << "\" has one or more parameter type mismatches." << std::endl;
                         return false;
                     }
                 }
@@ -361,7 +361,7 @@ bool Semantic::checkGlobals(){
         return false;
     }
     if(tables[1].find("main") == tables[1].end()){
-        std::cerr << "ERROR: no main function found" << std::endl;
+        std::cerr << "Error: no main function found" << std::endl;
         return false;
     }
     return true;
