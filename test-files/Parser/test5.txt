@@ -1,0 +1,10 @@
+f(){
+    int x;
+}
+
+int func() {
+    int x;
+    return x;
+}
+
+main(){}
