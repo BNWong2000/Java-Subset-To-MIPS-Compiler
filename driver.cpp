@@ -51,16 +51,16 @@ int Driver::start() {
 
     // if parsing didn't yield an error, then print the tree
     if (rV == 0) {
-        checker = new Semantic(tree);
-        // checker->setRoot(tree);
-        tree->print(0);
-        std::cout << "\n\n\n" << std::endl;
-        std::cout << "checking tree..." << std::endl;
-        bool good = checker->checkTree();
+        // checker = new Semantic(tree);
+        // std::cout << "checking tree..." << std::endl;
+        // bool good = checker->checkTree();
+        
+        bool good = tree->checkSemantics();
         if(!good){
-            std::cerr << "Semantic Error detected. Terminating......" << std::endl;
+            std::cerr << "Semantic Error detected. Terminating..." << std::endl;
             return 1;
         }
+        tree->print(0);
         
         
     } else {

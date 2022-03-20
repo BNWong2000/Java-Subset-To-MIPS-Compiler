@@ -3,6 +3,7 @@
 #include <vector>
 
 #include "ast.hpp"
+#include "semantic.hpp"
 
 
 void AST::printProg(int indentLvl) {
@@ -15,10 +16,6 @@ void AST::printProg(int indentLvl) {
     for(auto child : children){
         child->print(indentLvl + 1);
     }
-};
-
-void AST::printProgWithoutChildren(){
-    std::cout << "{ Program: " << fileName << " }" << std::endl;
 };
 
 void AST::addChild(AST *child){
@@ -86,47 +83,6 @@ void AST::printStmt(int indentLvl) {
     for(auto child : children){
         child->print(indentLvl + 1);
     }
-};
-
-void AST::printStmtWithoutChildren(){
-    // prints out the type
-    switch (theStmtType){
-        case ifStmt:
-            std::cout << "If statement";
-            break;
-        case ifElseStmt:
-            std::cout << "If-else statement";
-            break;
-        case assignment:
-            std::cout << "Assignment";
-            break;
-        case nullType:
-            std::cout << "Null statement";
-            break;
-        case returnStmt:
-            std::cout << "Return statement";
-            break;
-        case whileStmt:
-            std::cout << "While statement";
-            break;
-        case breakStmt:
-            std::cout << "Break statement";
-            break;
-        case blockStmt:
-            std::cout << "Block";
-            break;
-        case funcCallStmt:
-            std::cout << "Function call";
-            break;
-        case emptyBlockStmt:
-            std::cout << "Empty block";
-            break;
-        default:
-        ;
-    } 
-
-    // prints out the line number
-    std::cout << " { line: " << lineNo << " }" << std::endl;
 };
 
 
@@ -201,137 +157,6 @@ void AST::setAsEmptyBlock(){
 
 //-------------------------------------------------
 
-
-void AST::printExprWithoutChildren() {
-    // Prints out the type, and, if necessary, other details
-    switch (theExprType){
-        case identifier:
-            std::cout << "Identifier { Name: " << "\"" << name << "\",";
-            break;
-        case number:
-            std::cout << "number { Value: " << num << ",";
-            break;
-        case stringLit:
-            {
-                std::cout << "String Literal { Value: ";
-                auto nullChar = name.find('\0');
-                if(nullChar != std::string::npos){
-                    std::cout << name.substr(0, (int) nullChar) << "\\x00" << name.substr(((int) nullChar) + 1, name.size()-((int) nullChar));
-                }else{
-                    std::cout << name;
-                }
-                std::cout << ",";
-                break;
-            }
-        case boolLit:
-            {std::string boolVal;
-            boolVal = num == 1 ? "True" : "False";
-            std::cout << "Boolean Literal { Value: " << boolVal << ",";
-            break;}
-        case unary:
-            {
-                std::cout << "Unary { Operator: ";
-                switch(theOp){
-                    case op_SUB:
-                        std::cout << "\'-\',";
-                        break;
-                    case op_NOT:
-                        std::cout << "\'!\',";
-                        break;
-                    default:
-                        break;
-                }
-                break;
-            }
-        case relational:
-            {
-                std::cout << "Relation { Operator: ";
-                switch(theOp){  
-                    case op_LT:
-                        std::cout << "\'<\',";
-                        break;
-                    case op_GT:
-                        std::cout << "\'>\',";
-                        break;
-                    case op_GE:
-                        std::cout << "\'>=\',";
-                        break;
-                    case op_LE:
-                        std::cout << "\'<=\',";
-                        break;
-                    default:
-                        break;
-                }
-                break;
-            }
-        case equality:
-            {
-                std::cout << "Equality { Operator: ";
-                switch(theOp){
-                    case op_EQ:
-                        std::cout << "\'==\',";
-                        break;
-                    case op_NEQ:
-                        std::cout << "\'!=\',";
-                        break;
-                    default:
-                        break;
-                }
-                break;
-            }
-        case conditional:
-            {
-                std::cout << "Conditional { Operator: ";
-                switch(theOp){
-                    case op_AND:
-                        std::cout << "\'&&\',";
-                        break;
-                    case op_OR:
-                        std::cout << "\'||\',";
-                        break;
-                    default:
-                        break;
-                }
-                break;
-            }
-        case arithmetic:
-            {
-                std::cout << "Arithmetic { Operator: ";
-                switch(theOp){
-                    case op_ADD:
-                        std::cout << "\'+\',";
-                        break;
-                    case op_SUB:
-                        std::cout << "\'-\',";
-                        break;
-                    case op_MULT:
-                        std::cout << "\'*\',";
-                        break;
-                    case op_DIV:
-                        std::cout << "\'/\',";
-                        break;
-                    case op_MOD:
-                        std::cout << "\'%\',";
-                        break;
-                    default:
-                        break;
-                }
-                break;
-            }
-        case functionCall:
-            std::cout << "Function Call {" ;
-            break;
-        // case assignExpr:
-        //     std::cout << "Assignment Expression {";
-        //     break;
-        default:
-            break;
-    }
-
-    // Prints out the line number
-    std::cout << " line: " << lineNo << " }" << std::endl;
-};
-
 void AST::printExpr(int indentLvl) {
     // Formats the spacing of the tree properly
     if(indentLvl > 0){
@@ -344,7 +169,7 @@ void AST::printExpr(int indentLvl) {
     // Prints out the type, and, if necessary, other details
     switch (theExprType){
         case identifier:
-            std::cout << "Identifier { Name: " << "\"" << name << "\",";
+            std::cout << "Identifier { Name: " << "\"" << name << "\", Sym: <" << tableEntry << ">, Sig: \"" << tableEntry->getSig() << "\",";
             break;
         case number:
             std::cout << "number { Value: " << num << ",";
@@ -457,7 +282,7 @@ void AST::printExpr(int indentLvl) {
                 break;
             }
         case functionCall:
-            std::cout << "Function Call {" ;
+            std::cout << "Function Call { Sig: " << tableEntry->getRV() << "," ;
             break;
         // case assignExpr:
         //     std::cout << "Assignment Expression {";
@@ -570,150 +395,6 @@ void AST::setAsFunctionCall(AST *id, AST *args){
 // };
 
 //-------------------------------------------------
-
-void AST::printDeclWithoutChildren() {
-    // Prints out the type and any other necessary details
-    switch(theDeclType){
-        case declarator: {
-            std::cout << "Function Declarator { Return type: ";
-            break;
-        }
-        case function:
-        {
-            std::cout << "Function { Return Type: ";
-            switch(theVar){
-                case var_BOOL:
-                    std::cout << "Boolean,";
-                    break;
-                case var_INT:
-                    std::cout << "Integer,";
-                    break;
-                case var_STRING:
-                    std::cout << "String,";
-                    break;
-                case var_VOID:
-                    std::cout << "Void,";
-                    break;
-                default:
-                    std::cerr << "Error: illegal Type" << std::endl;
-            }
-            break;
-        }
-        case mainFunction:
-            std::cout << "Main Function {";
-            break;
-        case functionHeader:
-            {
-                std::cout << "Function Header { Return type: ";
-                switch(theVar){
-                    case var_BOOL:
-                        std::cout << "Boolean,";
-                        break;
-                    case var_INT:
-                        std::cout << "Integer,";
-                        break;
-                    case var_STRING:
-                        std::cout << "String,";
-                        break;
-                    case var_VOID:
-                        std::cout << "Void,";
-                        break;
-                    default:
-                        std::cerr << "Error: illegal Type" << std::endl;
-                }
-                break;
-            }
-        case variable:
-            {
-                std::cout << "Variable { Type: ";
-            switch(theVar){
-                case var_BOOL:
-                    std::cout << "Boolean,";
-                    break;
-                case var_INT:
-                    std::cout << "Integer,";
-                    break;
-                case var_STRING:
-                    std::cout << "String,";
-                    break;
-                case var_VOID:
-                    std::cout << "Void,";
-                    break;
-                default:
-                    std::cerr << "Error: illegal Type" << std::endl;
-            }
-            break;
-        }
-        case globalVariable:
-            {
-                std::cout << "Global variable { Type: ";
-                switch(theVar){
-                    case var_BOOL:
-                        std::cout << "Boolean,";
-                        break;
-                    case var_INT:
-                        std::cout << "Integer,";
-                        break;
-                    case var_STRING:
-                        std::cout << "String,";
-                        break;
-                    case var_VOID:
-                        std::cout << "Void,";
-                        break;
-                    default:
-                        std::cerr << "Error: illegal Type" << std::endl;
-                }
-                break;
-            }
-        case parameter:
-            {
-                std::cout << "Parameter { Type: ";
-                switch(theVar){
-                    case var_BOOL:
-                        std::cout << "Boolean,";
-                        break;
-                    case var_INT:
-                        std::cout << "Integer,";
-                        break;
-                    case var_STRING:
-                        std::cout << "String,";
-                        break;
-                    case var_VOID:
-                        std::cout << "Void,";
-                        break;
-                    default:
-                        std::cerr << "Error: illegal Type" << std::endl;
-                }
-                break;
-            }
-        case typeDecl:
-            {
-                std::cout << "Type Declaration { Type: ";
-                switch(theVar){
-                    case var_BOOL:
-                        std::cout << "Boolean,";
-                        break;
-                    case var_INT:
-                        std::cout << "Integer,";
-                        break;
-                    case var_STRING:
-                        std::cout << "String,";
-                        break;
-                    case var_VOID:
-                        std::cout << "Void,";
-                        break;
-                    default:
-                        std::cerr << "Error: illegal Type" << std::endl;
-                }
-                break;
-            }
-        default:
-        ;
-    }
-
-    // prints out the line number
-    std::cout << " line: " << lineNo << " }" << std::endl;
-};
 
 void AST::printDecl(int indentLvl) {
     // Ensures proper spacing when printing. 
@@ -943,20 +624,11 @@ void AST::print(int indentLvl){
     };
 }
 
-void AST::printWithoutChildren(){
-    switch (theNode){
-        case prog:
-            printProgWithoutChildren();
-            break;
-        case statement:
-            printStmtWithoutChildren();
-            break;
-        case expression:
-            printExprWithoutChildren();
-            break;
-        case declaration:
-            printDeclWithoutChildren();
-            break;
-    };
+//-------------------------------------------------
+
+bool AST::checkSemantics(){
+    return analyzer->checkTree();
 }
+
+AST::AST(std::string name) : fileName(name) {theNode = prog; analyzer = new Semantic(this);};
 

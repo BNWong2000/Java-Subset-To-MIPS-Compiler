@@ -47,7 +47,6 @@ void foo(int i, int j, int k, boolean booo){
 }
 
 int bar(boolean a){
-    return true;
     return assss();
 }
 

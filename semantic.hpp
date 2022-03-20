@@ -3,24 +3,50 @@
 #ifndef SEMANTIC_HPP
 #define SEMANTIC_HPP
 
-#include "ast.hpp"
 #include <unordered_map>
 #include <string>
 #include <vector>
+#include "ast.hpp"
 
-class symEntry {
+class AST;
+
+class SymEntry {
 public:
     Variables type;
     std::vector<Variables> params;
     bool isFunc;
 
-    symEntry(){}
-    symEntry(Variables var){
+    SymEntry(){}
+    SymEntry(Variables var){
         type = var;
     }
 
     void addParam(Variables var){
         params.push_back(var);
+    }
+
+    std::string getSig(){
+        std::string result = "";
+        
+        if(isFunc){
+            
+            result += "f(";
+            
+            if(params.size() > 0){
+                result += varToString(params[0]);
+                for(int i = 1; i < params.size(); i++){
+                    result += ", " + varToString(params[i]);
+                }
+            }
+            result += ")";
+        }else{
+            return varToString(type);
+        }
+        return result;
+    }
+
+    std::string getRV(){
+        return varToString(type);
     }
 
 };
@@ -30,7 +56,7 @@ private:
     // std::unordered_map<std::string, std::string> symbolTable;
 
     // Vector which stores all the symbol tables for each scope
-    std::vector <std::unordered_map<std::string, symEntry *>> tables;
+    std::vector <std::unordered_map<std::string, SymEntry *>> tables;
 
     // Stack which is used to manage scope (contains index of symbols tables for each scope)
     // These are indices of 'tables' which are pushed and popped, from the stack
@@ -57,7 +83,7 @@ private:
 
 public:
     Semantic(AST *myRoot){
-        std::unordered_map<std::string, symEntry *> globalTable;
+        std::unordered_map<std::string, SymEntry *> globalTable;
         tables.push_back(globalTable);
         scopeStack.push_back(0);
         depth = 1;

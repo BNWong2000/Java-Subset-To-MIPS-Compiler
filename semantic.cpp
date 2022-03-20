@@ -1,7 +1,6 @@
 #include "semantic.hpp"
 
 
-
 bool Semantic::globalCheck_callback(AST *node){
     if(node->theNode == declaration){
         
@@ -13,7 +12,7 @@ bool Semantic::globalCheck_callback(AST *node){
                     std::cerr << "main function already exists!" << std::endl;
                     return false;
                 }
-                symEntry *temp = new symEntry();
+                SymEntry *temp = new SymEntry();
                 temp->isFunc = true;
                 tables[0].insert({name, temp});
                 break;
@@ -26,7 +25,7 @@ bool Semantic::globalCheck_callback(AST *node){
                     return false;
                 }
                 
-                symEntry *entry = new symEntry( node->getTheVar());
+                SymEntry *entry = new SymEntry( node->getTheVar());
                 entry->isFunc = true;
                 for(int i = 1; i < funcDecl->getChildren().size(); i++){
                     entry->addParam(funcDecl->getChildren()[i]->getTheVar());
@@ -40,7 +39,7 @@ bool Semantic::globalCheck_callback(AST *node){
                     std::cerr << "Duplicate global variable \"" << name << "\" being declared." << std::endl;
                     return false;
                 }
-                symEntry *entry = new symEntry(node->getTheVar());
+                SymEntry *entry = new SymEntry(node->getTheVar());
                 entry->isFunc = false;
                 
                 tables[0].insert({name, entry});
@@ -74,7 +73,7 @@ bool Semantic::idCheckPre(AST *node){
     }
     if(node->theNode == declaration && node->theDeclType == function){
         // function or main declaration (both have declarator children)
-        std::unordered_map<std::string, symEntry *> currScope;
+        std::unordered_map<std::string, SymEntry *> currScope;
         scopeStack.push_back(tables.size());
         tables.push_back(currScope); 
     }else if(node->theNode == declaration){
@@ -85,10 +84,10 @@ bool Semantic::idCheckPre(AST *node){
                 std::cerr << "ERROR: local declaration of \"" << name << "\" is not in outermost block at line " << node->getLine() << std::endl;  
             }
             // variable
-            std::unordered_map<std::string, symEntry *> &top = tables[scopeStack.back()];
+            std::unordered_map<std::string, SymEntry *> &top = tables[scopeStack.back()];
             if(top.find(name) == top.end()){ 
                 // not inside of the top scope
-                symEntry *entry = new symEntry(node->getTheVar());
+                SymEntry *entry = new SymEntry(node->getTheVar());
                 entry->isFunc = false;
                 top.insert({name, entry});
             }else{
@@ -107,7 +106,7 @@ bool Semantic::idCheckPre(AST *node){
             int currInd = scopeStack[i];
             if(tables[currInd].find(name) != tables[currInd].end()){
                 found = true;
-                node->setTableEntry(currInd);
+                node->setTableEntry(tables[currInd][name]);
                 break;
             }
         }
@@ -138,8 +137,8 @@ bool Semantic::typeCheck(AST *node){
     if(node->theNode == expression){
         switch (node->theExprType){
             case identifier:
-                if(!tables[node->getTableEntry()][node->getName()]->isFunc)
-                    node->setTheVar(tables[node->getTableEntry()][node->getName()]->type);
+                if(!node->getTableEntry()->isFunc)
+                    node->setTheVar(node->getTableEntry()->type);
                 else
                     node->setTheVar(not_var); // assign it to this for functions
                     // so that a function name can't be used as an identifier.
@@ -150,7 +149,8 @@ bool Semantic::typeCheck(AST *node){
                     std::cerr << "Error on line " << node->getLine() << ": cannot call main function" << std::endl;
                     return false;
                 }
-                symEntry *lookup = tables[0][name];
+                SymEntry *lookup = tables[0][name];
+                node->setTableEntry(lookup);
                 node->setTheVar(lookup->type);
                 if((node->getChildren().size()-1) != lookup->params.size()){
                     std::cerr << "Function call on line " << node->getLine() << " has a different number of parameters than the function requires." << std::endl;
@@ -381,22 +381,22 @@ bool Semantic::checkMisc(){
 }
 
 bool Semantic::checkTree(){
-    std::cout << "checking globals..." << std::endl;
+    // std::cout << "checking globals..." << std::endl;
     if(!checkGlobals()){
         return false;
     }
-    std::cout << "checking Identifiers..." << std::endl;
+    // std::cout << "checking Identifiers..." << std::endl;
     if(!checkIds()){
         return false;
     }
-    std::cout << "checking types..." << std::endl;
+    // std::cout << "checking types..." << std::endl;
     if(!checkTypes()){
         return false;
     }
-    std::cout << "Checking the rest..." << std::endl;
+    // std::cout << "Checking the rest..." << std::endl;
     if(!checkMisc()){
         return false;
     }
-    std::cout << "Semantically correct." << std::endl;
+    // std::cout << "Semantically correct." << std::endl;
     return true;
 }

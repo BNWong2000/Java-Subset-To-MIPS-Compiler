@@ -8,6 +8,9 @@
 #include <memory>
 #include <unordered_map>
 
+class Semantic;
+class SymEntry;
+
 // All the arithmetic and logical operators
 enum Operators {
     op_ADD,
@@ -125,9 +128,11 @@ protected:
     // Top level node, which stores the file name.
     std::string fileName;
 
+    Semantic *analyzer;
+
     // index of the 'tables' vector 
     // for this node (if it's an id)
-    int tableEntry;
+    SymEntry *tableEntry;
 
     // Variable to store information on variable types for certain declarations
     Variables theVar;
@@ -143,28 +148,20 @@ protected:
 
     // Line number of the statement, for printing/debugging
     int lineNo;
+
     void printProg (int indentLvl);
-    void printProgWithoutChildren();
-
     void printStmt (int indentLvl);
-    void printStmtWithoutChildren();
-
     void printExpr (int indentLvl);
-    void printExprWithoutChildren();
-
     void printDecl (int indentLvl);
-    void printDeclWithoutChildren();
-
 
 public:
     NodeType theNode;
     Stmt theStmtType;
     Expr theExprType;
     Decl theDeclType;
-
     Variables getTheVar(){return theVar;}
 
-    AST(std::string name) : fileName(name) {theNode = prog;};
+    AST(std::string name);
     AST(int line) : lineNo(line) {}
 
     ~AST()
@@ -202,16 +199,16 @@ public:
         return lineNo;
     }
 
-    int getTableEntry(){
+    SymEntry *getTableEntry(){
         return tableEntry;
     }
 
-    void setTableEntry(int entry){
+    void setTableEntry(SymEntry * entry){
         tableEntry = entry;
     }
-    // Function to print either with or without the children.
+    // Function to print
     void print(int indentLvl);
-    void printWithoutChildren();
+
     Operators getTheOp(){
         return theOp;
     }
@@ -219,6 +216,8 @@ public:
     void setTheVar(Variables var){
         theVar = var;
     }
+
+    bool checkSemantics();
 
     // The following functions are meant to be called after the constructor is called.
     // They set the type, and add any mandatory children
@@ -262,18 +261,11 @@ public:
     void setAsParameter(Variables varType, AST *ex); // type identifier
     void setAsType(Variables varType);
 
-    // Variables getVar()
-    // {
-    //     return theVar;
-    // }
-
-    std::string getName()
-    {
+    std::string getName(){
         return name;
     }
 
-    int getNum()
-    {
+    int getNum(){
         return num;
     }
 
