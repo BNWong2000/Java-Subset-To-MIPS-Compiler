@@ -5,11 +5,14 @@ main(){
     i = 10;
     k = false;
     k = true;
-    if(!k){
+    int l;
+    l = 2;
+    i = i + l * (i / i) + 2;
+    if(k && true || k){
         {}
         return;
     }
-    while(k){
+    while( true == true){
         break;
     }
     if(true){
@@ -18,8 +21,11 @@ main(){
         ;
     }
     _thing();
-    i = bar(!true);
-    foo(1,1,1,k);
+    k = bar(!true);
+    foo(bar(true),1,1,k);
+    //foo(bar, 1,2,k);
+    i = bar(k) + 1;
+    i = bar(true);
 }
 
 void foo(int i, int j, int k, boolean booo){    

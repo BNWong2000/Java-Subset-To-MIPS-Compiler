@@ -9,8 +9,7 @@
 #include <unordered_map>
 
 // All the arithmetic and logical operators
-enum Operators
-{
+enum Operators {
     op_ADD,
     op_SUB,
     op_MULT,
@@ -48,12 +47,12 @@ inline std::string opToString(Operators op){
 }
 
 // Variable types (explicit and implicit)
-enum Variables
-{
+enum Variables {
+    not_var,
     var_INT,
     var_BOOL,
     var_VOID,
-    var_STRING
+    var_STRING,
 };
 
 inline std::string varToString(Variables var){
@@ -67,8 +66,7 @@ inline std::string varToString(Variables var){
 }
 
 // Statement types - to be used to define the type of statement for each class instance
-enum Stmt
-{
+enum Stmt {
     ifStmt,
     ifElseStmt,
     assignment,
@@ -82,8 +80,7 @@ enum Stmt
 };
 
 // Expression types - to be used to define the type of expression for each class instance
-enum Expr
-{
+enum Expr {
     identifier,
     number,
     stringLit,
@@ -98,8 +95,7 @@ enum Expr
 };
 
 // Declaration types - to be used to define the type of declaration for each class instance
-enum Decl
-{
+enum Decl {
     declarator,
     mainFunction,
     function,
@@ -110,8 +106,7 @@ enum Decl
     typeDecl
 };
 
-enum NodeType
-{
+enum NodeType {
     prog,
     statement,
     expression,
@@ -119,8 +114,7 @@ enum NodeType
 };
 
 // Parent class.
-class AST
-{
+class AST {
 protected:
     // A vector for all the children of a node
     std::vector<AST *> children;

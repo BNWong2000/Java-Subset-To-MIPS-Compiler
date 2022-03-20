@@ -15,6 +15,7 @@ bool Semantic::globalCheck_callback(AST *node){
                     return false;
                 }
                 symEntry *temp = new symEntry();
+                temp->isFunc = true;
                 tables[0].insert({name, temp});
                 break;
             }
@@ -27,6 +28,7 @@ bool Semantic::globalCheck_callback(AST *node){
                 }
                 
                 symEntry *entry = new symEntry( node->getChildren()[0]->getTheVar());
+                entry->isFunc = true;
                 for(int i = 1; i < funcDecl->getChildren().size(); i++){
                     entry->addParam(funcDecl->getChildren()[i]->getTheVar());
                 }
@@ -40,6 +42,7 @@ bool Semantic::globalCheck_callback(AST *node){
                     return false;
                 }
                 symEntry *entry = new symEntry(node->getTheVar());
+                entry->isFunc = false;
                 
                 tables[0].insert({name, entry});
                 break;
@@ -49,7 +52,6 @@ bool Semantic::globalCheck_callback(AST *node){
         }
     }
     return true;
-    // node->printWithoutChildren();
 }
 
 /**
@@ -88,6 +90,7 @@ bool Semantic::idCheckPre(AST *node){
             if(top.find(name) == top.end()){ 
                 // not inside of the top scope
                 symEntry *entry = new symEntry(node->getTheVar());
+                entry->isFunc = false;
                 top.insert({name, entry});
             }else{
                 // error
@@ -136,9 +139,13 @@ bool Semantic::typeCheck(AST *node){
     if(node->theNode == expression){
         switch (node->theExprType){
             case identifier:
-                node->setTheVar(tables[node->getTableEntry()][node->getName()]->type);
+                if(!tables[node->getTableEntry()][node->getName()]->isFunc)
+                    node->setTheVar(tables[node->getTableEntry()][node->getName()]->type);
+                else
+                    node->setTheVar(not_var); // assign it to this for functions
+                    // so that a function name can't be used as an identifier.
                 break;
-            case functionCall:{
+            case functionCall: {
                 symEntry *lookup = tables[0][node->getFirstChild()->getName()];
                 node->setTheVar(lookup->type);
                 if((node->getChildren().size()-1) != lookup->params.size()){
@@ -166,12 +173,34 @@ bool Semantic::typeCheck(AST *node){
                 }
                 break;
             case relational:
+                if(node->getFirstChild()->getTheVar() != var_INT || node->getChildren()[1]->getTheVar() != var_INT){
+                    std::cerr << "Error on line " << node->getLine() << ": type mismatch for relational expression." << std::endl;
+                    return false;
+                }
                 break;
-            case equality:
+            case equality: {
+                Variables type = node->getFirstChild()->getTheVar();
+                if(type != var_BOOL && type != var_INT){
+                    std::cerr << "Error on line " << node->getLine() << ": invalid type used in equality expression." << std::endl;
+                    return false;
+                }
+                if(type != node->getChildren()[1]->getTheVar()){
+                    std::cerr << "Error on line " << node->getLine() << ": type mismatch for equality expression." << std::endl;
+                    return false;
+                }
                 break;
+            }
             case conditional:
+                if(node->getFirstChild()->getTheVar() != var_BOOL || node->getChildren()[1]->getTheVar() != var_BOOL){
+                    std::cerr << "Error on line " << node->getLine() << ": type mismatch for conditional expression." << std::endl;
+                    return false;
+                }
                 break;
             case arithmetic:
+                if(node->getFirstChild()->getTheVar() != var_INT || node->getChildren()[1]->getTheVar() != var_INT){
+                    std::cerr << "Error on line " << node->getLine() << ": type mismatch for arithmetic expression." << std::endl;
+                    return false;
+                }
                 break;
             default:
                 ;
@@ -187,9 +216,16 @@ bool Semantic::typeCheck(AST *node){
                 return false;
             }
             break;
-        case assignment:
+        case assignment: {
             // compare its children's types
+            Variables type = node->getFirstChild()->getTheVar();
+            if(type != node->getChildren()[1]->getTheVar() || type == not_var){
+                std::cerr << "Error on line " << node->getLine() << ": assignment type mismatch." << std::endl;
+                return false;
+            }
+            node->setTheVar(type);
             break;
+        }
         default:
             break;
         }

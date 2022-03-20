@@ -13,6 +13,7 @@ class symEntry {
 public:
     Variables type;
     std::vector<Variables> params;
+    bool isFunc;
 
     symEntry(){}
     symEntry(Variables var){
@@ -74,12 +75,12 @@ public:
 // The number/type of arguments in a function call doesn't match the function's declaration. ***Done***
 // The main function can't be called. 
 // Break statements must be inside a while statement.
-// Type mismatch for an operator (||, &&, ==, !=, =, <, >, <=, >=, +, - (unary and binary), *, /, %, !).
+// Type mismatch for an operator (||, &&, ==, !=, =, <, >, <=, >=, +, - (unary and binary), *, /, %, !). ***Done***
 // No return statement in a non-void function.
 // A void function can't return a value.
 // A non-void function must return a value. Note that you're only checking for the existence of an appropriate return statement at the semantic checking stage, not whether it's actually executed.
-// A value returned from a function has the wrong type.
-// An if- or while-condition must be of Boolean type.
+// A value returned from a function has the wrong type. ***Done***
+// An if- or while-condition must be of Boolean type. ***Done***
 // An identifier is redefined within the same scope. ***Done***
 // An undeclared identifier is used. ***Done***
 
