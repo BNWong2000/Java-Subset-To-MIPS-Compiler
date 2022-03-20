@@ -5,6 +5,10 @@ int assss(){
     return 1;
 }
 
+void printc(int s){
+    ;
+}
+
 main(){
     i = 10;
     k = false;
@@ -14,8 +18,8 @@ main(){
     i = i + l * (i / i) + 2;
     if(k && true || k){
         {}
-        
     }
+    prints("asd");
     while( true == true){
         break;
         break;
@@ -24,6 +28,7 @@ main(){
     }
     if(true){
         ;
+        
     }else{
         ;
     }

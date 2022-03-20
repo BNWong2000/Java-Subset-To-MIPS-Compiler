@@ -8,41 +8,41 @@ bool Semantic::globalCheck_callback(AST *node){
             case mainFunction: {
                 // Check if the main function has previously been declared. 
                 std::string name = node->getChildren()[0]->getChildren()[0]->getName();
-                if(tables[0].find(name) != tables[0].end()){
+                if(tables[1].find(name) != tables[1].end()){
                     std::cerr << "main function already exists!" << std::endl;
                     return false;
                 }
                 SymEntry *temp = new SymEntry();
                 temp->isFunc = true;
-                tables[0].insert({name, temp});
+                tables[1].insert({name, temp});
                 break;
             }
             case function: {
                 AST *funcDecl = node->getChildren()[0]; // ->getChildren()[0]
                 std::string name = funcDecl->getChildren()[0]->getName();
-                if(tables[0].find(name) != tables[0].end()){
+                if(tables[1].find(name) != tables[1].end()){
                     std::cerr << "Duplicate function of name \"" << name << "\" being declared." << std::endl;
                     return false;
                 }
                 
-                SymEntry *entry = new SymEntry( node->getTheVar());
+                SymEntry *entry = new SymEntry(node->getTheVar());
                 entry->isFunc = true;
                 for(int i = 1; i < funcDecl->getChildren().size(); i++){
                     entry->addParam(funcDecl->getChildren()[i]->getTheVar());
                 }
-                tables[0].insert({name, entry});
+                tables[1].insert({name, entry});
                 break;
             }
             case globalVariable: {
                 std::string name = node->getChildren()[0]->getName();
-                if(tables[0].find(name) != tables[0].end()){
+                if(tables[1].find(name) != tables[1].end()){
                     std::cerr << "Duplicate global variable \"" << name << "\" being declared." << std::endl;
                     return false;
                 }
                 SymEntry *entry = new SymEntry(node->getTheVar());
                 entry->isFunc = false;
                 
-                tables[0].insert({name, entry});
+                tables[1].insert({name, entry});
                 break;
             }
             default:
@@ -79,7 +79,7 @@ bool Semantic::idCheckPre(AST *node){
     }else if(node->theNode == declaration){
         if(node->theDeclType == variable || node->theDeclType == parameter){
             std::string name = node->getFirstChild()->getName();
-            if(depth >= 3){
+            if(depth >= 4){
                 // This indicates a nested block within a function
                 std::cerr << "ERROR: local declaration of \"" << name << "\" is not in outermost block at line " << node->getLine() << std::endl;  
             }
@@ -149,7 +149,13 @@ bool Semantic::typeCheck(AST *node){
                     std::cerr << "Error on line " << node->getLine() << ": cannot call main function" << std::endl;
                     return false;
                 }
-                SymEntry *lookup = tables[0][name];
+                SymEntry *lookup;
+                if(tables[1].find(name) != tables[1].end()){
+                    lookup = tables[1][name];
+                }else{
+                    lookup = tables[0][name];
+                }
+                
                 node->setTableEntry(lookup);
                 node->setTheVar(lookup->type);
                 if((node->getChildren().size()-1) != lookup->params.size()){
@@ -352,7 +358,7 @@ bool Semantic::checkGlobals(){
     if(!postOrder(root, &Semantic::globalCheck_callback, this)){
         return false;
     }
-    if(tables[0].find("main") == tables[0].end()){
+    if(tables[1].find("main") == tables[1].end()){
         std::cerr << "ERROR: no main function found" << std::endl;
         return false;
     }
@@ -399,4 +405,47 @@ bool Semantic::checkTree(){
     }
     // std::cout << "Semantically correct." << std::endl;
     return true;
+}
+
+void Semantic::createPreDef(){
+    std::unordered_map<std::string, SymEntry *> preDefTable;
+
+    // getchar int getchar()
+    SymEntry *getcharEntry = new SymEntry(var_INT);
+    getcharEntry->isFunc = true;
+    preDefTable.insert({"getchar", getcharEntry});
+
+    // halt	void halt()
+    SymEntry *haltEntry = new SymEntry(var_VOID);
+    haltEntry->isFunc = true;
+    preDefTable.insert({"halt", haltEntry});
+
+    // printb void printb(boolean b)
+    SymEntry *printbEntry = new SymEntry(var_VOID);
+    printbEntry->isFunc = true;
+    printbEntry->addParam(var_BOOL);
+    preDefTable.insert({"printb", printbEntry});
+    
+
+    // printc void printc(int c)
+    SymEntry *printcEntry = new SymEntry(var_VOID);
+    printcEntry->isFunc = true;
+    printcEntry->addParam(var_INT);
+    preDefTable.insert({"printc", printcEntry});
+
+    // printi void printi(int i)
+    SymEntry *printiEntry = new SymEntry(var_VOID);
+    printiEntry->isFunc = true;
+    printiEntry->addParam(var_INT);
+    preDefTable.insert({"printi", printiEntry});
+
+    // prints void prints(string s)
+    SymEntry *printsEntry = new SymEntry(var_VOID);
+    printsEntry->isFunc = true;
+    printsEntry->addParam(var_STRING);
+    preDefTable.insert({"prints", printsEntry});
+
+    // stick it onto the table and scope stack. 
+    tables.push_back(preDefTable);
+    scopeStack.push_back(0);
 }

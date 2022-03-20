@@ -68,11 +68,6 @@ private:
     Variables funcRetType;
     bool returnSatisfied; 
 
-    // void preOrder(AST *curr, void (Semantic::*callback)(AST *));
-
-    // void postOrder(AST *curr, void (Semantic::*callback)(AST *));
-
-    // void prePostOrder(AST *curr, void (Semantic::*preCall)(AST *), void (Semantic::*postCall)(AST *));
 
     bool globalCheck_callback(AST *node);
     bool idCheckPre(AST *node);
@@ -81,12 +76,16 @@ private:
     bool miscCheckPre(AST *node);
     bool miscCheckPost(AST *node);
 
+    // function for creating the symbol table for pre-defined functions (prints, etc)
+    void createPreDef();
+
 public:
     Semantic(AST *myRoot){
+        createPreDef();
         std::unordered_map<std::string, SymEntry *> globalTable;
         tables.push_back(globalTable);
-        scopeStack.push_back(0);
-        depth = 1;
+        scopeStack.push_back(1);
+        depth = 2;
         currLoopCount = 0;
         root = myRoot;
         funcRetType = not_var;
