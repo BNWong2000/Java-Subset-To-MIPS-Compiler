@@ -238,10 +238,34 @@ bool Semantic::typeCheck(AST *node){
 }
 
 bool Semantic::miscCheckPre(AST* node){
+    if(node->theNode == statement){
+        switch (node->theStmtType){
+        case whileStmt:
+            currLoopCount++;
+            break;
+        case breakStmt:
+            if(currLoopCount == 0){
+                std::cerr << "Error on line " << node->getLine() << ": break statement not in while loop. " << std::endl;
+                return false;
+            }
+            break;
+        default:
+            ;
+        }
+    }
     return true;
 }
 
 bool Semantic::miscCheckPost(AST* node){
+    if(node->theNode == statement){
+        switch (node->theStmtType){
+        case whileStmt:
+            currLoopCount--;
+            break;
+        default:
+            ;
+        }
+    }
     return true;
 }
 

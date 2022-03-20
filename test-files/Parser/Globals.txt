@@ -14,6 +14,9 @@ main(){
     }
     while( true == true){
         break;
+        break;
+        break;
+        break;
     }
     if(true){
         ;
@@ -26,6 +29,7 @@ main(){
     //foo(bar, 1,2,k);
     i = bar(k) + 1;
     i = bar(true);
+    
     
 }
 

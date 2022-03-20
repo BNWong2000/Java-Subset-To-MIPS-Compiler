@@ -38,6 +38,7 @@ private:
     std::vector <int> scopeStack;
     AST *root;
     int depth;
+    int currLoopCount;
 
     // void preOrder(AST *curr, void (Semantic::*callback)(AST *));
 
@@ -58,6 +59,7 @@ public:
         tables.push_back(globalTable);
         scopeStack.push_back(0);
         depth = 1;
+        currLoopCount = 0;
         root = myRoot;
     };
     ~Semantic(){};
@@ -76,7 +78,7 @@ public:
 // A local declaration was not in an outermost block. ***Done***
 // The number/type of arguments in a function call doesn't match the function's declaration. ***Done***
 // The main function can't be called. ***Done***
-// Break statements must be inside a while statement.
+// Break statements must be inside a while statement. ***Done***
 // Type mismatch for an operator (||, &&, ==, !=, =, <, >, <=, >=, +, - (unary and binary), *, /, %, !). ***Done***
 // No return statement in a non-void function.
 // A void function can't return a value.
