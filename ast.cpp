@@ -4,6 +4,7 @@
 
 #include "ast.hpp"
 #include "semantic.hpp"
+#include "symbolTable.hpp"
 
 
 void AST::printProg(int indentLvl) {

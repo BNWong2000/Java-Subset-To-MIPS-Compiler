@@ -1,0 +1,150 @@
+Error: no main function found
+error: no main declaration found
+Error on line 3: main function already exists
+error: multiple main declarations found
+Error on line 3: main function already exists
+error: 'main' redefined at or near line 3
+Error on line 4: local declaration of "j" is not in outermost block at line 4
+error: local declaration not in outermost block at or near line 4
+Error on line 4: local declaration of "j" is not in outermost block at line 4
+error: local declaration not in outermost block at or near line 4
+Error on line 4: local declaration of "j" is not in outermost block at line 4
+error: local declaration not in outermost block at or near line 4
+Error on line 5: function call "foo" has one or more parameter type mismatches.
+error: number/type of arguments doesn't match function declaration at or near line 5
+Error on line 5: function call "foo" has one or more parameter type mismatches.
+error: number/type of arguments doesn't match function declaration at or near line 5
+Error on line 5: function call "foo" has one or more parameter type mismatches.
+error: number/type of arguments doesn't match function declaration at or near line 5
+Error on line 5: function call "foo" has a different number of parameters than the function requires.
+error: number/type of arguments doesn't match function declaration at or near line 5
+Error on line 5: function call "foo" has a different number of parameters than the function requires.
+error: number/type of arguments doesn't match function declaration at or near line 5
+Error on line 9: function call "foo" has one or more parameter type mismatches.
+error: number/type of arguments doesn't match function declaration at or near line 9
+Error on line 4: Improper return type.
+error: returned value has the wrong type at or near line 4
+Error on line 4: cannot call main function
+error: can't call the main function at or near line 4
+Error on line 2: break statement not in while loop. 
+error: break must be inside 'while' at or near line 2
+Error on line 3: break statement not in while loop. 
+error: break must be inside 'while' at or near line 3
+Error on line 5: break statement not in while loop. 
+error: break must be inside 'while' at or near line 5
+Error on line 2: type mismatch for "==" expression. 
+error: type mismatch for '==' at or near line 2
+Error on line 2: type mismatch for "!=" expression. 
+error: type mismatch for '!=' at or near line 2
+Error on line 2: type mismatch for "<" expression.
+error: type mismatch for '<' at or near line 2
+Error on line 2: type mismatch for "<" expression.
+error: type mismatch for '<' at or near line 2
+Error on line 2: type mismatch for "<" expression.
+error: type mismatch for '<' at or near line 2
+Error on line 2: type mismatch for "<" expression.
+error: type mismatch for '<' at or near line 2
+Error on line 2: type mismatch for ">" expression.
+error: type mismatch for '>' at or near line 2
+Error on line 2: type mismatch for ">" expression.
+error: type mismatch for '>' at or near line 2
+Error on line 2: type mismatch for "<=" expression.
+error: type mismatch for '<=' at or near line 2
+Error on line 2: type mismatch for "<=" expression.
+error: type mismatch for '<=' at or near line 2
+Error on line 2: type mismatch for "<=" expression.
+error: type mismatch for '<=' at or near line 2
+Error on line 2: type mismatch for "<=" expression.
+error: type mismatch for '<=' at or near line 2
+Error on line 2: type mismatch for ">=" expression.
+error: type mismatch for '>=' at or near line 2
+Error on line 2: type mismatch for ">=" expression.
+error: type mismatch for '>=' at or near line 2
+Error on line 2: type mismatch for "&&" expression.
+error: type mismatch for '&&' at or near line 2
+Error on line 2: type mismatch for "&&" expression.
+error: type mismatch for '&&' at or near line 2
+Error on line 2: type mismatch for "&&" expression.
+error: type mismatch for '&&' at or near line 2
+Error on line 2: type mismatch for "||" expression.
+error: type mismatch for '||' at or near line 2
+Error on line 2: type mismatch for "||" expression.
+error: type mismatch for '||' at or near line 2
+Error on line 2: type mismatch for "||" expression.
+error: type mismatch for '||' at or near line 2
+Error on line 3: unary operator type mismatch.
+error: type mismatch for '-' at or near line 3
+Error on line 3: unary operator type mismatch.
+error: type mismatch for '!' at or near line 3
+Error on line 3: type mismatch for "+" arithmetic expression.
+error: type mismatch for '+' at or near line 3
+Error on line 4: type mismatch for "+" arithmetic expression.
+error: type mismatch for '+' at or near line 4
+Error on line 4: type mismatch for "+" arithmetic expression.
+error: type mismatch for '+' at or near line 4
+Error on line 9: Improper return type.
+error: returned value has the wrong type at or near line 9
+Error on line 3: type mismatch for "-" arithmetic expression.
+error: type mismatch for '-' at or near line 3
+Error on line 4: type mismatch for "-" arithmetic expression.
+error: type mismatch for '-' at or near line 4
+Error on line 4: type mismatch for "-" arithmetic expression.
+error: type mismatch for '-' at or near line 4
+Error on line 9: Improper return type.
+error: returned value has the wrong type at or near line 9
+Error on line 3: type mismatch for "*" arithmetic expression.
+error: type mismatch for '*' at or near line 3
+Error on line 4: type mismatch for "*" arithmetic expression.
+error: type mismatch for '*' at or near line 4
+Error on line 4: type mismatch for "*" arithmetic expression.
+error: type mismatch for '*' at or near line 4
+Error on line 9: Improper return type.
+error: returned value has the wrong type at or near line 9
+Error on line 3: type mismatch for "/" arithmetic expression.
+error: type mismatch for '/' at or near line 3
+Error on line 4: type mismatch for "/" arithmetic expression.
+error: type mismatch for '/' at or near line 4
+Error on line 4: type mismatch for "/" arithmetic expression.
+error: type mismatch for '/' at or near line 4
+Error on line 9: Improper return type.
+error: returned value has the wrong type at or near line 9
+Error on line 3: type mismatch for "/" arithmetic expression.
+error: type mismatch for '/' at or near line 3
+Error on line 4: type mismatch for "/" arithmetic expression.
+error: type mismatch for '/' at or near line 4
+Error on line 4: type mismatch for "/" arithmetic expression.
+error: type mismatch for '/' at or near line 4
+Error on line 9: Improper return type.
+error: returned value has the wrong type at or near line 9
+Error on line 2: Improper return type.
+error: this function can't return a value at or near line 2
+Error on line 2: Improper return type.
+error: this function can't return a value at or near line 2
+Error on line 2: No return value specified.
+error: this function must return a value at or near line 2
+Error on line 2: Improper return type.
+error: returned value has the wrong type at or near line 2
+Error on line 1: No return statement on non-void function.
+error: no return statement in non-void function 'foo'
+Error on line 7: type mismatch for "=".
+error: type mismatch for '=' at or near line 7
+Error on line 7: type mismatch for "=".
+error: type mismatch for '=' at or near line 7
+Error on line 4: expected a boolean expression.
+error: need a boolean expression at or near line 4
+Error on line 4: expected a boolean expression.
+error: need a boolean expression at or near line 4
+Error on line 4: expected a boolean expression.
+error: need a boolean expression at or near line 4
+Error on line 4: expected a boolean expression.
+error: need a boolean expression at or near line 4
+Error on line 3: identifier "i" already exists in this scope. 
+error: 'i' redefined at or near line 3
+Error on line 4: identifier "i" already exists in this scope. 
+error: 'i' redefined at or near line 4
+Error on line 2: identifier "i" has not yet been declared. 
+error: unknown identifier 'i' at or near line 2
+Error on line 6: identifier "i" has not yet been declared. 
+error: unknown identifier 'i' at or near line 6
+Error on line 2: identifier "food" has not yet been declared. 
+error: unknown identifier 'food' at or near line 2

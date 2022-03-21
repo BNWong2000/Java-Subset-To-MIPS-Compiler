@@ -1,4 +1,5 @@
 #include "semantic.hpp"
+#include "symbolTable.hpp"
 
 
 bool Semantic::globalCheck_callback(AST *node){
