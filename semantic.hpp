@@ -58,6 +58,8 @@ private:
     // Vector which stores all the symbol tables for each scope
     std::vector <std::unordered_map<std::string, SymEntry *>> tables;
 
+    std::string mainFunctionName;
+
     // Stack which is used to manage scope (contains index of symbols tables for each scope)
     // These are indices of 'tables' which are pushed and popped, from the stack
     // Using a vector instead of stack, since it allows me to iterate through it
@@ -90,6 +92,7 @@ public:
         root = myRoot;
         funcRetType = not_var;
         returnSatisfied = true;
+        mainFunctionName = "";
     };
     ~Semantic(){};
     void setRoot(AST *myRoot){root = myRoot;};

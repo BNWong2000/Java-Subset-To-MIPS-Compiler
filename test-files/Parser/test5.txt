@@ -1,5 +1,6 @@
 f(){
     int x;
+    return x;
 }
 
 int func() {

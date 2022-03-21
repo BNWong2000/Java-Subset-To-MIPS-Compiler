@@ -7,15 +7,20 @@ bool Semantic::globalCheck_callback(AST *node){
         switch(node->theDeclType){
             case mainFunction: {
                 // Check if the main function has previously been declared. 
-                std::string name = node->getChildren()[0]->getChildren()[0]->getName();
-                if(name.compare("main") != 0){
-                    std::cerr << "Error on line " << node->getLine() << ": improper declaration of function \"" << name << "\". missing return value." << std::endl;
-                    return false;
-                }
-                if(tables[1].find(name) != tables[1].end()){
+                if(mainFunctionName.size() > 0){
                     std::cerr << "Error on line " << node->getLine() <<": main function already exists" << std::endl;
                     return false;
                 }
+                std::string name = node->getChildren()[0]->getChildren()[0]->getName();
+                // if(name.compare("main") != 0){
+                //     std::cerr << "Error on line " << node->getLine() << ": improper declaration of function \"" << name << "\". missing return value." << std::endl;
+                //     return false;
+                // }
+                // if(tables[1].find(name) != tables[1].end()){
+                //     std::cerr << "Error on line " << node->getLine() <<": main function already exists" << std::endl;
+                //     return false;
+                // }
+                mainFunctionName = name;
                 SymEntry *temp = new SymEntry();
                 temp->isFunc = true;
                 tables[1].insert({name, temp});
@@ -151,7 +156,7 @@ bool Semantic::typeCheck(AST *node){
                 break;
             case functionCall: {
                 std::string name = node->getFirstChild()->getName();
-                if(name.compare("main") == 0){
+                if(name.compare(mainFunctionName) == 0){
                     std::cerr << "Error on line " << node->getLine() << ": cannot call main function" << std::endl;
                     return false;
                 }
@@ -364,7 +369,11 @@ bool Semantic::checkGlobals(){
     if(!postOrder(root, &Semantic::globalCheck_callback, this)){
         return false;
     }
-    if(tables[1].find("main") == tables[1].end()){
+    // if(tables[1].find("main") == tables[1].end()){
+    //     std::cerr << "Error: no main function found" << std::endl;
+    //     return false;
+    // }
+    if(mainFunctionName.size() == 0){
         std::cerr << "Error: no main function found" << std::endl;
         return false;
     }

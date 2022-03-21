@@ -9,6 +9,7 @@ void printc(int s){
     ;
 }
 
+
 main(){
     i = 10;
     k = false;
