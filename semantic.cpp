@@ -81,7 +81,7 @@ bool Semantic::idCheckPre(AST *node){
         
         depth++;
     }
-    if(node->theNode == declaration && node->theDeclType == function){
+    if(node->theNode == declaration && (node->theDeclType == function || node->theDeclType == mainFunction)){
         // function or main declaration (both have declarator children)
         std::unordered_map<std::string, SymEntry *> currScope;
         scopeStack.push_back(tables.size());
@@ -134,7 +134,7 @@ bool Semantic::idCheckPre(AST *node){
 
 bool Semantic::idCheckPost(AST *node){
     // pop from stack.
-    if(node->theNode == declaration && node->theDeclType == function){
+    if(node->theNode == declaration && (node->theDeclType == function || node->theDeclType == mainFunction)){
         scopeStack.pop_back();
     }
 
