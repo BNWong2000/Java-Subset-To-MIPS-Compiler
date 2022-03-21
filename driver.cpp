@@ -57,7 +57,7 @@ int Driver::start() {
         
         bool good = tree->checkSemantics();
         if(!good){
-            std::cerr << "Semantic Error detected. Terminating..." << std::endl;
+            // std::cerr << "Semantic Error detected. Terminating..." << std::endl;
             return 1;
         }
         tree->print(0);

@@ -195,31 +195,31 @@ bool Semantic::typeCheck(AST *node){
                 break;
             case relational:
                 if(node->getFirstChild()->getTheVar() != var_INT || node->getChildren()[1]->getTheVar() != var_INT){
-                    std::cerr << "Error on line " << node->getLine() << ": type mismatch for relational expression." << std::endl;
+                    std::cerr << "Error on line " << node->getLine() << ": type mismatch for \"" << opToString(node->getTheOp()) << "\" expression." << std::endl;
                     return false;
                 }
                 break;
             case equality: {
                 Variables type = node->getFirstChild()->getTheVar();
                 if(type != var_BOOL && type != var_INT){
-                    std::cerr << "Error on line " << node->getLine() << ": invalid type used in equality expression." << std::endl;
+                    std::cerr << "Error on line " << node->getLine() << ": invalid type used in \"" << opToString(node->getTheOp()) << "\" expression." << std::endl;
                     return false;
                 }
                 if(type != node->getChildren()[1]->getTheVar()){
-                    std::cerr << "Error on line " << node->getLine() << ": type mismatch for equality expression." << std::endl;
+                    std::cerr << "Error on line " << node->getLine() << ": type mismatch for \"" << opToString(node->getTheOp()) << "\" expression. " << std::endl;
                     return false;
                 }
                 break;
             }
             case conditional:
                 if(node->getFirstChild()->getTheVar() != var_BOOL || node->getChildren()[1]->getTheVar() != var_BOOL){
-                    std::cerr << "Error on line " << node->getLine() << ": type mismatch for conditional expression." << std::endl;
+                    std::cerr << "Error on line " << node->getLine() << ": type mismatch for \"" << opToString(node->getTheOp()) << "\" expression." << std::endl;
                     return false;
                 }
                 break;
             case arithmetic:
                 if(node->getFirstChild()->getTheVar() != var_INT || node->getChildren()[1]->getTheVar() != var_INT){
-                    std::cerr << "Error on line " << node->getLine() << ": type mismatch for arithmetic expression." << std::endl;
+                    std::cerr << "Error on line " << node->getLine() << ": type mismatch for \"" << opToString(node->getTheOp()) << "\" arithmetic expression." << std::endl;
                     return false;
                 }
                 break;
@@ -241,7 +241,7 @@ bool Semantic::typeCheck(AST *node){
             // compare its children's types
             Variables type = node->getFirstChild()->getTheVar();
             if(type != node->getChildren()[1]->getTheVar() || type == not_var){
-                std::cerr << "Error on line " << node->getLine() << ": assignment type mismatch." << std::endl;
+                std::cerr << "Error on line " << node->getLine() << ": type mismatch for \"=\"." << std::endl;
                 return false;
             }
             node->setTheVar(type);
