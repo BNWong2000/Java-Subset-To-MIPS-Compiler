@@ -633,3 +633,6 @@ bool AST::checkSemantics(){
 
 AST::AST(std::string name) : fileName(name) {theNode = prog; analyzer = new Semantic(this);};
 
+std::string AST::getMainFunction(){
+    return analyzer->getMainFunc();
+}

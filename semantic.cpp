@@ -286,6 +286,10 @@ bool Semantic::miscCheckPre(AST* node){
             funcRetType = var_VOID;
             returnSatisfied = true;
         }
+    }else if(node->theNode == expression && node->theExprType == stringLit){
+        // give every string literal a unique number for codegen...
+        node->setNum(strCount);
+        strCount++;
     }
     return true;
 }
@@ -465,3 +469,4 @@ void Semantic::createPreDef(){
     tables.push_back(preDefTable);
     scopeStack.push_back(0);
 }
+

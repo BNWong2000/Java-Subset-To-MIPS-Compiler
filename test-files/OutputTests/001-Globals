@@ -1,0 +1,16 @@
+int i;
+int j;
+boolean k;
+
+// int foo(){
+//     return 1;
+// }
+// 
+// boolean bar(int i, int k){
+//     return true;
+// }
+
+main(){
+    prints("asdf");
+    prints("as");
+}

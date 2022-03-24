@@ -30,6 +30,7 @@ private:
     int currLoopCount;
     Variables funcRetType;
     bool returnSatisfied; 
+    int strCount;
 
 
     bool globalCheck_callback(AST *node);
@@ -54,6 +55,7 @@ public:
         funcRetType = not_var;
         returnSatisfied = true;
         mainFunctionName = "";
+        strCount = 0;
     };
     ~Semantic(){};
     void setRoot(AST *myRoot){root = myRoot;};
@@ -63,6 +65,10 @@ public:
     bool checkIds();
     bool checkTypes();
     bool checkMisc();
+
+    std::string getMainFunc(){
+        return mainFunctionName;
+    }
 
 };
 

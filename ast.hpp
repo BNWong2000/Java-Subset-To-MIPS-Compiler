@@ -180,13 +180,15 @@ public:
         return children;
     }
 
-    bool hasSibling()
-    {
+    bool hasSibling() {
         return sibling != nullptr;
     }
 
-    AST *getSibling()
-    {
+    void setNum(int newNum){
+        num = newNum;
+    }
+
+    AST *getSibling() {
         return sibling;
     }
 
@@ -268,6 +270,8 @@ public:
     int getNum(){
         return num;
     }
+
+    std::string getMainFunction();
 
 
 };

@@ -1,0 +1,30 @@
+├{ Program: test-files/OutputTests/001-Globals }
+├----Global variable { Type: Integer, line: 1 }
+|     ├----Identifier { Name: "i", Sym: <0x1124170>, Sig: "int", line: 1 }
+├----Global variable { Type: Integer, line: 2 }
+|     ├----Identifier { Name: "j", Sym: <0x111a120>, Sig: "int", line: 2 }
+├----Global variable { Type: Boolean, line: 3 }
+|     ├----Identifier { Name: "k", Sym: <0x111a150>, Sig: "boolean", line: 3 }
+├----Function { Return Type: Integer, line: 5 }
+|     ├----Function Declarator { line: 5 }
+|     |     ├----Identifier { Name: "foo", Sym: <0x111a180>, Sig: "f()", line: 5 }
+|     ├----Block { line: 5 }
+|     |     ├----Return statement { line: 6 }
+|     |     |     ├----number { Value: 1, line: 6 }
+├----Function { Return Type: Boolean, line: 9 }
+|     ├----Function Declarator { line: 9 }
+|     |     ├----Identifier { Name: "bar", Sym: <0x111a1b0>, Sig: "f(int, int)", line: 9 }
+|     |     ├----Parameter { Type: Integer, line: 9 }
+|     |     |     ├----Identifier { Name: "i", Sym: <0x111a300>, Sig: "int", line: 9 }
+|     |     ├----Parameter { Type: Integer, line: 9 }
+|     |     |     ├----Identifier { Name: "k", Sym: <0x111a330>, Sig: "int", line: 9 }
+|     ├----Block { line: 9 }
+|     |     ├----Return statement { line: 10 }
+|     |     |     ├----Boolean Literal { Value: True, line: 10 }
+├----Main Function { line: 13 }
+|     ├----Function Declarator { line: 13 }
+|     |     ├----Identifier { Name: "main", Sym: <0x111a1e0>, Sig: "f()", line: 13 }
+|     ├----Block { line: 13 }
+|     |     ├----Function Call { Sig: void, line: 14 }
+|     |     |     ├----Identifier { Name: "prints", Sym: <0x1124520>, Sig: "f(string)", line: 14 }
+|     |     |     ├----String Literal { Value: "asdf", line: 14 }

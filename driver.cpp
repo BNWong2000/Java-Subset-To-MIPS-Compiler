@@ -61,6 +61,10 @@ int Driver::start() {
             return 1;
         }
         tree->print(0);
+        std::string mainFuncName = tree->getMainFunction();
+
+        gen = new CodeGen(tree, mainFuncName);
+        gen->generate();
         
         
     } else {

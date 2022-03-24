@@ -8,10 +8,10 @@
 #include "scanner.hpp"
 #include "parser.hh"
 #include "ast.hpp"
+#include "codegen.hpp"
 // #include "semantic.hpp"
 
-class Driver
-{
+class Driver {
 
 public:
     Driver(const char* file) : file_name(file) { hasError = false;}
@@ -34,6 +34,7 @@ public:
 
 private:
     int parse(std::istream &inputStream);
+    CodeGen *gen; 
 
     // Error information
     bool hasError;
