@@ -60,7 +60,7 @@ int Driver::start() {
             // std::cerr << "Semantic Error detected. Terminating..." << std::endl;
             return 1;
         }
-        tree->print(0);
+        // tree->print(0);
         std::string mainFuncName = tree->getMainFunction();
 
         gen = new CodeGen(tree, mainFuncName);

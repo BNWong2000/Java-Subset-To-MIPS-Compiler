@@ -1,5 +1,6 @@
 #include "codegen.hpp"
 #include "ast.hpp"
+#include "symbolTable.hpp"
 
 bool prePostOrder(AST *curr, bool (CodeGen::*preCall)(AST *), bool (CodeGen::*postCall)(AST *), CodeGen *cGen){
     if(!(cGen->*preCall)(curr)){
@@ -53,6 +54,7 @@ bool CodeGen::globalsPass(AST *node){
             }
             result += "0";
             writeLine(result);
+            writeTabbedLine(".align 2");
         }
     }
     return true;
@@ -60,12 +62,114 @@ bool CodeGen::globalsPass(AST *node){
 
 bool CodeGen::prePass(AST *node){
     if(node->theNode == declaration){
-        //
+        switch (node->theDeclType){
+            case mainFunction:
+                break;
+            case function:
+                initFuncStack = stackLevel;
+                break;
+            case declarator:
+                // Label
+                writeLine(node->getFirstChild()->getName() + ":");
+                writeTabbedLine("subu $sp, $sp, 4");
+                storeOnStack();
+                writeTabbedLine("sw $ra, 0($sp)");
+                currParamCount = 0;
+                break;
+            case parameter:
+                
+                break;
+            default:
+                ;
+        }
+    }else if(node->theNode == expression){
+        switch (node->theExprType){
+            case identifier:
+            {
+                SymEntry *entry = node->getTableEntry();
+                if(entry->isFunc){
+                    break;
+                }
+                // check if global or not
+                if(entry->isGlobal){
+                    //
+                }else{
+                    // check if stored on stack yet or not. 
+                    if(entry->offset == -1){
+                        // store on stack and record...
+                        writeTabbedLine("subu $sp, $sp, 4");
+                        entry->offset = storeOnStack();
+                    }
+                }
+                break;
+            }
+            default:
+                ;
+        }
     }
     return true;
 }
 
 bool CodeGen::postPass(AST *node){
+    if(node->theNode == declaration){
+        switch (node->theDeclType){
+            case mainFunction:
+                writeTabbedLine("li $v0, 10");
+                writeTabbedLine("syscall");
+                break;
+            case function:
+            {
+                int temp = stackLevel - initFuncStack;
+                writeTabbedLine("");
+                if(temp > 0){
+                    writeTabbedLine("addu $sp, $sp, " + std::to_string(temp));
+                }
+                writeTabbedLine("lw $ra," + std::to_string(temp-4) + "($sp)");
+                writeTabbedLine("jr $ra");
+                break;
+            }
+            case declarator:
+                currParamCount = 0;
+                break;
+            case parameter:
+                writeTabbedLine("sw $a" + std::to_string(currParamCount) + ", 0($sp)");
+                currParamCount++;
+                break;
+            default:
+                ;
+        }
+    }else if(node->theNode == statement){
+        switch(node->theStmtType){
+            case assignment:
+                // restore onto stack
+                break;
+            default:
+                ;
+        }
+    }else{
+        switch(node->theExprType){
+            case unary:
+                break;
+            case arithmetic:
+                // check it's children. 
+                // free reg from children. 
+                // grab a new reg
+                // store reg in the node, and exec instruction
+                break;
+            case identifier:
+                // check if its a decl or not...
+                // if not, put it in a reg.
+                // grab reg, store in node.
+                // lw 
+                break;
+            case number:
+                // put it in a reg.
+                // store in node.
+                break;
+            default:
+                ;
+        }
+    }
     return true;
 }
 

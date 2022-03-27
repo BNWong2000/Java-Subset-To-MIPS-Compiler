@@ -6,6 +6,7 @@
 #include <unordered_map>
 #include <vector>
 #include <string>
+#include <variant>
 #include "ast.hpp"
 
 
@@ -14,10 +15,12 @@ public:
     Variables type;
     std::vector<Variables> params;
     bool isFunc;
-
-    SymEntry(){}
+    bool isGlobal;
+    int offset;
+    SymEntry(){offset = -1;}
     SymEntry(Variables var){
         type = var;
+        offset = -1;
     }
 
     void addParam(Variables var){

@@ -13,14 +13,6 @@ bool Semantic::globalCheck_callback(AST *node){
                     return false;
                 }
                 std::string name = node->getChildren()[0]->getChildren()[0]->getName();
-                // if(name.compare("main") != 0){
-                //     std::cerr << "Error on line " << node->getLine() << ": improper declaration of function \"" << name << "\". missing return value." << std::endl;
-                //     return false;
-                // }
-                // if(tables[1].find(name) != tables[1].end()){
-                //     std::cerr << "Error on line " << node->getLine() <<": main function already exists" << std::endl;
-                //     return false;
-                // }
                 mainFunctionName = name;
                 SymEntry *temp = new SymEntry();
                 temp->isFunc = true;
@@ -51,6 +43,7 @@ bool Semantic::globalCheck_callback(AST *node){
                 }
                 SymEntry *entry = new SymEntry(node->getTheVar());
                 entry->isFunc = false;
+                entry->isGlobal = true;
                 
                 tables[1].insert({name, entry});
                 break;
@@ -101,6 +94,7 @@ bool Semantic::idCheckPre(AST *node){
                 // not inside of the top scope
                 SymEntry *entry = new SymEntry(node->getTheVar());
                 entry->isFunc = false;
+                entry->isGlobal = false;
                 top.insert({name, entry});
             }else{
                 // error
