@@ -28,9 +28,9 @@ private:
     int initFuncStack;
 
     int storeOnStack(){
-        int rV = stackLevel;
+        // int rV = stackLevel;
         stackLevel += 4;
-        return rV;
+        return stackLevel;
     }
 
     void popFromStack(){

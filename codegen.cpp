@@ -94,9 +94,7 @@ bool CodeGen::prePass(AST *node){
                     break;
                 }
                 // check if global or not
-                if(entry->isGlobal){
-                    //
-                }else{
+                if(!entry->isGlobal){
                     // check if stored on stack yet or not. 
                     if(entry->offset == -1){
                         // store on stack and record...
@@ -147,16 +145,29 @@ bool CodeGen::postPass(AST *node){
             {
                 // restore onto stack
                 // check it's children. (gauranteed 2 children)
+                // writeLine("BRUH");
                 Registers source = node->getChildren()[1]->getReg();
                 // Get a source register
                 if(source == NONE){
                     // either a number or identifier
                     AST *temp = node->getChildren()[1];
-                    if(temp->theExprType == identifier){
+                    source = getNextReg();
+                    // std::cout << "here" << std::endl;
+                    if(temp->theNode == statement){
+                        // this means our dest is another assignment (i.e., i = j = k;)
+                        auto sourceEntry = temp->getFirstChild()->getTableEntry();
+                        
+                        if(sourceEntry->isGlobal){
+                            writeTabbedLine("lw " + regToStr(source) + ", _" + temp->getFirstChild()->getName());
+                        }else{
+                            int offset = sourceEntry->offset;
+                            writeTabbedLine("lw " + regToStr(source) + ", " + std::to_string(stackLevel - offset) + "($sp)");
+                        }
+                        
+                    }else if(temp->theExprType == identifier){
                         // do something else
                         SymEntry *tempEntry = temp->getTableEntry();
                         int offset = tempEntry->offset;
-                        source = getNextReg();
                         if(offset == -1){
                             // global variable
                             writeTabbedLine("lw " + regToStr(source) + ", _" + temp->getName());
@@ -165,14 +176,13 @@ bool CodeGen::postPass(AST *node){
                             writeTabbedLine("lw " + regToStr(source) + ", " + std::to_string(stackLevel - offset) + "($sp)");
                         }
                     }else if(temp->theExprType == number){
-                        source = getNextReg();
                         writeTabbedLine("li " + regToStr(source) + ", " + std::to_string(temp->getNum()));
                     }else{
                         std::cerr << "ERROR - an expression doesn't have a reg set up." << std::endl;
                         return false;
                     }
                 }
-
+                
                 SymEntry *destEntry = node->getFirstChild()->getTableEntry();
                 if(destEntry->isGlobal){
                     writeTabbedLine("sw " + regToStr(source) + ", _" + node->getFirstChild()->getName());
@@ -180,6 +190,7 @@ bool CodeGen::postPass(AST *node){
                     writeTabbedLine("sw " + regToStr(source) + ", " + std::to_string(stackLevel - destEntry->offset) + "($sp)");
                 }
                 freeReg(source);
+                
                 break;
             }
             case returnStmt:
@@ -190,7 +201,7 @@ bool CodeGen::postPass(AST *node){
                 if(temp > 0){
                     writeTabbedLine("addu $sp, $sp, " + std::to_string(temp));
                 }
-                
+
                 if(node->getChildren().size() == 1){
                     // node is returning something...
                     auto child = node->getFirstChild();

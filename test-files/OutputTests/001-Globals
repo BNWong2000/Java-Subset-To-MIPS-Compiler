@@ -4,7 +4,10 @@ boolean k;
 
 int bar(int i, int k){
     int l;
-    return 1;
+    return foo();
+}
+void sss(){
+    return;
 }
 
 main(){
