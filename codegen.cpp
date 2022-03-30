@@ -182,6 +182,36 @@ bool CodeGen::postPass(AST *node){
                 freeReg(source);
                 break;
             }
+            case returnStmt:
+            {
+                int temp = stackLevel - initFuncStack;
+                writeTabbedLine("");
+                writeTabbedLine("lw $ra, " + std::to_string(temp-4) + "($sp)");
+                if(temp > 0){
+                    writeTabbedLine("addu $sp, $sp, " + std::to_string(temp));
+                }
+                
+                if(node->getChildren().size() == 1){
+                    // node is returning something...
+                    auto child = node->getFirstChild();
+                    if(child->theExprType == number){
+                        writeTabbedLine("li $v0, " + std::to_string(node->getNum()));
+                    }else if(child->theExprType == identifier){
+                        auto entry = child->getTableEntry();
+                        if(entry->isGlobal){
+                            writeTabbedLine("sw $v0, _" + child->getName());
+                        }else{
+                            writeTabbedLine("sw $v0, " + std::to_string(stackLevel - entry->offset) + "($sp)");
+                        }
+                    }else if(child->theExprType == boolLit){
+                        writeTabbedLine("li $v0, " + std::to_string(node->getNum()));
+                    }else{
+                        writeTabbedLine("move $v0, " + regToStr(child->getReg()));
+                    }
+                }
+                writeTabbedLine("jr $ra");
+                break;
+            }
             default:
                 ;
         }
@@ -264,6 +294,8 @@ bool CodeGen::postPass(AST *node){
                 writeTabbedLine(res);
                 break;
             }
+            case relational:
+                break;
             case functionCall:
             {
                 auto registerList = storeCurrRegisters();
