@@ -7,6 +7,7 @@
 #include <vector>
 #include <memory>
 #include <unordered_map>
+#include "regEnums.hpp"
 
 class Semantic;
 class SymEntry;
@@ -143,6 +144,9 @@ protected:
     // a string, to store information for identifiers, or strings.
     std::string name;
 
+    // Register for the node
+    Registers reg;
+
     // an int to store information for integer literals
     int num;
 
@@ -161,8 +165,12 @@ public:
     Decl theDeclType;
     Variables getTheVar(){return theVar;}
 
+    Registers getReg(){return reg;}
+
+    void setReg(Registers myReg){reg = myReg;}
+
     AST(std::string name);
-    AST(int line) : lineNo(line) {}
+    AST(int line) : lineNo(line) { reg = NONE; }
 
     ~AST()
     {

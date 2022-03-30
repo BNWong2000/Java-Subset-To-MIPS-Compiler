@@ -70,7 +70,7 @@ bool CodeGen::prePass(AST *node){
                 break;
             case declarator:
                 // Label
-                writeLine(node->getFirstChild()->getName() + ":");
+                writeLine("\n" + node->getFirstChild()->getName() + ":");
                 writeTabbedLine("subu $sp, $sp, 4");
                 storeOnStack();
                 writeTabbedLine("sw $ra, 0($sp)");
@@ -141,8 +141,39 @@ bool CodeGen::postPass(AST *node){
     }else if(node->theNode == statement){
         switch(node->theStmtType){
             case assignment:
+            {
                 // restore onto stack
+                // check it's children. (gauranteed 2 children)
+                Registers source = node->getChildren()[1]->getReg();
+                // Get a source register
+                if(source == NONE){
+                    // either a number or identifier
+                    AST *temp = node->getChildren()[1];
+                    if(temp->theExprType == identifier){
+                        // do something else
+                        SymEntry *tempEntry = temp->getTableEntry();
+                        int offset = tempEntry->offset;
+                        source = getNextReg();
+                        if(offset == -1){
+                            // global variable
+                            writeTabbedLine("lw " + regToStr(source) + ", _" + temp->getName());
+                        }else{
+                            // local variable. find stack offset.
+                            writeTabbedLine("lw " + regToStr(source) + ", " + std::to_string(stackLevel - offset) + "($sp)");
+                        }
+                    }else if(temp->theExprType == number){
+                        source = getNextReg();
+                        writeTabbedLine("li " + regToStr(source) + ", " + std::to_string(temp->getNum()));
+                    }else{
+                        std::cerr << "ERROR - an expression doesn't have a reg set up." << std::endl;
+                        return false;
+                    }
+                }
+
+                
+
                 break;
+            }
             default:
                 ;
         }
@@ -151,21 +182,106 @@ bool CodeGen::postPass(AST *node){
             case unary:
                 break;
             case arithmetic:
-                // check it's children. 
+            {
+                // check it's children. (gauranteed 2 children)
+                Registers childOne = node->getChildren()[0]->getReg();
+                Registers childTwo = node->getChildren()[1]->getReg();
+                
+                if(childOne == NONE){
+                    AST *temp = node->getFirstChild();
+                    if(temp->theExprType == identifier){
+                        // do something else
+                        SymEntry *tempEntry = temp->getTableEntry();
+                        int offset = tempEntry->offset;
+                        childOne = getNextReg();
+                        if(offset == -1){
+                            // global variable
+                            writeTabbedLine("lw " + regToStr(childOne) + ", _" + temp->getName());
+                        }else{
+                            // local variable. find stack offset.
+                            writeTabbedLine("lw " + regToStr(childOne) + ", " + std::to_string(stackLevel - offset) + "($sp)");
+                        }
+                    }else if(temp->theExprType == number){
+                        // do another separate thing.
+                        childOne = getNextReg();
+                        writeTabbedLine("li " + regToStr(childOne) + ", " + std::to_string(temp->getNum()));
+                    }else{
+                        std::cerr << "ERROR - an expression doesn't have a reg set up." << std::endl;
+                        return false;
+                    }
+                }
+
+                if(childTwo == NONE){
+                    AST *temp = node->getChildren()[1];
+                    if(temp->theExprType == identifier){
+                        // do something else
+                        SymEntry *tempEntry = temp->getTableEntry();
+                        int offset = tempEntry->offset;
+                        childTwo = getNextReg();
+                        if(offset == -1){
+                            // global variable
+                            writeTabbedLine("lw " + regToStr(childTwo) + ", _" + temp->getName());
+                        }else{
+                            // local variable. find stack offset.
+                            writeTabbedLine("lw " + regToStr(childTwo) + ", " + std::to_string(stackLevel - offset) + "($sp)");
+                        }
+                    }else if(temp->theExprType == number){
+                        // do another separate thing.
+                        childTwo = getNextReg();
+                        writeTabbedLine("li " + regToStr(childTwo) + ", " + std::to_string(temp->getNum()));
+                    }else{
+                        std::cerr << "ERROR - an expression doesn't have a reg set up." << std::endl;
+                        return false;
+                    }
+                    
+                }
+                
                 // free reg from children. 
+                freeReg(childOne);
+                freeReg(childTwo);
+                node->getChildren()[0]->setReg(NONE);
+                node->getChildren()[1]->setReg(NONE);
+
                 // grab a new reg
+                Registers dest = getNextReg();
+                if(dest == NONE){
+                    std::cerr << "ERROR: No registers remaining." << std::endl;
+                    return false;
+                }
+                node->setReg(dest);
+
                 // store reg in the node, and exec instruction
+                std::string res = opToInstr(node->getTheOp()) + " " + regToStr(dest) + ", ";
+                res += regToStr(childOne) + ", " + regToStr(childTwo);
+                writeTabbedLine(res);
                 break;
+            }
             case identifier:
+            {
                 // check if its a decl or not...
+                // SymEntry *entry = node->getTableEntry();
+                // if(entry->isFunc || entry->offset == -1){
+                    
+                // }
                 // if not, put it in a reg.
                 // grab reg, store in node.
                 // lw 
                 break;
+            }
             case number:
-                // put it in a reg.
+            {
+                // Registers dest = getNextReg();
+                // if(dest == NONE){
+                //     std::cerr << "here";
+                //     std::cerr << "ERROR: No registers remaining." << std::endl;
+                //     return false;
+                // }
+                // node->setReg(dest);
+                // // put it in a reg.
+                // writeTabbedLine("li " + regToStr(dest) + ", " + std::to_string(node->getNum()));
                 // store in node.
                 break;
+            }
             default:
                 ;
         }
@@ -181,4 +297,12 @@ bool CodeGen::generate(){
     writeLine("\n\t.text");
     writeLine("\t.globl " + tree->getMainFunction());
     return prePostOrder(tree, &CodeGen::prePass, &CodeGen::postPass, this);
+}
+
+void CodeGen::initRegList(){
+    for(int i = NONE; i != s_seven; i++){
+        Registers temp = static_cast<Registers>(i);
+        regList.push_back({temp, true});
+    }
+    regList.push_back({s_seven, true});
 }

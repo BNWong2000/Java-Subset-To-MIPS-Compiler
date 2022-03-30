@@ -389,12 +389,6 @@ void AST::setAsFunctionCall(AST *id, AST *args){
     theExprType = functionCall;
 };
 
-// void AST::setAsAssignment(AST *assignStmt){
-//     theNode = expression;
-//     addChild(assignStmt);
-//     theExprType = assignExpr;
-// };
-
 //-------------------------------------------------
 
 void AST::printDecl(int indentLvl) {

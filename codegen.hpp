@@ -5,69 +5,8 @@
 
 #include "ast.hpp"
 #include <string>
-
-enum registers{
-    t_zero,
-    t_one,
-    t_two,
-    t_three,
-    t_four,
-    t_five,
-    t_six,
-    t_seven,
-    t_eight,
-    t_nine,
-    s_zero,
-    s_one,
-    s_two,
-    s_three,
-    s_four,
-    s_five,
-    s_six,
-    s_seven
-};
-
-inline std::string regToStr(Registers reg){
-    switch (reg){
-        case t_zero:
-            return "$t0";
-        case t_one:
-            return "$t1";
-        case t_two:
-            return "$t2";
-        case t_three:
-            return "$t3";
-        case t_four:
-            return "$t4";
-        case t_five:
-            return "$t5";
-        case t_six:
-            return "$t6";
-        case t_seven:
-            return "$t7";
-        case t_eight:
-            return "$t8";
-        case t_nine:
-            return "$t9";
-        case s_zero:
-            return "$s0";
-        case s_one:
-            return "$s1";
-        case s_two:
-            return "$s2";
-        case s_three:
-            return "$s3";
-        case s_four:
-            return "$s4";
-        case s_five:
-            return "$s5";
-        case s_six:
-            return "$s6";
-        case s_seven:
-            return "$s7";
-    }
-    return "ERRORRRRR";
-}
+#include <utility>
+#include "regEnums.hpp"
 
 class CodeGen{
 private:
@@ -97,11 +36,43 @@ private:
     void popFromStack(){
         stackLevel -= 4;
     }
+
+    void initRegList();
+
+    Registers getNextReg(){
+        for(int i = 0; i < regList.size(); i++){
+            if(regList[i].first != NONE && regList[i].second){
+                regList[i].second = false;
+                return regList[i].first;
+            }
+        }
+        // for(auto it : regList){
+        //     if(it.second && it.first != NONE){
+        //         it.second = false;
+        //         return it.first;
+        //     }
+        // }
+        return NONE;
+    }
+
+    void freeReg(Registers reg){
+        // just iterate through and search. Can't do binary search :/
+        for(int i = 0; i < regList.size(); i++){
+            if(regList[i].first == reg){
+                regList[i].second = true;
+                return;
+            }
+        }
+    }
+    // could use a map here, but there are so few registers, that searching in a vector is fine. 
+    // Also, iterating through a vector is a little simpler. 
+    std::vector <std::pair<Registers, bool>> regList; // if second is false, it's not available.
 public:
     CodeGen(AST *theTree, std::string mainName){
         tree = theTree;
         mainFuncName = mainName;
         stackLevel = 0;
+        initRegList();
     }
 
     bool globalsPass(AST *node);
@@ -113,6 +84,26 @@ public:
     bool generate();
 
 };
+
+inline std::string opToInstr(Operators op){
+    switch (op){
+        case op_ADD:    return "addu";
+        case op_SUB:    return "subu";
+        case op_MULT:   return "mulu";
+        case op_DIV:    return "divu";
+        case op_MOD:    return "remu";
+        case op_LT:     return "<";
+        case op_GT:     return ">";
+        case op_GE:     return ">=";
+        case op_LE:     return "<=";
+        case op_EQ:     return "==";
+        case op_NEQ:    return "!=";
+        case op_NOT:    return "!";
+        case op_AND:    return "&&";
+        case op_OR:     return "||";
+        default: return "invalid op.";
+    }
+}
 
 
 #endif
