@@ -98,7 +98,8 @@ bool CodeGen::prePass(AST *node){
                     // check if stored on stack yet or not. 
                     if(entry->offset == -1){
                         // store on stack and record...
-                        writeTabbedLine("subu $sp, $sp, 4");
+                        writeTabbedLine("subu $sp, $sp, 4    # " + node->getName() );
+                        
                         entry->offset = storeOnStack();
                     }
                 }
@@ -320,8 +321,13 @@ bool CodeGen::postPass(AST *node){
                         writeTabbedLine("li $a" + std::to_string(i - 1) + ", " + std::to_string(node->getNum()));
                     }else{
                         if(childList[i]->getReg() == NONE){
-                            auto symEntry = node->getTableEntry();
-                            writeTabbedLine("lw $a" + std::to_string(i - 1) + ", " + std::to_string(stackLevel - symEntry->offset) + "($sp)");
+                            SymEntry *symEntry = childList[i]->getTableEntry();
+                            if(symEntry->isGlobal){
+                                writeTabbedLine("lw $a" + std::to_string(i - 1) + ", _" + childList[i]->getName());
+                            }else{
+                                writeTabbedLine("lw $a" + std::to_string(i - 1) + ", " + std::to_string(stackLevel - symEntry->offset) + "($sp)");
+                            }
+                            
                         }else{
                             // it's a function or expression
                             writeTabbedLine("move $a" + std::to_string(i - 1) + ", " + regToStr(childList[i]->getReg()));
