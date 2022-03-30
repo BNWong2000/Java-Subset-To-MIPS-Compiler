@@ -65,6 +65,8 @@ bool CodeGen::prePass(AST *node){
         switch (node->theDeclType){
             case mainFunction:
                 initFuncStack = stackLevel;
+                writeLine("main:");
+                writeTabbedLine("jal _" + node->getFirstChild()->getFirstChild()->getName());
                 writeLine("\n_" + node->getFirstChild()->getFirstChild()->getName() + ":");
                 break;
             case function:
@@ -358,7 +360,7 @@ bool CodeGen::generate(){
         return false;
     }
     writeLine("\n\t.text");
-    writeLine("\t.globl _" + tree->getMainFunction());
+    writeLine("\t.globl main");
     
     bool rV = prePostOrder(tree, &CodeGen::prePass, &CodeGen::postPass, this);
     generateHeaderFuncs();
