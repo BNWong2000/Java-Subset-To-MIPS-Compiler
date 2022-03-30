@@ -65,11 +65,11 @@ bool CodeGen::prePass(AST *node){
         switch (node->theDeclType){
             case mainFunction:
                 initFuncStack = stackLevel;
-                writeLine("\n" + node->getFirstChild()->getFirstChild()->getName() + ":");
+                writeLine("\n_" + node->getFirstChild()->getFirstChild()->getName() + ":");
                 break;
             case function:
                 initFuncStack = stackLevel;
-                writeLine("\n" + node->getFirstChild()->getFirstChild()->getName() + ":");
+                writeLine("\n_" + node->getFirstChild()->getFirstChild()->getName() + ":");
                 writeTabbedLine("subu $sp, $sp, 4");
                 storeOnStack();
                 writeTabbedLine("sw $ra, 0($sp)");
@@ -334,7 +334,7 @@ bool CodeGen::postPass(AST *node){
                         }
                     }
                 }
-                writeTabbedLine("jal " + node->getFirstChild()->getName());
+                writeTabbedLine("jal _" + node->getFirstChild()->getName());
                 
                 restoreRegisters(registerList);
                 if(node->getTheVar() != var_VOID){
@@ -358,8 +358,11 @@ bool CodeGen::generate(){
         return false;
     }
     writeLine("\n\t.text");
-    writeLine("\t.globl " + tree->getMainFunction());
-    return prePostOrder(tree, &CodeGen::prePass, &CodeGen::postPass, this);
+    writeLine("\t.globl _" + tree->getMainFunction());
+    
+    bool rV = prePostOrder(tree, &CodeGen::prePass, &CodeGen::postPass, this);
+    generateHeaderFuncs();
+    return rV;
 }
 
 void CodeGen::initRegList(){
@@ -401,5 +404,14 @@ void CodeGen::restoreRegisters(std::vector<std::pair<Registers, int>> regs){
     if(regs.size() > 0)
         writeTabbedLine("addu $sp, $sp, " + std::to_string(regs.size()*4));
     // std::cout << "STACK FRAMEEEE" << std::endl;
+}
+
+void CodeGen::generateHeaderFuncs(){
+    writeLine(generate_getChar());
+    writeLine(generate_halt());
+    writeLine(generate_printb());
+    writeLine(generate_printc());
+    writeLine(generate_printi());
+    writeLine(generate_prints());
 }
 

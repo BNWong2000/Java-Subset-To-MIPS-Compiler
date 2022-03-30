@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 #include "regEnums.hpp"
+#include "headerFuncCode.hpp"
 
 class CodeGen{
 private:
@@ -73,6 +74,7 @@ private:
     std::vector <std::pair<Registers, bool>> regList; // if second is false, it's not available.
     std::vector<std::pair<Registers, int>> storeCurrRegisters();
     void restoreRegisters(std::vector<std::pair<Registers, int>> regs);
+    void generateHeaderFuncs();
 public:
     CodeGen(AST *theTree, std::string mainName){
         tree = theTree;
