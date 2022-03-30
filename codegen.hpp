@@ -46,12 +46,6 @@ private:
                 return regList[i].first;
             }
         }
-        // for(auto it : regList){
-        //     if(it.second && it.first != NONE){
-        //         it.second = false;
-        //         return it.first;
-        //     }
-        // }
         return NONE;
     }
 
@@ -64,9 +58,21 @@ private:
             }
         }
     }
+
+    void claimReg(Registers reg){
+        // just iterate through and search. Can't do binary search :/
+        for(int i = 0; i < regList.size(); i++){
+            if(regList[i].first == reg){
+                regList[i].second = false;
+                return;
+            }
+        }
+    }
     // could use a map here, but there are so few registers, that searching in a vector is fine. 
     // Also, iterating through a vector is a little simpler. 
     std::vector <std::pair<Registers, bool>> regList; // if second is false, it's not available.
+    std::vector<std::pair<Registers, int>> storeCurrRegisters();
+    void restoreRegisters(std::vector<std::pair<Registers, int>> regs);
 public:
     CodeGen(AST *theTree, std::string mainName){
         tree = theTree;

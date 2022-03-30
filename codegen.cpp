@@ -124,10 +124,10 @@ bool CodeGen::postPass(AST *node){
             {
                 int temp = stackLevel - initFuncStack;
                 writeTabbedLine("");
+                writeTabbedLine("lw $ra, " + std::to_string(temp-4) + "($sp)");
                 if(temp > 0){
                     writeTabbedLine("addu $sp, $sp, " + std::to_string(temp));
                 }
-                writeTabbedLine("lw $ra," + std::to_string(temp-4) + "($sp)");
                 writeTabbedLine("jr $ra");
                 break;
             }
@@ -264,30 +264,18 @@ bool CodeGen::postPass(AST *node){
                 writeTabbedLine(res);
                 break;
             }
-            case identifier:
+            case functionCall:
             {
-                // check if its a decl or not...
-                // SymEntry *entry = node->getTableEntry();
-                // if(entry->isFunc || entry->offset == -1){
-                    
-                // }
-                // if not, put it in a reg.
-                // grab reg, store in node.
-                // lw 
-                break;
-            }
-            case number:
-            {
-                // Registers dest = getNextReg();
-                // if(dest == NONE){
-                //     std::cerr << "here";
-                //     std::cerr << "ERROR: No registers remaining." << std::endl;
-                //     return false;
-                // }
-                // node->setReg(dest);
-                // // put it in a reg.
-                // writeTabbedLine("li " + regToStr(dest) + ", " + std::to_string(node->getNum()));
-                // store in node.
+                auto registerList = storeCurrRegisters();
+                writeTabbedLine("jal " + node->getFirstChild()->getName());
+                
+                restoreRegisters(registerList);
+                if(node->getTheVar() != var_VOID){
+                    // return value
+                    Registers newRetVal = getNextReg();
+                    writeTabbedLine("move " + regToStr(newRetVal) + ", $v0");
+                    node->setReg(newRetVal);
+                }
                 break;
             }
             default:
@@ -315,4 +303,34 @@ void CodeGen::initRegList(){
     regList.push_back({s_seven, true});
 }
 
+std::vector<std::pair<Registers, int>> CodeGen::storeCurrRegisters(){
+    std::cout << "STACK FRAMEEEE" << std::endl;
+    std::vector<std::pair<Registers, int>> result;
+    for(int i = 0; i < regList.size(); i++){
+        if(!regList[i].second && regList[i].first != NONE){
+            result.push_back({regList[i].first, 0});
+            freeReg(regList[i].first);
+        }
+    }
+
+    int currLevel = stackLevel;
+    if(result.size() > 0)
+        writeTabbedLine("subu $sp, $sp, " + std::to_string(result.size()*4));
+    for(int i = 0; i < result.size(); i++){
+        result[i].second = currLevel;
+        writeTabbedLine("sw " + regToStr(result[i].first) + ", " + std::to_string(currLevel - stackLevel) + "($sp)");
+        stackLevel += 4;
+    }
+    return result;
+}
+
+void CodeGen::restoreRegisters(std::vector<std::pair<Registers, int>> regs){
+
+    for(int i = 0; i < regs.size(); i++){
+        claimReg(regs[i].first);
+    }
+    if(regs.size() > 0)
+        writeTabbedLine("addu $sp, $sp, " + std::to_string(regs.size()*4));
+    std::cout << "STACK FRAMEEEE" << std::endl;
+}
 
