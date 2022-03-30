@@ -64,17 +64,20 @@ bool CodeGen::prePass(AST *node){
     if(node->theNode == declaration){
         switch (node->theDeclType){
             case mainFunction:
+                initFuncStack = stackLevel;
+                writeLine("\n" + node->getFirstChild()->getFirstChild()->getName() + ":");
                 break;
             case function:
                 initFuncStack = stackLevel;
-                break;
-            case declarator:
-                // Label
-                writeLine("\n" + node->getFirstChild()->getName() + ":");
+                writeLine("\n" + node->getFirstChild()->getFirstChild()->getName() + ":");
                 writeTabbedLine("subu $sp, $sp, 4");
                 storeOnStack();
                 writeTabbedLine("sw $ra, 0($sp)");
                 currParamCount = 0;
+                break;
+            case declarator:
+                // Label
+                
                 break;
             case parameter:
                 
@@ -170,8 +173,13 @@ bool CodeGen::postPass(AST *node){
                     }
                 }
 
-                
-
+                SymEntry *destEntry = node->getFirstChild()->getTableEntry();
+                if(destEntry->isGlobal){
+                    writeTabbedLine("sw " + regToStr(source) + ", _" + node->getFirstChild()->getName());
+                }else{
+                    writeTabbedLine("sw " + regToStr(source) + ", " + std::to_string(stackLevel - destEntry->offset) + "($sp)");
+                }
+                freeReg(source);
                 break;
             }
             default:
@@ -306,3 +314,5 @@ void CodeGen::initRegList(){
     }
     regList.push_back({s_seven, true});
 }
+
+
