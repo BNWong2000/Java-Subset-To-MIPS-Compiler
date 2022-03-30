@@ -267,6 +267,24 @@ bool CodeGen::postPass(AST *node){
             case functionCall:
             {
                 auto registerList = storeCurrRegisters();
+                auto childList = node->getChildren();
+                if(childList.size() > 5){
+                    std::cerr << "ERROR: More than 4 parameters for function " << node->getFirstChild()->getName() << std::endl;
+                    return false;
+                }
+                for(int i = 1; i < childList.size(); i++){
+                    if(childList[i]->theExprType == number){
+                        writeTabbedLine("li $a" + std::to_string(i - 1) + ", " + std::to_string(node->getNum()));
+                    }else{
+                        if(childList[i]->getReg() == NONE){
+                            auto symEntry = node->getTableEntry();
+                            writeTabbedLine("lw $a" + std::to_string(i - 1) + ", " + std::to_string(stackLevel - symEntry->offset) + "($sp)");
+                        }else{
+                            // it's a function or expression
+                            writeTabbedLine("move $a" + std::to_string(i - 1) + ", " + regToStr(childList[i]->getReg()));
+                        }
+                    }
+                }
                 writeTabbedLine("jal " + node->getFirstChild()->getName());
                 
                 restoreRegisters(registerList);
@@ -304,7 +322,8 @@ void CodeGen::initRegList(){
 }
 
 std::vector<std::pair<Registers, int>> CodeGen::storeCurrRegisters(){
-    std::cout << "STACK FRAMEEEE" << std::endl;
+    writeLine("");
+    // std::cout << "STACK FRAMEEEE" << std::endl;
     std::vector<std::pair<Registers, int>> result;
     for(int i = 0; i < regList.size(); i++){
         if(!regList[i].second && regList[i].first != NONE){
@@ -318,19 +337,20 @@ std::vector<std::pair<Registers, int>> CodeGen::storeCurrRegisters(){
         writeTabbedLine("subu $sp, $sp, " + std::to_string(result.size()*4));
     for(int i = 0; i < result.size(); i++){
         result[i].second = currLevel;
-        writeTabbedLine("sw " + regToStr(result[i].first) + ", " + std::to_string(currLevel - stackLevel) + "($sp)");
+        writeTabbedLine("sw " + regToStr(result[i].first) + ", " + std::to_string(stackLevel - currLevel) + "($sp)");
         stackLevel += 4;
     }
     return result;
 }
 
 void CodeGen::restoreRegisters(std::vector<std::pair<Registers, int>> regs){
-
-    for(int i = 0; i < regs.size(); i++){
+    for(int i = regs.size()-1; i >= 0; i--){
+        stackLevel -= 4;
         claimReg(regs[i].first);
+        writeTabbedLine("lw " + regToStr(regs[i].first) + ", " + std::to_string(stackLevel - regs[i].second) + "($sp)");
     }
     if(regs.size() > 0)
         writeTabbedLine("addu $sp, $sp, " + std::to_string(regs.size()*4));
-    std::cout << "STACK FRAMEEEE" << std::endl;
+    // std::cout << "STACK FRAMEEEE" << std::endl;
 }
 

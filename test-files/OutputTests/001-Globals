@@ -2,12 +2,24 @@ int i;
 int j;
 boolean k;
 
-boolean bar(int i, int k){
-    return true;
+int bar(int i, int k){
+    int l;
+    return 1;
 }
 
 main(){
     // prints("asdf");
     // prints("as");
-    k = bar(0,0);
+    int i;
+    // i = foo() + foo() + foo();
+    bar(1, bar(foo(), foo()));
+    // int i;
+    // i = 0;
+    // i = i + 1;
+    // i = 1 + foo() + 1 + 1;
 }
+
+int foo(){
+    return 1;
+}
+
