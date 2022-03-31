@@ -100,15 +100,15 @@ inline std::string opToInstr(Operators op){
         case op_MULT:   return "mulu";
         case op_DIV:    return "divu";
         case op_MOD:    return "remu";
-        case op_LT:     return "<";
-        case op_GT:     return ">";
-        case op_GE:     return ">=";
-        case op_LE:     return "<=";
-        case op_EQ:     return "==";
-        case op_NEQ:    return "!=";
+        case op_LT:     return "slt";
+        case op_GT:     return "sgt";
+        case op_GE:     return "sge";
+        case op_LE:     return "sle";
+        case op_EQ:     return "seq";
+        case op_NEQ:    return "sne";
         case op_NOT:    return "!";
-        case op_AND:    return "&&";
-        case op_OR:     return "||";
+        case op_AND:    return "and";
+        case op_OR:     return "os";
         default: return "invalid op.";
     }
 }

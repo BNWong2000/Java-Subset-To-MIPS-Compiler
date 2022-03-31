@@ -215,7 +215,7 @@ bool CodeGen::postPass(AST *node){
                             // local variable. find stack offset.
                             writeTabbedLine("lw " + regToStr(source) + ", " + std::to_string(stackLevel - offset) + "($sp)");
                         }
-                    }else if(temp->theExprType == number){
+                    }else if(temp->theExprType == number || temp->theExprType == boolLit){
                         writeTabbedLine("li " + regToStr(source) + ", " + std::to_string(temp->getNum()));
                     }else{
                         std::cerr << "ERROR - an expression doesn't have a reg set up." << std::endl;
@@ -270,7 +270,12 @@ bool CodeGen::postPass(AST *node){
         switch(node->theExprType){
             case unary:
                 break;
+            // all binary ops have the same tree structure.
+            // and at this point, we know our semantics are good. 
             case arithmetic:
+            case conditional:
+            case relational:
+            case equality:
             {
                 // check it's children. (gauranteed 2 children)
                 Registers childOne = node->getChildren()[0]->getReg();
@@ -283,14 +288,14 @@ bool CodeGen::postPass(AST *node){
                         SymEntry *tempEntry = temp->getTableEntry();
                         int offset = tempEntry->offset;
                         childOne = getNextReg();
-                        if(offset == -1){
+                        if(tempEntry->isGlobal){
                             // global variable
                             writeTabbedLine("lw " + regToStr(childOne) + ", _" + temp->getName());
                         }else{
                             // local variable. find stack offset.
                             writeTabbedLine("lw " + regToStr(childOne) + ", " + std::to_string(stackLevel - offset) + "($sp)");
                         }
-                    }else if(temp->theExprType == number){
+                    }else if(temp->theExprType == number || temp->theExprType == boolLit){
                         // do another separate thing.
                         childOne = getNextReg();
                         writeTabbedLine("li " + regToStr(childOne) + ", " + std::to_string(temp->getNum()));
@@ -307,14 +312,14 @@ bool CodeGen::postPass(AST *node){
                         SymEntry *tempEntry = temp->getTableEntry();
                         int offset = tempEntry->offset;
                         childTwo = getNextReg();
-                        if(offset == -1){
+                        if(tempEntry->isGlobal){
                             // global variable
                             writeTabbedLine("lw " + regToStr(childTwo) + ", _" + temp->getName());
                         }else{
                             // local variable. find stack offset.
                             writeTabbedLine("lw " + regToStr(childTwo) + ", " + std::to_string(stackLevel - offset) + "($sp)");
                         }
-                    }else if(temp->theExprType == number){
+                    }else if(temp->theExprType == number || temp->theExprType == boolLit){
                         // do another separate thing.
                         childTwo = getNextReg();
                         writeTabbedLine("li " + regToStr(childTwo) + ", " + std::to_string(temp->getNum()));
@@ -345,12 +350,6 @@ bool CodeGen::postPass(AST *node){
                 writeTabbedLine(res);
                 break;
             }
-            case relational:
-                break;
-            case equality:
-                break;
-            case conditional:
-                break;
             case functionCall:
             {
                 auto registerList = storeCurrRegisters();
