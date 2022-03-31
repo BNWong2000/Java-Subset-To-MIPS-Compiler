@@ -45,16 +45,53 @@ bool CodeGen::globalsPass(AST *node){
     }else if(node->theNode == expression){
         // check for string lit
         if(node->theExprType == stringLit){
-            // do stuff here....
             std::string stringLit = node->getName();
             std::string result = "str" + std::to_string(node->getNum()) + ":\t.byte ";  
-            for(int i = 0; i < stringLit.size(); i++){
-                result += std::to_string(int(stringLit[i]));
+            for(int i = 1; i < stringLit.size()-1; i++){
+                // bounds are from 1 to size()-2, to ignore the quotes at the start/finish
+                if(stringLit[i] == '\\' && i+1 < stringLit.size()-1){
+                    switch (stringLit[i+1]){
+                        case 'n':
+                            result += std::to_string(int('\n'));
+                            i++;
+                            break;
+                        case 'b':
+                            result += std::to_string(int('\b'));
+                            i++;
+                            break;
+                        case 'f':
+                            result += std::to_string(int('\f'));
+                            i++;
+                            break;
+                        case 't':
+                            result += std::to_string(int('\t'));
+                            i++;
+                            break;
+                        case 'r':
+                            result += std::to_string(int('\r'));
+                            i++;
+                            break;
+                        case '\'':
+                            result += std::to_string(int('\''));
+                            i++;
+                            break;
+                        case '\"':
+                            result += std::to_string(int('\"'));
+                            i++;
+                            break;
+                        default:
+                            ;
+                    }
+                }else{
+                    result += std::to_string(int(stringLit[i]));
+                }
                 result += ", ";
             }
             result += "0";
             writeLine(result);
             writeTabbedLine(".align 2");
+            // store the length of the string.
+            writeLine("str" + std::to_string(node->getNum()) + "Len:\t.word " + std::to_string(stringLit.size() + 1));
         }
     }
     return true;
@@ -310,6 +347,10 @@ bool CodeGen::postPass(AST *node){
             }
             case relational:
                 break;
+            case equality:
+                break;
+            case conditional:
+                break;
             case functionCall:
             {
                 auto registerList = storeCurrRegisters();
@@ -321,6 +362,9 @@ bool CodeGen::postPass(AST *node){
                 for(int i = 1; i < childList.size(); i++){
                     if(childList[i]->theExprType == number){
                         writeTabbedLine("li $a" + std::to_string(i - 1) + ", " + std::to_string(node->getNum()));
+                    }else if(childList[i]->theExprType == stringLit){
+                        writeTabbedLine("la $a0, str" + std::to_string(node->getNum()));
+                        writeTabbedLine("lw $a1, str" + std::to_string(node->getNum()) + "Len");
                     }else{
                         if(childList[i]->getReg() == NONE){
                             SymEntry *symEntry = childList[i]->getTableEntry();

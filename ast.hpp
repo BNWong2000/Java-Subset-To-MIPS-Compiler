@@ -95,7 +95,6 @@ enum Expr {
     conditional,
     arithmetic,
     functionCall,
-    // assignExpr,
 };
 
 // Declaration types - to be used to define the type of declaration for each class instance
