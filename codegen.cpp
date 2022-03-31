@@ -47,8 +47,10 @@ bool CodeGen::globalsPass(AST *node){
         if(node->theExprType == stringLit){
             std::string stringLit = node->getName();
             std::string result = "str" + std::to_string(node->getNum()) + ":\t.byte ";  
+            int strLen = 0;
             for(int i = 1; i < stringLit.size()-1; i++){
                 // bounds are from 1 to size()-2, to ignore the quotes at the start/finish
+                strLen++;
                 if(stringLit[i] == '\\' && i+1 < stringLit.size()-1){
                     switch (stringLit[i+1]){
                         case 'n':
@@ -91,7 +93,7 @@ bool CodeGen::globalsPass(AST *node){
             writeLine(result);
             writeTabbedLine(".align 2");
             // store the length of the string.
-            writeLine("str" + std::to_string(node->getNum()) + "Len:\t.word " + std::to_string(stringLit.size() + 1));
+            writeLine("str" + std::to_string(node->getNum()) + "Len:\t.word " + std::to_string(strLen + 1));
         }
     }
     return true;

@@ -21,7 +21,7 @@ std::string generate_halt(){
 std::string generate_printb(){
     std::string result = 
     "\n_printb:\n";
-    result += "\tli $v0, 10 \n";
+    result += "\tli $v0, 1 \n";
     result += "\tsyscall \n";
     result += "\tjr $ra";
     return result;
