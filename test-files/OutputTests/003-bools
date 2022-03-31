@@ -1,0 +1,8 @@
+main(){
+    boolean bob;
+    bob = true;
+    if(bob && 2 == 2){
+        ;
+    }
+    while(2 < 3){;}
+}

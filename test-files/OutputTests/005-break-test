@@ -1,0 +1,12 @@
+main(){
+    int i;
+    i = 0;
+    while(true){
+        prints("loop\n");
+        if(i == 7){
+            prints("breaking\n");
+            break;
+        }
+        i = i + 1;
+    }
+}

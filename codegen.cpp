@@ -147,6 +147,63 @@ bool CodeGen::prePass(AST *node){
             default:
                 ;
         }
+    }else if(node->theNode == statement){
+        switch(node->theStmtType){
+            case ifStmt: // if always has 2 children
+            {
+                currIfCount++;
+                auto children = node->getChildren();
+                children[0]->setIsIfLoop(1); // conditional for if
+                children[0]->setNum(currIfCount); 
+                children[1]->setIsIfLoop(1); // block/body
+                children[1]->setNum(currIfCount); 
+                // writeLine("ifStart" + std::to_string(currIfCount) + ":"); // print label
+                node->setNum(currIfCount); // store it in the node.
+                break;
+            }
+            case ifElseStmt: // ifelse always has 3 children
+            {
+                currIfCount++;
+                auto children = node->getChildren();
+                children[0]->setIsIfLoop(2); // conditional for if/else
+                children[0]->setNum(currIfCount);
+                children[1]->setIsIfLoop(1); // if block/body
+                children[1]->setNum(currIfCount);
+                children[2]->setIsIfLoop(2); // else block/body
+                children[2]->setNum(currIfCount);
+                // writeLine("ifStart" + std::to_string(currIfCount) + ":"); // print label
+                node->setNum(currIfCount); // store it in the node.
+                break;
+            }
+            case whileStmt: // while always has 2 children
+            {
+                currWhileCount++;
+                auto children = node->getChildren();
+                children[0]->setIsIfLoop(3); // conditional
+                children[0]->setNum(currWhileCount); 
+                children[1]->setIsIfLoop(3); // block/body
+                children[1]->setNum(currWhileCount); 
+                writeLine("whileStart" + std::to_string(currWhileCount) + ":"); // print label
+                break;
+            }
+            case blockStmt:
+            {
+                switch(node->getIsIfLoop()){
+                    case 1: // if statement block
+                        break;
+                    case 2: // else statement block
+                        writeLine("elseStart" + std::to_string(node->getNum()) + ":");
+                        break;
+                    case 3: // while statement block
+                        break;
+                    default:
+                        ;
+                }
+                break;
+            }
+            default:
+                ;
+        }
     }
     return true;
 }
@@ -263,6 +320,32 @@ bool CodeGen::postPass(AST *node){
                 writeTabbedLine("jr $ra");
                 break;
             }
+            case ifStmt:
+                writeLine("ifEnd" + std::to_string(node->getNum()) + ":"); // print label
+                break;
+            case ifElseStmt:
+                writeLine("ifEnd" + std::to_string(node->getNum()) + ":"); // print label
+                break;
+            case blockStmt:
+                switch (node->getIsIfLoop()){
+                    case 1:
+                        writeTabbedLine("j ifEnd" + std::to_string(node->getNum()));
+                        break;
+                    case 2:
+                        break;
+                    case 3: // while loop block
+                        writeTabbedLine("j whileStart" + std::to_string(node->getNum()));
+                        break;
+                    default:
+                        ;
+                }
+                break;
+            case whileStmt:
+                writeLine("whileEnd" + std::to_string(node->getNum()) + ":"); // print label
+                break;
+            case breakStmt:
+                writeTabbedLine("j whileEnd" + std::to_string(currWhileCount));
+                break;
             default:
                 ;
         }
@@ -273,9 +356,9 @@ bool CodeGen::postPass(AST *node){
             // all binary ops have the same tree structure.
             // and at this point, we know our semantics are good. 
             case arithmetic:
-            case conditional:
-            case relational:
             case equality:
+            case conditional:
+            case relational: // but note that equalities, conditionals and relationals can be used for if/while
             {
                 // check it's children. (gauranteed 2 children)
                 Registers childOne = node->getChildren()[0]->getReg();
@@ -348,6 +431,16 @@ bool CodeGen::postPass(AST *node){
                 std::string res = opToInstr(node->getTheOp()) + " " + regToStr(dest) + ", ";
                 res += regToStr(childOne) + ", " + regToStr(childTwo);
                 writeTabbedLine(res);
+                if(node->getIsIfLoop() == 1){
+                    // This conditional is being used for if statement. 
+                    writeTabbedLine("beqz " + regToStr(node->getReg()) + ", ifEnd" + std::to_string(node->getNum()));
+                }else if(node->getIsIfLoop() == 2){
+                    // This conditional is being used for ifelse statement. 
+                    writeTabbedLine("beqz " + regToStr(node->getReg()) + ", elseStart" + std::to_string(node->getNum()));
+                }else if(node->getIsIfLoop() == 3){
+                    // This conditional is being used for while statement. 
+                    writeTabbedLine("beqz " + regToStr(node->getReg()) + ", whileEnd" + std::to_string(node->getNum()));
+                } 
                 break;
             }
             case functionCall:
@@ -362,8 +455,8 @@ bool CodeGen::postPass(AST *node){
                     if(childList[i]->theExprType == number){
                         writeTabbedLine("li $a" + std::to_string(i - 1) + ", " + std::to_string(node->getNum()));
                     }else if(childList[i]->theExprType == stringLit){
-                        writeTabbedLine("la $a0, str" + std::to_string(node->getNum()));
-                        writeTabbedLine("lw $a1, str" + std::to_string(node->getNum()) + "Len");
+                        writeTabbedLine("la $a0, str" + std::to_string(childList[i]->getNum()));
+                        writeTabbedLine("lw $a1, str" + std::to_string(childList[i]->getNum()) + "Len");
                     }else{
                         if(childList[i]->getReg() == NONE){
                             SymEntry *symEntry = childList[i]->getTableEntry();

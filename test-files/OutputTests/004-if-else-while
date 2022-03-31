@@ -1,0 +1,21 @@
+main(){
+    int i;
+    if(1 == 2){
+        i = 1;
+        prints("if1\n");
+    }else{
+        i = 2;
+        prints("else\n");
+    }
+
+    if(2 == 2){
+        i = 3;
+        prints("if2\n");
+    }
+    i = 4;
+
+    while(i > 2){
+        prints("while\n");
+        i = i - 1;
+    }
+}

@@ -146,11 +146,15 @@ protected:
     // Register for the node
     Registers reg;
 
-    // an int to store information for integer literals
+    // an int to store information relating to the node.
     int num;
 
     // Line number of the statement, for printing/debugging
     int lineNo;
+
+    // If it's part of an if or while
+    // 1 for if, 2 for else, 3 for while
+    int isIfLoop;
 
     void printProg (int indentLvl);
     void printStmt (int indentLvl);
@@ -169,7 +173,10 @@ public:
     void setReg(Registers myReg){reg = myReg;}
 
     AST(std::string name);
-    AST(int line) : lineNo(line) { reg = NONE; }
+    AST(int line) : lineNo(line) { 
+        reg = NONE; 
+        isIfLoop = 0;
+    }
 
     ~AST()
     {
@@ -224,6 +231,14 @@ public:
 
     void setTheVar(Variables var){
         theVar = var;
+    }
+
+    int getIsIfLoop(){
+        return isIfLoop;
+    }
+
+    void setIsIfLoop(int x){
+        isIfLoop = x;
     }
 
     bool checkSemantics();

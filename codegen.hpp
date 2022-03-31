@@ -26,6 +26,8 @@ private:
 
     int stackLevel;
     int currParamCount;
+    int currWhileCount;
+    int currIfCount;
     int initFuncStack;
 
     int storeOnStack(){
@@ -80,6 +82,8 @@ public:
         tree = theTree;
         mainFuncName = mainName;
         stackLevel = 0;
+        currWhileCount = -1;
+        currIfCount = -1;
         initRegList();
     }
 
