@@ -62,6 +62,14 @@ private:
         }
     }
 
+    void freeAllReg(){
+        for(int i = 0; i < regList.size(); i++){
+            if(!regList[i].second){
+                regList[i].second = true;
+            }
+        }
+    }
+
     void claimReg(Registers reg){
         // just iterate through and search. Can't do binary search :/
         for(int i = 0; i < regList.size(); i++){

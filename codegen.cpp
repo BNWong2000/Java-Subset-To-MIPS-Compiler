@@ -160,7 +160,7 @@ bool CodeGen::prePass(AST *node){
                 children[1]->setIsIfOrLoop(ifBlock); // block/body
                 children[1]->setNum(currIfCount); 
                 // writeLine("ifStart" + std::to_string(currIfCount) + ":"); // print label
-                node->setNum(currIfCount); // store it in the node.
+                // node->setNum(currIfCount); // store it in the node.
                 break;
             }
             case ifElseStmt: // ifelse always has 3 children
@@ -174,7 +174,7 @@ bool CodeGen::prePass(AST *node){
                 children[2]->setIsIfOrLoop(elseBlock); // else block/body
                 children[2]->setNum(currIfCount);
                 // writeLine("ifStart" + std::to_string(currIfCount) + ":"); // print label
-                node->setNum(currIfCount); // store it in the node.
+                // node->setNum(currIfCount); // store it in the node.
                 break;
             }
             case whileStmt: // while always has 2 children
@@ -226,6 +226,7 @@ bool CodeGen::postPass(AST *node){
                     writeTabbedLine("addu $sp, $sp, " + std::to_string(temp));
                 }
                 writeTabbedLine("jr $ra");
+                freeAllReg();
                 break;
             }
             case declarator:
@@ -297,9 +298,7 @@ bool CodeGen::postPass(AST *node){
                 int temp = stackLevel - initFuncStack;
                 writeTabbedLine("");
                 writeTabbedLine("lw $ra, " + std::to_string(temp-4) + "($sp)");
-                if(temp > 0){
-                    writeTabbedLine("addu $sp, $sp, " + std::to_string(temp));
-                }
+                
                 if(node->getChildren().size() == 1){
                     
                     // node is returning something...
@@ -313,9 +312,9 @@ bool CodeGen::postPass(AST *node){
                     }else if(child->theExprType == identifier){
                         auto entry = child->getTableEntry();
                         if(entry->isGlobal){
-                            writeTabbedLine("sw $v0, _" + child->getName());
+                            writeTabbedLine("lw $v0, _" + child->getName());
                         }else{
-                            writeTabbedLine("sw $v0, " + std::to_string(stackLevel - entry->offset) + "($sp)");
+                            writeTabbedLine("lw $v0, " + std::to_string(stackLevel - entry->offset) + "($sp)");
                         }
                     }else if(child->theExprType == boolLit){
                         writeTabbedLine("li $v0, " + std::to_string(child->getNum()));
@@ -323,14 +322,17 @@ bool CodeGen::postPass(AST *node){
                         writeTabbedLine("move $v0, " + regToStr(child->getReg()));
                     }
                 }
+                if(temp > 0){
+                    writeTabbedLine("addu $sp, $sp, " + std::to_string(temp));
+                }
                 writeTabbedLine("jr $ra");
                 break;
             }
             case ifStmt:
-                writeLine("ifEnd" + std::to_string(node->getNum()) + ":"); // print label
+                writeLine("ifEnd" + std::to_string(node->getFirstChild()->getNum()) + ":"); // print label
                 break;
             case ifElseStmt:
-                writeLine("ifEnd" + std::to_string(node->getNum()) + ":"); // print label
+                writeLine("ifEnd" + std::to_string(node->getFirstChild()->getNum()) + ":"); // print label
                 break;
             case blockStmt:
                 break;
@@ -393,6 +395,9 @@ bool CodeGen::postPass(AST *node){
                 
                 if(childOne == NONE){
                     AST *temp = node->getFirstChild();
+                    if(temp->theNode == statement){
+                        temp = temp->getFirstChild();
+                    }
                     if(temp->theExprType == identifier){
                         // do something else
                         SymEntry *tempEntry = temp->getTableEntry();
@@ -417,6 +422,9 @@ bool CodeGen::postPass(AST *node){
 
                 if(childTwo == NONE){
                     AST *temp = node->getChildren()[1];
+                    if(temp->theNode == statement){
+                        temp = temp->getFirstChild();
+                    }
                     if(temp->theExprType == identifier){
                         // do something else
                         SymEntry *tempEntry = temp->getTableEntry();
