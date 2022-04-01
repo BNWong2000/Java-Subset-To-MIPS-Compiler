@@ -181,7 +181,7 @@ bool CodeGen::prePass(AST *node){
             {
                 currWhileCount++;
                 auto children = node->getChildren();
-                node->setNum(currWhileCount);
+                // node->setNum(currWhileCount);
                 children[0]->setIsIfOrLoop(whileConditional); // conditional
                 children[0]->setNum(currWhileCount); 
                 children[1]->setIsIfOrLoop(whileBlock); // block/body
@@ -337,7 +337,7 @@ bool CodeGen::postPass(AST *node){
             case blockStmt:
                 break;
             case whileStmt:
-                writeLine("whileEnd" + std::to_string(node->getNum()) + ":"); // print label
+                writeLine("whileEnd" + std::to_string(node->getFirstChild()->getNum()) + ":"); // print label
                 break;
             case breakStmt:
                 writeTabbedLine("j whileEnd" + std::to_string(currWhileCount));
