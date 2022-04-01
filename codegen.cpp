@@ -300,12 +300,16 @@ bool CodeGen::postPass(AST *node){
                 if(temp > 0){
                     writeTabbedLine("addu $sp, $sp, " + std::to_string(temp));
                 }
-
                 if(node->getChildren().size() == 1){
+                    
                     // node is returning something...
                     auto child = node->getFirstChild();
+                    if(child->theNode == statement){
+                        // Assignment (edge case);
+                        child = child->getFirstChild();
+                    }
                     if(child->theExprType == number){
-                        writeTabbedLine("li $v0, " + std::to_string(node->getNum()));
+                        writeTabbedLine("li $v0, " + std::to_string(child->getNum()));
                     }else if(child->theExprType == identifier){
                         auto entry = child->getTableEntry();
                         if(entry->isGlobal){
@@ -314,7 +318,7 @@ bool CodeGen::postPass(AST *node){
                             writeTabbedLine("sw $v0, " + std::to_string(stackLevel - entry->offset) + "($sp)");
                         }
                     }else if(child->theExprType == boolLit){
-                        writeTabbedLine("li $v0, " + std::to_string(node->getNum()));
+                        writeTabbedLine("li $v0, " + std::to_string(child->getNum()));
                     }else{
                         writeTabbedLine("move $v0, " + regToStr(child->getReg()));
                     }
@@ -342,7 +346,40 @@ bool CodeGen::postPass(AST *node){
     }else if(node->theNode == expression){
         switch(node->theExprType){
             case unary:
+            {
+                auto child = node->getFirstChild();
+                Registers source = child->getReg();
+                if(source == NONE){
+                    if(child->theExprType == identifier){
+                        SymEntry *tempEntry = child->getTableEntry();
+                        int offset = tempEntry->offset;
+                        source = getNextReg();
+                        if(tempEntry->isGlobal){
+                            // global variable
+                            writeTabbedLine("lw " + regToStr(source) + ", _" + child->getName());
+                        }else{
+                            // local variable. find stack offset.
+                            writeTabbedLine("lw " + regToStr(source) + ", " + std::to_string(stackLevel - offset) + "($sp)");
+                        }
+                    }else if(child->theExprType == number || child->theExprType == boolLit){
+                        // do another separate thing.
+                        source = getNextReg();
+                        writeTabbedLine("li " + regToStr(source) + ", " + std::to_string(child->getNum()));
+                    }else{
+                        std::cerr << "ERROR - an expression doesn't have a reg set up." << std::endl;
+                        return false;
+                    }
+                }
+                freeReg(source);
+                Registers dest = getNextReg();
+                if(node->getTheOp() == op_SUB){
+                    writeTabbedLine("negu " + regToStr(dest) + ", " + regToStr(source));
+                }else if(node->getTheOp() == op_NOT){
+                    writeTabbedLine("xori " + regToStr(dest) + ", " + regToStr(source) + ", 1");
+                }
+                node->setReg(dest);
                 break;
+            }
             // all binary ops have the same tree structure.
             // and at this point, we know our semantics are good. 
             case arithmetic:
@@ -420,17 +457,7 @@ bool CodeGen::postPass(AST *node){
                 // store reg in the node, and exec instruction
                 std::string res = opToInstr(node->getTheOp()) + " " + regToStr(dest) + ", ";
                 res += regToStr(childOne) + ", " + regToStr(childTwo);
-                writeTabbedLine(res);
-                if(node->getIsIfOrLoop() == ifConditional){
-                    // This conditional is being used for if statement. 
-                    writeTabbedLine("beqz " + regToStr(node->getReg()) + ", ifEnd" + std::to_string(node->getNum()));
-                }else if(node->getIsIfOrLoop() == elseConditional){
-                    // This conditional is being used for ifelse statement. 
-                    writeTabbedLine("beqz " + regToStr(node->getReg()) + ", elseStart" + std::to_string(node->getNum()));
-                }else if(node->getIsIfOrLoop() == whileConditional){
-                    // This conditional is being used for while statement. 
-                    writeTabbedLine("beqz " + regToStr(node->getReg()) + ", whileEnd" + std::to_string(node->getNum()));
-                } 
+                writeTabbedLine(res); 
                 break;
             }
             case functionCall:
@@ -442,23 +469,28 @@ bool CodeGen::postPass(AST *node){
                     return false;
                 }
                 for(int i = 1; i < childList.size(); i++){
-                    if(childList[i]->theExprType == number){
-                        writeTabbedLine("li $a" + std::to_string(i - 1) + ", " + std::to_string(childList[i]->getNum()));
-                    }else if(childList[i]->theExprType == stringLit){
-                        writeTabbedLine("la $a0, str" + std::to_string(childList[i]->getNum()));
-                        writeTabbedLine("lw $a1, str" + std::to_string(childList[i]->getNum()) + "Len");
+                    auto child = childList[i];
+                    if(child->theNode == statement){
+                        // assignment (edge case)
+                        child = child->getFirstChild();
+                    }
+                    if(child->theExprType == number || child->theExprType == boolLit){
+                        writeTabbedLine("li $a" + std::to_string(i - 1) + ", " + std::to_string(child->getNum()));
+                    }else if(child->theExprType == stringLit){
+                        writeTabbedLine("la $a0, str" + std::to_string(child->getNum()));
+                        writeTabbedLine("lw $a1, str" + std::to_string(child->getNum()) + "Len");
                     }else{
-                        if(childList[i]->getReg() == NONE){
-                            SymEntry *symEntry = childList[i]->getTableEntry();
+                        if(child->getReg() == NONE){
+                            SymEntry *symEntry = child->getTableEntry();
                             if(symEntry->isGlobal){
-                                writeTabbedLine("lw $a" + std::to_string(i - 1) + ", _" + childList[i]->getName());
+                                writeTabbedLine("lw $a" + std::to_string(i - 1) + ", _" + child->getName());
                             }else{
                                 writeTabbedLine("lw $a" + std::to_string(i - 1) + ", " + std::to_string(stackLevel - symEntry->offset) + "($sp)");
                             }
                             
                         }else{
                             // it's a function or expression
-                            writeTabbedLine("move $a" + std::to_string(i - 1) + ", " + regToStr(childList[i]->getReg()));
+                            writeTabbedLine("move $a" + std::to_string(i - 1) + ", " + regToStr(child->getReg()));
                         }
                     }
                 }
@@ -478,6 +510,57 @@ bool CodeGen::postPass(AST *node){
         }
     }
     switch (node->getIsIfOrLoop()){
+        case ifConditional:
+        {
+            Registers source = node->getReg();
+            if(source == NONE){
+                auto entry = node->getTableEntry();
+                source = getNextReg();
+                if(entry->isGlobal){
+                    writeTabbedLine("lw " + regToStr(source) + ", _" + node->getName());
+                }else{
+                    int offset = entry->offset;
+                    writeTabbedLine("lw " + regToStr(source) + ", " + std::to_string(stackLevel - offset) + "($sp)");
+                }
+            }
+            writeTabbedLine("beqz " + regToStr(source) + ", ifEnd" + std::to_string(node->getNum()));
+            freeReg(source);
+            break;
+        }
+        case elseConditional:
+        {
+            Registers source = node->getReg();
+            if(source == NONE){
+                auto entry = node->getTableEntry();
+                source = getNextReg();
+                if(entry->isGlobal){
+                    writeTabbedLine("lw " + regToStr(source) + ", _" + node->getName());
+                }else{
+                    int offset = entry->offset;
+                    writeTabbedLine("lw " + regToStr(source) + ", " + std::to_string(stackLevel - offset) + "($sp)");
+                }
+            }
+            writeTabbedLine("beqz " + regToStr(source) + ", elseStart" + std::to_string(node->getNum()));
+            freeReg(source);
+            break;
+        }
+        case whileConditional:
+        {
+            Registers source = node->getReg();
+            if(source == NONE){
+                auto entry = node->getTableEntry();
+                source = getNextReg();
+                if(entry->isGlobal){
+                    writeTabbedLine("lw " + regToStr(source) + ", _" + node->getName());
+                }else{
+                    int offset = entry->offset;
+                    writeTabbedLine("lw " + regToStr(source) + ", " + std::to_string(stackLevel - offset) + "($sp)");
+                }
+            }
+            writeTabbedLine("beqz " + regToStr(source) + ", whileEnd" + std::to_string(node->getNum()));
+            freeReg(source);
+            break;
+        }
         case ifBlock:
             writeTabbedLine("j ifEnd" + std::to_string(node->getNum()));
             break;

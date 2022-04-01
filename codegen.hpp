@@ -112,7 +112,7 @@ inline std::string opToInstr(Operators op){
         case op_NEQ:    return "sne";
         case op_NOT:    return "!";
         case op_AND:    return "and";
-        case op_OR:     return "os";
+        case op_OR:     return "or";
         default: return "invalid op.";
     }
 }
