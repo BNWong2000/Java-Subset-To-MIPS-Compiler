@@ -451,6 +451,14 @@ bool CodeGen::postPass(AST *node){
 
                 if(node->getTheOp() == op_DIV || node->getTheOp() == op_MOD){
                     // div by zero error
+                    writeTabbedLine("bnez " + regToStr(childTwo) + ", goodDiv");
+                    writeTabbedLine(".data");
+                    writeLine("divZeroErr:\t.asciiz \"Runtime Error: divide by zero\n\"");
+                    writeTabbedLine(".text");
+                    writeLine("divCheck:");
+                    writeTabbedLine("la $a0, divZeroErr");
+                    writeTabbedLine("jal ERROR");
+                    writeLine("goodDiv:");
                 }
                 
                 // free reg from children. 
