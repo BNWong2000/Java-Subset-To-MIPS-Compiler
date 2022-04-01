@@ -3,7 +3,7 @@
 std::string generate_getChar(){
     std::string result = 
     "\n_getchar:\n";
-    result += "\t \n";
+    result += "\tli $v0, 12 \n";
     result += "\tsyscall \n";
     result += "\tjr $ra";
     return result;

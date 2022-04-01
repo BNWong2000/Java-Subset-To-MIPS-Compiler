@@ -155,9 +155,9 @@ bool CodeGen::prePass(AST *node){
             {
                 currIfCount++;
                 auto children = node->getChildren();
-                children[0]->setIsIfLoop(1); // conditional for if
+                children[0]->setIsIfOrLoop(ifConditional); // conditional for if
                 children[0]->setNum(currIfCount); 
-                children[1]->setIsIfLoop(1); // block/body
+                children[1]->setIsIfOrLoop(ifBlock); // block/body
                 children[1]->setNum(currIfCount); 
                 // writeLine("ifStart" + std::to_string(currIfCount) + ":"); // print label
                 node->setNum(currIfCount); // store it in the node.
@@ -167,11 +167,11 @@ bool CodeGen::prePass(AST *node){
             {
                 currIfCount++;
                 auto children = node->getChildren();
-                children[0]->setIsIfLoop(2); // conditional for if/else
+                children[0]->setIsIfOrLoop(elseConditional); // conditional for if/else
                 children[0]->setNum(currIfCount);
-                children[1]->setIsIfLoop(1); // if block/body
+                children[1]->setIsIfOrLoop(ifBlock); // if block/body
                 children[1]->setNum(currIfCount);
-                children[2]->setIsIfLoop(2); // else block/body
+                children[2]->setIsIfOrLoop(elseBlock); // else block/body
                 children[2]->setNum(currIfCount);
                 // writeLine("ifStart" + std::to_string(currIfCount) + ":"); // print label
                 node->setNum(currIfCount); // store it in the node.
@@ -181,31 +181,31 @@ bool CodeGen::prePass(AST *node){
             {
                 currWhileCount++;
                 auto children = node->getChildren();
-                children[0]->setIsIfLoop(3); // conditional
+                node->setNum(currWhileCount);
+                children[0]->setIsIfOrLoop(whileConditional); // conditional
                 children[0]->setNum(currWhileCount); 
-                children[1]->setIsIfLoop(3); // block/body
+                children[1]->setIsIfOrLoop(whileBlock); // block/body
                 children[1]->setNum(currWhileCount); 
                 writeLine("whileStart" + std::to_string(currWhileCount) + ":"); // print label
                 break;
             }
             case blockStmt:
-            {
-                switch(node->getIsIfLoop()){
-                    case 1: // if statement block
-                        break;
-                    case 2: // else statement block
-                        writeLine("elseStart" + std::to_string(node->getNum()) + ":");
-                        break;
-                    case 3: // while statement block
-                        break;
-                    default:
-                        ;
-                }
                 break;
-            }
+            
             default:
                 ;
         }
+    }
+    switch(node->getIsIfOrLoop()){
+        case ifBlock: // if statement conditional
+            break;
+        case elseBlock: // else statement conditional
+            writeLine("elseStart" + std::to_string(node->getNum()) + ":");
+            break;
+        case whileBlock: // while statement conditional
+            break;
+        default:
+            ;
     }
     return true;
 }
@@ -329,18 +329,6 @@ bool CodeGen::postPass(AST *node){
                 writeLine("ifEnd" + std::to_string(node->getNum()) + ":"); // print label
                 break;
             case blockStmt:
-                switch (node->getIsIfLoop()){
-                    case 1:
-                        writeTabbedLine("j ifEnd" + std::to_string(node->getNum()));
-                        break;
-                    case 2:
-                        break;
-                    case 3: // while loop block
-                        writeTabbedLine("j whileStart" + std::to_string(node->getNum()));
-                        break;
-                    default:
-                        ;
-                }
                 break;
             case whileStmt:
                 writeLine("whileEnd" + std::to_string(node->getNum()) + ":"); // print label
@@ -351,7 +339,7 @@ bool CodeGen::postPass(AST *node){
             default:
                 ;
         }
-    }else{
+    }else if(node->theNode == expression){
         switch(node->theExprType){
             case unary:
                 break;
@@ -433,13 +421,13 @@ bool CodeGen::postPass(AST *node){
                 std::string res = opToInstr(node->getTheOp()) + " " + regToStr(dest) + ", ";
                 res += regToStr(childOne) + ", " + regToStr(childTwo);
                 writeTabbedLine(res);
-                if(node->getIsIfLoop() == 1){
+                if(node->getIsIfOrLoop() == ifConditional){
                     // This conditional is being used for if statement. 
                     writeTabbedLine("beqz " + regToStr(node->getReg()) + ", ifEnd" + std::to_string(node->getNum()));
-                }else if(node->getIsIfLoop() == 2){
+                }else if(node->getIsIfOrLoop() == elseConditional){
                     // This conditional is being used for ifelse statement. 
                     writeTabbedLine("beqz " + regToStr(node->getReg()) + ", elseStart" + std::to_string(node->getNum()));
-                }else if(node->getIsIfLoop() == 3){
+                }else if(node->getIsIfOrLoop() == whileConditional){
                     // This conditional is being used for while statement. 
                     writeTabbedLine("beqz " + regToStr(node->getReg()) + ", whileEnd" + std::to_string(node->getNum()));
                 } 
@@ -455,7 +443,7 @@ bool CodeGen::postPass(AST *node){
                 }
                 for(int i = 1; i < childList.size(); i++){
                     if(childList[i]->theExprType == number){
-                        writeTabbedLine("li $a" + std::to_string(i - 1) + ", " + std::to_string(node->getNum()));
+                        writeTabbedLine("li $a" + std::to_string(i - 1) + ", " + std::to_string(childList[i]->getNum()));
                     }else if(childList[i]->theExprType == stringLit){
                         writeTabbedLine("la $a0, str" + std::to_string(childList[i]->getNum()));
                         writeTabbedLine("lw $a1, str" + std::to_string(childList[i]->getNum()) + "Len");
@@ -488,6 +476,18 @@ bool CodeGen::postPass(AST *node){
             default:
                 ;
         }
+    }
+    switch (node->getIsIfOrLoop()){
+        case ifBlock:
+            writeTabbedLine("j ifEnd" + std::to_string(node->getNum()));
+            break;
+        case elseBlock:
+            break;
+        case whileBlock: // while loop block
+            writeTabbedLine("j whileStart" + std::to_string(node->getNum()));
+            break;
+        default:
+            ;
     }
     return true;
 }

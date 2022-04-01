@@ -101,7 +101,7 @@ inline std::string opToInstr(Operators op){
     switch (op){
         case op_ADD:    return "addu";
         case op_SUB:    return "subu";
-        case op_MULT:   return "mulu";
+        case op_MULT:   return "mul";
         case op_DIV:    return "divu";
         case op_MOD:    return "remu";
         case op_LT:     return "slt";

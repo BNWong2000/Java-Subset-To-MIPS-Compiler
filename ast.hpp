@@ -116,6 +116,19 @@ enum NodeType {
     declaration
 };
 
+// enum for if a node is connected to a while or if/else
+// noneOfTheBelow means it isn't (default value)
+enum ifWhileElseStuff{
+    noneOfTheBelow,
+    ifConditional,
+    elseConditional,
+    whileConditional,
+    ifBlock,
+    elseBlock,
+    whileBlock
+
+};
+
 // Parent class.
 class AST {
 protected:
@@ -154,7 +167,7 @@ protected:
 
     // If it's part of an if or while
     // 1 for if, 2 for else, 3 for while
-    int isIfLoop;
+    ifWhileElseStuff isIfOrLoop;
 
     void printProg (int indentLvl);
     void printStmt (int indentLvl);
@@ -175,7 +188,7 @@ public:
     AST(std::string name);
     AST(int line) : lineNo(line) { 
         reg = NONE; 
-        isIfLoop = 0;
+        isIfOrLoop = noneOfTheBelow;
     }
 
     ~AST()
@@ -233,12 +246,12 @@ public:
         theVar = var;
     }
 
-    int getIsIfLoop(){
-        return isIfLoop;
+    ifWhileElseStuff getIsIfOrLoop(){
+        return isIfOrLoop;
     }
 
-    void setIsIfLoop(int x){
-        isIfLoop = x;
+    void setIsIfOrLoop(ifWhileElseStuff x){
+        isIfOrLoop = x;
     }
 
     bool checkSemantics();

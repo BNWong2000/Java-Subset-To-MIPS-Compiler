@@ -625,7 +625,11 @@ bool AST::checkSemantics(){
     return analyzer->checkTree();
 }
 
-AST::AST(std::string name) : fileName(name) {theNode = prog; analyzer = new Semantic(this);};
+AST::AST(std::string name) : fileName(name) {
+    theNode = prog; 
+    analyzer = new Semantic(this);
+    isIfOrLoop = noneOfTheBelow;
+};
 
 std::string AST::getMainFunction(){
     return analyzer->getMainFunc();
