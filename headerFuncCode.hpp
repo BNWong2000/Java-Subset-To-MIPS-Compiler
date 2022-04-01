@@ -9,5 +9,6 @@ std::string generate_printb();
 std::string generate_printc();
 std::string generate_printi();
 std::string generate_prints();
+std::string generate_error();
 
 #endif

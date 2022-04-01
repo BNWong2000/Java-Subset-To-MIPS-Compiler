@@ -156,9 +156,9 @@ bool CodeGen::prePass(AST *node){
                 currIfCount++;
                 auto children = node->getChildren();
                 children[0]->setIsIfOrLoop(ifConditional); // conditional for if
-                children[0]->setNum(currIfCount); 
+                children[0]->setBlockID(currIfCount); 
                 children[1]->setIsIfOrLoop(ifBlock); // block/body
-                children[1]->setNum(currIfCount); 
+                children[1]->setBlockID(currIfCount); 
                 // writeLine("ifStart" + std::to_string(currIfCount) + ":"); // print label
                 // node->setNum(currIfCount); // store it in the node.
                 break;
@@ -168,11 +168,11 @@ bool CodeGen::prePass(AST *node){
                 currIfCount++;
                 auto children = node->getChildren();
                 children[0]->setIsIfOrLoop(elseConditional); // conditional for if/else
-                children[0]->setNum(currIfCount);
+                children[0]->setBlockID(currIfCount);
                 children[1]->setIsIfOrLoop(ifBlock); // if block/body
-                children[1]->setNum(currIfCount);
+                children[1]->setBlockID(currIfCount);
                 children[2]->setIsIfOrLoop(elseBlock); // else block/body
-                children[2]->setNum(currIfCount);
+                children[2]->setBlockID(currIfCount);
                 // writeLine("ifStart" + std::to_string(currIfCount) + ":"); // print label
                 // node->setNum(currIfCount); // store it in the node.
                 break;
@@ -180,12 +180,13 @@ bool CodeGen::prePass(AST *node){
             case whileStmt: // while always has 2 children
             {
                 currWhileCount++;
+                whileStack.push(currWhileCount);
                 auto children = node->getChildren();
                 // node->setNum(currWhileCount);
                 children[0]->setIsIfOrLoop(whileConditional); // conditional
-                children[0]->setNum(currWhileCount); 
+                children[0]->setBlockID(currWhileCount); 
                 children[1]->setIsIfOrLoop(whileBlock); // block/body
-                children[1]->setNum(currWhileCount); 
+                children[1]->setBlockID(currWhileCount); 
                 writeLine("whileStart" + std::to_string(currWhileCount) + ":"); // print label
                 break;
             }
@@ -200,7 +201,7 @@ bool CodeGen::prePass(AST *node){
         case ifBlock: // if statement conditional
             break;
         case elseBlock: // else statement conditional
-            writeLine("elseStart" + std::to_string(node->getNum()) + ":");
+            writeLine("elseStart" + std::to_string(node->getBlockID()) + ":");
             break;
         case whileBlock: // while statement conditional
             break;
@@ -329,18 +330,19 @@ bool CodeGen::postPass(AST *node){
                 break;
             }
             case ifStmt:
-                writeLine("ifEnd" + std::to_string(node->getFirstChild()->getNum()) + ":"); // print label
+                writeLine("ifEnd" + std::to_string(node->getFirstChild()->getBlockID()) + ":"); // print label
                 break;
             case ifElseStmt:
-                writeLine("ifEnd" + std::to_string(node->getFirstChild()->getNum()) + ":"); // print label
+                writeLine("ifEnd" + std::to_string(node->getFirstChild()->getBlockID()) + ":"); // print label
                 break;
             case blockStmt:
                 break;
             case whileStmt:
-                writeLine("whileEnd" + std::to_string(node->getFirstChild()->getNum()) + ":"); // print label
+                whileStack.pop();
+                writeLine("whileEnd" + std::to_string(node->getFirstChild()->getBlockID()) + ":"); // print label
                 break;
             case breakStmt:
-                writeTabbedLine("j whileEnd" + std::to_string(currWhileCount));
+                writeTabbedLine("j whileEnd" + std::to_string(whileStack.top()));
                 break;
             default:
                 ;
@@ -445,7 +447,10 @@ bool CodeGen::postPass(AST *node){
                         std::cerr << "ERROR - an expression doesn't have a reg set up." << std::endl;
                         return false;
                     }
-                    
+                }
+
+                if(node->getTheOp() == op_DIV || node->getTheOp() == op_MOD){
+                    // div by zero error
                 }
                 
                 // free reg from children. 
@@ -520,62 +525,80 @@ bool CodeGen::postPass(AST *node){
     switch (node->getIsIfOrLoop()){
         case ifConditional:
         {
-            Registers source = node->getReg();
+            auto temp = node;
+            if(temp->theNode == statement){
+                temp = temp->getFirstChild();
+            }
+            Registers source = temp->getReg();
             if(source == NONE){
-                auto entry = node->getTableEntry();
+                auto entry = temp->getTableEntry();
                 source = getNextReg();
-                if(entry->isGlobal){
-                    writeTabbedLine("lw " + regToStr(source) + ", _" + node->getName());
+                if(temp->theExprType == boolLit){
+                    writeTabbedLine("li " + regToStr(source) + ", " + std::to_string(temp->getNum()));
+                }else if(entry->isGlobal){
+                    writeTabbedLine("lw " + regToStr(source) + ", _" + temp->getName());
                 }else{
                     int offset = entry->offset;
                     writeTabbedLine("lw " + regToStr(source) + ", " + std::to_string(stackLevel - offset) + "($sp)");
                 }
             }
-            writeTabbedLine("beqz " + regToStr(source) + ", ifEnd" + std::to_string(node->getNum()));
+            writeTabbedLine("beqz " + regToStr(source) + ", ifEnd" + std::to_string(temp->getBlockID()));
             freeReg(source);
             break;
         }
         case elseConditional:
         {
-            Registers source = node->getReg();
+            auto temp = node;
+            if(temp->theNode == statement){
+                temp = temp->getFirstChild();
+            }
+            Registers source = temp->getReg();
             if(source == NONE){
-                auto entry = node->getTableEntry();
+                auto entry = temp->getTableEntry();
                 source = getNextReg();
-                if(entry->isGlobal){
-                    writeTabbedLine("lw " + regToStr(source) + ", _" + node->getName());
+                if(temp->theExprType == boolLit){
+                    writeTabbedLine("li " + regToStr(source) + ", " + std::to_string(temp->getNum()));
+                }else if(entry->isGlobal){
+                    writeTabbedLine("lw " + regToStr(source) + ", _" + temp->getName());
                 }else{
                     int offset = entry->offset;
                     writeTabbedLine("lw " + regToStr(source) + ", " + std::to_string(stackLevel - offset) + "($sp)");
                 }
             }
-            writeTabbedLine("beqz " + regToStr(source) + ", elseStart" + std::to_string(node->getNum()));
+            writeTabbedLine("beqz " + regToStr(source) + ", elseStart" + std::to_string(node->getBlockID()));
             freeReg(source);
             break;
         }
         case whileConditional:
         {
-            Registers source = node->getReg();
+            auto temp = node;
+            if(temp->theNode == statement){
+                temp = temp->getFirstChild();
+            }
+            Registers source = temp->getReg();
             if(source == NONE){
-                auto entry = node->getTableEntry();
+                auto entry = temp->getTableEntry();
                 source = getNextReg();
-                if(entry->isGlobal){
-                    writeTabbedLine("lw " + regToStr(source) + ", _" + node->getName());
+                if(temp->theExprType == boolLit){
+                    writeTabbedLine("li " + regToStr(source) + ", " + std::to_string(temp->getNum()));
+                }else if(entry->isGlobal){
+                    writeTabbedLine("lw " + regToStr(source) + ", _" + temp->getName());
                 }else{
                     int offset = entry->offset;
                     writeTabbedLine("lw " + regToStr(source) + ", " + std::to_string(stackLevel - offset) + "($sp)");
                 }
             }
-            writeTabbedLine("beqz " + regToStr(source) + ", whileEnd" + std::to_string(node->getNum()));
+            writeTabbedLine("beqz " + regToStr(source) + ", whileEnd" + std::to_string(node->getBlockID()));
             freeReg(source);
             break;
         }
         case ifBlock:
-            writeTabbedLine("j ifEnd" + std::to_string(node->getNum()));
+            writeTabbedLine("j ifEnd" + std::to_string(node->getBlockID()));
             break;
         case elseBlock:
             break;
         case whileBlock: // while loop block
-            writeTabbedLine("j whileStart" + std::to_string(node->getNum()));
+            writeTabbedLine("j whileStart" + std::to_string(node->getBlockID()));
             break;
         default:
             ;
@@ -644,5 +667,6 @@ void CodeGen::generateHeaderFuncs(){
     writeLine(generate_printc());
     writeLine(generate_printi());
     writeLine(generate_prints());
+    writeLine(generate_error());
 }
 

@@ -162,6 +162,9 @@ protected:
     // an int to store information relating to the node.
     int num;
 
+    // an int to store block information about the node
+    int blockID;
+
     // Line number of the statement, for printing/debugging
     int lineNo;
 
@@ -213,6 +216,10 @@ public:
 
     void setNum(int newNum){
         num = newNum;
+    }
+
+    void setBlockID(int newNum){
+        blockID = newNum;
     }
 
     AST *getSibling() {
@@ -304,6 +311,10 @@ public:
 
     int getNum(){
         return num;
+    }
+
+    int getBlockID(){
+        return blockID;
     }
 
     std::string getMainFunction();

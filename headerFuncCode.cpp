@@ -63,3 +63,14 @@ std::string generate_prints(){
     
     return result;
 }
+
+std::string generate_error(){
+    std::string result=
+    "\nERROR:\n";
+    result += "\tli $v0, 4    # print error message ascii\n";
+    result += "\tsyscall \n";
+    result += "\tli $v0, 10   # halt\n";
+    result += "\tsyscall \n";
+    result += "\tjr $ra";
+    return result;
+}

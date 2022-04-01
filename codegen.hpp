@@ -8,6 +8,7 @@
 #include <utility>
 #include "regEnums.hpp"
 #include "headerFuncCode.hpp"
+#include <stack>
 
 class CodeGen{
 private:
@@ -27,6 +28,9 @@ private:
     int stackLevel;
     int currParamCount;
     int currWhileCount;
+
+    std::stack<int> whileStack;
+
     int currIfCount;
     int initFuncStack;
 
