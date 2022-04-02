@@ -25,9 +25,12 @@ private:
         std::cout << "\t" << line << std::endl;
     }
 
+    int divZeroCount;
+
     int stackLevel;
     int currParamCount;
     int currWhileCount;
+    int shortCircuitCount;
 
     std::stack<int> whileStack;
 
@@ -92,10 +95,12 @@ private:
 public:
     CodeGen(AST *theTree, std::string mainName){
         tree = theTree;
+        divZeroCount = -1;
         mainFuncName = mainName;
         stackLevel = 0;
         currWhileCount = -1;
         currIfCount = -1;
+        shortCircuitCount = -1;
         initRegList();
     }
 

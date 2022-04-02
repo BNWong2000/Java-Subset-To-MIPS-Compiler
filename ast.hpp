@@ -168,6 +168,10 @@ protected:
     // Line number of the statement, for printing/debugging
     int lineNo;
 
+    int conditionChild;
+
+    int sc;
+
     // If it's part of an if or while
     // 1 for if, 2 for else, 3 for while
     ifWhileElseStuff isIfOrLoop;
@@ -192,6 +196,7 @@ public:
     AST(int line) : lineNo(line) { 
         reg = NONE; 
         isIfOrLoop = noneOfTheBelow;
+        conditionChild = 0;
     }
 
     ~AST()
@@ -315,6 +320,22 @@ public:
 
     int getBlockID(){
         return blockID;
+    }
+
+    void setConditionChild(int x){
+        conditionChild = x;
+    }
+
+    int getConditionChild(){
+        return conditionChild;
+    }
+
+    int getSC(){
+        return sc;
+    }
+
+    void setSC(int s){
+        sc = s;
     }
 
     std::string getMainFunction();

@@ -146,6 +146,20 @@ bool CodeGen::prePass(AST *node){
                 }
                 break;
             }
+            case conditional:
+            {
+                shortCircuitCount++;
+                auto childOne = node->getFirstChild();
+                node->setSC(shortCircuitCount);
+                childOne->setBlockID(shortCircuitCount);
+                if(node->getTheOp() == op_AND){
+                    childOne->setConditionChild(1);
+                }else if(node->getTheOp() == op_OR){
+                    childOne->setConditionChild(2);
+                }
+                // node->setReg(getNextReg());
+                break;
+            }
             default:
                 ;
         }
@@ -244,9 +258,7 @@ bool CodeGen::postPass(AST *node){
         switch(node->theStmtType){
             case assignment:
             {
-                // restore onto stack
                 // check it's children. (gauranteed 2 children)
-                // writeLine("BRUH");
                 Registers source = node->getChildren()[1]->getReg();
                 // Get a source register
                 if(source == NONE){
@@ -389,17 +401,18 @@ bool CodeGen::postPass(AST *node){
             case arithmetic:
             case equality:
             case conditional:
-            case relational: // but note that equalities, conditionals and relationals can be used for if/while
+            case relational:
             {
                 // check it's children. (gauranteed 2 children)
                 Registers childOne = node->getChildren()[0]->getReg();
                 Registers childTwo = node->getChildren()[1]->getReg();
-                
+                auto childNodeOne = node->getFirstChild();
+                if(childNodeOne->theNode == statement){
+                    childNodeOne = childNodeOne->getFirstChild();
+                }
+                childOne = childNodeOne->getReg();
                 if(childOne == NONE){
-                    AST *temp = node->getFirstChild();
-                    if(temp->theNode == statement){
-                        temp = temp->getFirstChild();
-                    }
+                    AST *temp = childNodeOne;
                     if(temp->theExprType == identifier){
                         // do something else
                         SymEntry *tempEntry = temp->getTableEntry();
@@ -451,27 +464,29 @@ bool CodeGen::postPass(AST *node){
 
                 if(node->getTheOp() == op_DIV || node->getTheOp() == op_MOD){
                     // div by zero error
-                    writeTabbedLine("bnez " + regToStr(childTwo) + ", goodDiv");
+                    writeTabbedLine("bnez " + regToStr(childTwo) + ", goodDiv"+ std::to_string(++divZeroCount));
                     writeTabbedLine(".data");
-                    writeLine("divZeroErr:\t.asciiz \"Runtime Error: divide by zero\n\"");
+                    writeLine("divZeroErr" + std::to_string(divZeroCount) + ":\t.asciiz \"Runtime Error: divide by zero\n\"");
                     writeTabbedLine(".text");
-                    writeLine("divCheck:");
-                    writeTabbedLine("la $a0, divZeroErr");
+                    writeLine("divCheck" + std::to_string(divZeroCount) + ":");
+                    writeTabbedLine("la $a0, divZeroErr"+ std::to_string(divZeroCount));
                     writeTabbedLine("jal ERROR");
-                    writeLine("goodDiv:");
+                    writeLine("goodDiv" + std::to_string(divZeroCount) + ":");
                 }
                 
                 // free reg from children. 
-                freeReg(childOne);
+                // freeReg(childOne);
                 freeReg(childTwo);
-                node->getChildren()[0]->setReg(NONE);
-                node->getChildren()[1]->setReg(NONE);
 
                 // grab a new reg
-                Registers dest = getNextReg();
+                // Registers dest = getNextReg();
+                Registers dest = node->getReg();
                 if(dest == NONE){
-                    std::cerr << "ERROR: No registers remaining." << std::endl;
-                    return false;
+                    dest = childOne;
+                    // std::cerr << "hi 2212312341 op is" << opToString(node->getTheOp()) << std::endl;
+                    // return false;
+                }else{
+                    // std::cerr << "hi 2 op is" << opToString(node->getTheOp()) << std::endl;
                 }
                 node->setReg(dest);
 
@@ -479,6 +494,13 @@ bool CodeGen::postPass(AST *node){
                 std::string res = opToInstr(node->getTheOp()) + " " + regToStr(dest) + ", ";
                 res += regToStr(childOne) + ", " + regToStr(childTwo);
                 writeTabbedLine(res); 
+                
+                if(node->getTheOp() == op_AND || node->getTheOp() == op_OR){
+                   
+                    writeLine("cond" + std::to_string(node->getSC()) + ":");
+                }
+                node->getChildren()[0]->setReg(NONE);
+                node->getChildren()[1]->setReg(NONE);
                 break;
             }
             case functionCall:
@@ -610,6 +632,49 @@ bool CodeGen::postPass(AST *node){
             break;
         default:
             ;
+    }
+    if(node->getConditionChild() == 1){
+        // AND
+        auto temp = node; 
+        if(node->theNode == statement){
+            temp = node->getFirstChild();
+        }
+        Registers source = temp->getReg();
+        if(temp->getReg() == NONE){
+            source = getNextReg();
+            temp->setReg(source);
+            auto entry = temp->getTableEntry();
+            if(temp->theExprType == boolLit || temp->theExprType == number){
+                writeTabbedLine("li " + regToStr(source) + ", " + std::to_string(temp->getNum()));
+            }else if(entry->isGlobal){
+                writeTabbedLine("lw " + regToStr(source) + ", _" + temp->getName());
+            }else{
+                int offset = entry->offset;
+                writeTabbedLine("lw " + regToStr(source) + ", " + std::to_string(stackLevel - offset) + "($sp)");
+            }
+        }
+        writeTabbedLine("beqz " + regToStr(source) + ", cond" + std::to_string(node->getBlockID()));
+    }else if(node->getConditionChild() == 2){
+        // OR
+        auto temp = node; 
+        if(node->theNode == statement){
+            temp = node->getFirstChild();
+        }
+        Registers source = temp->getReg();
+        if(temp->getReg() == NONE){
+            source = getNextReg();
+            temp->setReg(source);
+            auto entry = temp->getTableEntry();
+            if(temp->theExprType == boolLit || temp->theExprType == number){
+                writeTabbedLine("li " + regToStr(source) + ", " + std::to_string(temp->getNum()));
+            }else if(entry->isGlobal){
+                writeTabbedLine("lw " + regToStr(source) + ", _" + temp->getName());
+            }else{
+                int offset = entry->offset;
+                writeTabbedLine("lw " + regToStr(source) + ", " + std::to_string(stackLevel - offset) + "($sp)");
+            }
+        }
+        writeTabbedLine("bnez " + regToStr(source) + ", cond" + std::to_string(node->getBlockID()));
     }
     return true;
 }

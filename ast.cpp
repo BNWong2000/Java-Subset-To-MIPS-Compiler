@@ -629,6 +629,7 @@ AST::AST(std::string name) : fileName(name) {
     theNode = prog; 
     analyzer = new Semantic(this);
     isIfOrLoop = noneOfTheBelow;
+    conditionChild = 0;
 };
 
 std::string AST::getMainFunction(){
