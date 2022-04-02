@@ -234,13 +234,21 @@ bool CodeGen::postPass(AST *node){
                 break;
             case function:
             {
-                int temp = stackLevel - initFuncStack;
-                writeTabbedLine("");
-                writeTabbedLine("lw $ra, " + std::to_string(temp-4) + "($sp)");
-                if(temp > 0){
-                    writeTabbedLine("addu $sp, $sp, " + std::to_string(temp));
+                if(node->getTheVar() != var_VOID){
+                    writeTabbedLine(".data");
+                    writeLine("noRetErr" + std::to_string(++noRetCount) + ":\t.asciiz \"Runtime Error: No return from function\n\"");
+                    writeTabbedLine(".text");
+                    writeTabbedLine("la $a0, noRetErr"+ std::to_string(noRetCount));
+                    writeTabbedLine("jal ERROR");
+                }else{
+                    int temp = stackLevel - initFuncStack;
+                    writeTabbedLine("");
+                    writeTabbedLine("lw $ra, " + std::to_string(temp-4) + "($sp)");
+                    if(temp > 0){
+                        writeTabbedLine("addu $sp, $sp, " + std::to_string(temp));
+                    }
+                    writeTabbedLine("jr $ra");
                 }
-                writeTabbedLine("jr $ra");
                 freeAllReg();
                 break;
             }

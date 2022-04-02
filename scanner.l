@@ -70,7 +70,7 @@ ID {alphaUnderscore}{alphaNumUnderscore}*
 "void"      return Token::T_VOID;
 
 {ID}        {yylval->str = new std::string(yytext); return Token::T_ID;}
-{num}       {yylval->ival = std::stoi(yytext); return Token::T_NUM;}
+{num}       {yylval->ival = std::stol(yytext); return Token::T_NUM;}
 
 "//"            BEGIN(COMMENT);
 \"              {yymore(); BEGIN(STRING); }

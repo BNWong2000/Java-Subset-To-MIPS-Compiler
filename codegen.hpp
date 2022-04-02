@@ -26,6 +26,7 @@ private:
     }
 
     int divZeroCount;
+    int noRetCount;
 
     int stackLevel;
     int currParamCount;
