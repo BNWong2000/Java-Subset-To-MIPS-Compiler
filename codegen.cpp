@@ -89,11 +89,11 @@ bool CodeGen::globalsPass(AST *node){
                 }
                 result += ", ";
             }
-            result += "0";
+            // result += "0";
             writeLine(result);
             writeTabbedLine(".align 2");
             // store the length of the string.
-            writeLine("str" + std::to_string(node->getNum()) + "Len:\t.word " + std::to_string(strLen + 1));
+            writeLine("str" + std::to_string(node->getNum()) + "Len:\t.word " + std::to_string(strLen));
         }
     }
     return true;
@@ -236,7 +236,7 @@ bool CodeGen::postPass(AST *node){
             {
                 if(node->getTheVar() != var_VOID){
                     writeTabbedLine(".data");
-                    writeLine("noRetErr" + std::to_string(++noRetCount) + ":\t.asciiz \"Runtime Error: No return from function\n\"");
+                    writeLine("noRetErr" + std::to_string(++noRetCount) + ":\t.asciiz \"Runtime Error: No return from function " + node->getFirstChild()->getFirstChild()->getName() + "\n\"");
                     writeTabbedLine(".text");
                     writeTabbedLine("la $a0, noRetErr"+ std::to_string(noRetCount));
                     writeTabbedLine("jal ERROR");
