@@ -13,5 +13,5 @@ Branden Wong - 30040675
 
 ### Execution Instructions:
 1. After bulding the project, the main executable should be created. 
-2. Execute this file and include the file you would like to scan/parse as an argument. Example:
+2. Execute this file and include the file you would like to compile as an argument. Example:
 `./main [NAME_OF_FILE]`
