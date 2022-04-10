@@ -15,3 +15,10 @@ Branden Wong - 30040675
 1. After bulding the project, the main executable should be created. 
 2. Execute this file and include the file you would like to compile as an argument. Example:
 `./main [NAME_OF_FILE]`
+
+This will output the MIPS assembly code to standard output, which can then be piped to a *.s file. 
+
+Example:
+`./main /path/to/j--/file > outputFileName.s`
+
+
