@@ -1,11 +1,14 @@
-# CPSC-411-Project
+# Java Subset to MIPS compiler
 Branden Wong
+
+This compiler compiles a specific subset of Java into MIPS assembly code. 
+The specification for this subset can be found [here](https://pages.cpsc.ucalgary.ca/~aycock/411/spec.html).
 
 ## How to Build:
 ### Prerequisites:
 - Ensure that your computer is running c++14 and contains the clang++ compiler
-- Ensure that the Fast Lexical Analyzer Tool (FLEX) libary is installed on your computer. This can be found here: [FLEX](https://github.com/westes/flex)).
-- Ensure that the Bison libary is installed on your computer. This can be found here: [Bison](https://www.gnu.org/software/bison/)).
+- Ensure that the Fast Lexical Analyzer Tool (FLEX) libary is installed on your computer. This can be found here: [FLEX](https://github.com/westes/flex).
+- Ensure that the Bison libary is installed on your computer. This can be found here: [Bison](https://www.gnu.org/software/bison/).
 
 ### Build Instructions:
 1. Clone this repository, and navigate to the base folder, `Java-Subset-To-MIPS-Compiler`
