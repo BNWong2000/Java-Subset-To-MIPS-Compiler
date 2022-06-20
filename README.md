@@ -2,7 +2,7 @@
 Branden Wong
 
 This compiler compiles a specific subset of Java into MIPS assembly code. 
-The specification for this subset can be found [here](https://pages.cpsc.ucalgary.ca/~aycock/411/spec.html).
+The specification for this subset can be found [here](Language-Specification) or alternatively [here](https://pages.cpsc.ucalgary.ca/~aycock/411/spec.html).
 
 ## How to Build:
 ### Prerequisites:
